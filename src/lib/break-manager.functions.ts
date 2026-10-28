@@ -191,11 +191,23 @@ export const listComments = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { data: rows, error } = await context.supabase
       .from("break_comments")
-      .select("id, body, internal, created_at, author:profiles!break_comments_author_id_fkey(full_name)")
+      .select("id, body, internal, created_at, author_id")
+      .eq("tenant_id", data.tenant_id)
       .eq("exception_id", data.exception_id)
       .order("created_at", { ascending: true });
     if (error) throw new Error(error.message);
-    return rows ?? [];
+    const list = rows ?? [];
+    // author_id references auth.users, not profiles, so resolve names separately.
+    const authorIds = [...new Set(list.map((r: any) => r.author_id).filter(Boolean))];
+    const names = new Map<string, string | null>();
+    if (authorIds.length) {
+      const { data: profs } = await context.supabase
+        .from("profiles")
+        .select("id, full_name")
+        .in("id", authorIds);
+      for (const p of (profs ?? []) as any[]) names.set(p.id, p.full_name ?? null);
+    }
+    return list.map((r: any) => ({ ...r, author: { full_name: names.get(r.author_id) ?? null } }));
   });
 
 export const addComment = createServerFn({ method: "POST" })

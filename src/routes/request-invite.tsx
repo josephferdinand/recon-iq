@@ -18,6 +18,23 @@ import {
 
 export const Route = createFileRoute("/request-invite")({
   component: RequestInvitePage,
+  head: () => ({
+    meta: [
+      { title: "Request access — ReconIQ" },
+      {
+        name: "description",
+        content:
+          "Request access to your organization’s ReconIQ workspace. Verify your work email, then your tenant administrator reviews your admission.",
+      },
+      { property: "og:title", content: "Request access — ReconIQ" },
+      {
+        property: "og:description",
+        content: "Verify your work email and request admission to your organization’s ReconIQ tenant.",
+      },
+      { property: "og:url", content: "https://reconintelligence.app/request-invite" },
+    ],
+    links: [{ rel: "canonical", href: "https://reconintelligence.app/request-invite" }],
+  }),
 });
 
 type Phase =
@@ -178,30 +195,31 @@ function RequestInvitePage() {
   };
 
   return (
-    <main className="min-h-dvh bg-[var(--brand-cream)] text-[var(--brand-coffee-deep)] xl:grid xl:grid-cols-2">
-      <section className="hidden bg-[#102743] px-12 py-10 text-white xl:flex xl:flex-col xl:justify-center">
+    <main className="min-h-dvh bg-black text-[#f5f5f7] xl:grid xl:grid-cols-2">
+      <section className="hidden border-r border-white/10 bg-[#0b0b0f] px-12 py-10 text-[#f5f5f7] xl:flex xl:flex-col xl:justify-center">
         <FviApprovedLogo className="h-28 w-28 rounded-lg" />
-        <p className="mt-8 text-xs font-semibold uppercase tracking-[0.25em] text-[#d6b46f]">
+        <p className="mt-8 text-xs font-semibold uppercase tracking-[0.18em] text-[#86868b]">
           ReconIQ
         </p>
         <h1 className="mt-4 max-w-lg font-display text-4xl font-semibold leading-tight">
           Join your organization’s reconciliation workspace
         </h1>
-        <p className="mt-5 max-w-lg text-sm leading-relaxed text-slate-200">
+        <p className="mt-5 max-w-lg text-sm leading-relaxed text-[#a1a1a6]">
           Your verified work email identifies the eligible organization. Its tenant administrator
           decides whether to admit you.
         </p>
-        <ol className="mt-9 space-y-5 text-sm text-slate-100">
+        <ol className="mt-9 space-y-5 text-sm text-[#d4d4da]">
           <li>1. Request access using your work email.</li>
           <li>2. Verify that email using the link we send.</li>
           <li>3. Wait for your tenant administrator’s decision.</li>
         </ol>
       </section>
-      <section className="flex min-h-dvh items-center justify-center px-5 py-8 xl:px-12">
+      <section className="flex min-h-dvh items-center justify-center bg-black px-5 py-8 xl:px-12">
         <div className="w-full max-w-md">
-          <FviApprovedLogo className="mx-auto mb-5 h-32 w-32 rounded-lg" />
-          <div className="rounded-2xl border border-slate-200 bg-white p-7 shadow-sm">
-            <h2 className="text-center font-display text-3xl font-semibold">Sign Up</h2>
+          <FviApprovedLogo className="mx-auto mb-5 h-32 w-32 rounded-lg xl:hidden" />
+          <div className="rounded-3xl border border-white/10 bg-[#161617] p-7">
+            <p className="text-center text-xs font-semibold uppercase tracking-[0.18em] text-[#86868b]">Request access</p>
+            <h2 className="mt-2 text-center font-display text-3xl font-semibold">Sign Up</h2>
             {phase === "verify" ? (
               <p className="mt-5 text-center text-sm leading-relaxed" role="status">
                 Your verification request was accepted. Check your inbox for the link; delivery has
@@ -223,7 +241,7 @@ function RequestInvitePage() {
                   here. Repeating this request will not create a second admission request.
                 </p>
                 <Button
-                  className="mt-4"
+                  className="mt-4 border-white/20 bg-transparent text-[#f5f5f7] hover:bg-white/10 hover:text-white"
                   variant="outline"
                   onClick={() => {
                     void submitVerifiedAdmission();
@@ -246,21 +264,21 @@ function RequestInvitePage() {
                     <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
                       <Link
                         to="/auth"
-                        className="font-semibold text-primary underline-offset-4 hover:underline"
+                        className="font-semibold text-[#2997ff] underline-offset-4 hover:text-white hover:underline"
                       >
                         Sign In
                       </Link>
                       <Link
                         to="/auth"
                         search={{ reset: true }}
-                        className="font-semibold text-primary underline-offset-4 hover:underline"
+                        className="font-semibold text-[#2997ff] underline-offset-4 hover:text-white hover:underline"
                       >
                         Forgot Password
                       </Link>
                       <Button
                         type="button"
                         variant="link"
-                        className="h-auto px-0 py-0"
+                        className="h-auto px-0 py-0 text-[#2997ff] hover:text-white"
                         onClick={startAnotherEmail}
                       >
                         Use Another Email Address
@@ -281,6 +299,7 @@ function RequestInvitePage() {
                         <Button
                           type="button"
                           variant="outline"
+                          className="border-white/20 bg-transparent text-[#f5f5f7] hover:bg-white/10 hover:text-white"
                           disabled={phase === "checking"}
                           onClick={() => {
                             if (attempt.current) void recoverAttempt(attempt.current, "check");
@@ -292,6 +311,7 @@ function RequestInvitePage() {
                           <Button
                             type="button"
                             variant="outline"
+                            className="border-white/20 bg-transparent text-[#f5f5f7] hover:bg-white/10 hover:text-white"
                             onClick={() => {
                               if (attempt.current) void recoverAttempt(attempt.current, "submit");
                             }}
@@ -304,14 +324,14 @@ function RequestInvitePage() {
                     <div className="flex flex-wrap gap-4">
                       <Link
                         to="/auth"
-                        className="font-semibold text-primary underline-offset-4 hover:underline"
+                        className="font-semibold text-[#2997ff] underline-offset-4 hover:text-white hover:underline"
                       >
                         Sign In
                       </Link>
                       <Link
                         to="/auth"
                         search={{ reset: true }}
-                        className="font-semibold text-primary underline-offset-4 hover:underline"
+                        className="font-semibold text-[#2997ff] underline-offset-4 hover:text-white hover:underline"
                       >
                         Forgot Password
                       </Link>
@@ -328,11 +348,11 @@ function RequestInvitePage() {
               ["form", "sending", "existing", "unknown", "checking", "not_sent"] as Phase[]
             ).includes(phase) ? (
               <form className="mt-6 space-y-4" onSubmit={submit} noValidate>
-                <p className="text-center text-sm text-muted-foreground">
+                <p className="text-center text-sm text-[#a1a1a6]">
                   Request admission to your organization’s ReconIQ tenant.
                 </p>
                 <div className="space-y-1.5">
-                  <Label htmlFor="signup-name">Full name</Label>
+                  <Label htmlFor="signup-name" className="text-sm font-medium text-[#f5f5f7]">Full name</Label>
                   <Input
                     id="signup-name"
                     autoComplete="name"
@@ -341,10 +361,11 @@ function RequestInvitePage() {
                     required
                     maxLength={120}
                     disabled={phase !== "form" && phase !== "existing"}
+                    className="h-11 rounded-xl border-white/15 bg-[#1c1c1f] px-3.5 text-[#f5f5f7] placeholder:text-[#86868b] focus-visible:ring-2 focus-visible:ring-[#2997ff]"
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="signup-email">Work email</Label>
+                  <Label htmlFor="signup-email" className="text-sm font-medium text-[#f5f5f7]">Work email</Label>
                   <Input
                     ref={emailInput}
                     id="signup-email"
@@ -358,27 +379,32 @@ function RequestInvitePage() {
                     required
                     maxLength={254}
                     disabled={phase !== "form" && phase !== "existing"}
+                    aria-describedby="signup-email-helper"
+                    className="h-11 rounded-xl border-white/15 bg-[#1c1c1f] px-3.5 text-[#f5f5f7] placeholder:text-[#86868b] focus-visible:ring-2 focus-visible:ring-[#2997ff]"
                   />
+                  <p id="signup-email-helper" className="text-xs text-[#86868b]">
+                    Use the work email your organization uses — we’ll send a verification link there.
+                  </p>
                 </div>
                 {formError && phase === "form" ? (
-                  <p className="text-sm text-destructive" role="alert">
+                  <p className="text-sm text-red-400" role="alert">
                     {formError}
                   </p>
                 ) : null}
-                <Button type="submit" className="w-full" disabled={phase !== "form"}>
+                <Button type="submit" className="h-11 w-full bg-white text-black hover:bg-white/85" disabled={phase !== "form"}>
                   {phase === "sending"
                     ? "Sending verification…"
                     : "Verify email and request access"}
                 </Button>
-                <p className="text-center text-xs text-muted-foreground">
+                <p className="text-center text-xs text-[#86868b]">
                   Submitting does not create tenant membership or grant access.
                 </p>
               </form>
             ) : null}
             {phase !== "existing" && !["unknown", "checking", "not_sent"].includes(phase) ? (
-              <p className="mt-6 text-center text-sm text-muted-foreground">
+              <p className="mt-6 text-center text-sm text-[#a1a1a6]">
                 Already have access?{" "}
-                <Link to="/auth" className="font-semibold text-primary hover:underline">
+                <Link to="/auth" className="font-semibold text-[#2997ff] hover:text-white hover:underline">
                   Sign In
                 </Link>
               </p>

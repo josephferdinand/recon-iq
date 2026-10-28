@@ -29,6 +29,7 @@ import {
   Link2Off,
 } from "lucide-react";
 import { toast } from "sonner";
+import { notifyUserError } from "@/lib/user-feedback";
 import { verifyGithubSyncChain } from "@/lib/github-sync.functions";
 
 type Props = {
@@ -67,7 +68,7 @@ export function GithubSyncVerifyChainDialog({
       if (r.ok) toast.success("Evidence chain verified end-to-end");
       else toast.error("Evidence chain verification failed");
     },
-    onError: (e: any) => toast.error(`Verification error: ${e.message}`),
+    onError: (e: any) => notifyUserError(e, "evidence_chain_verify"),
   });
 
   return (
@@ -174,8 +175,8 @@ export function GithubSyncVerifyChainDialog({
                       <TableHead>When</TableHead>
                       <TableHead>Action</TableHead>
                       <TableHead>Actor</TableHead>
-                      <TableHead>prev_hash</TableHead>
-                      <TableHead>row_hash</TableHead>
+                      <TableHead>Previous fingerprint</TableHead>
+                      <TableHead>Record fingerprint</TableHead>
                       <TableHead>Evidence link</TableHead>
                     </TableRow>
                   </TableHeader>

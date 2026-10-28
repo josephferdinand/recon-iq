@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Check, ArrowRight } from "lucide-react";
-import { FviApprovedLogo } from "@/components/fvi-approved-logo";
-import { BackButton } from "@/components/back-button";
+import { MarketingNav } from "@/components/marketing-nav";
+import { MarketingFooter } from "@/components/marketing-footer";
 
 export const Route = createFileRoute("/pricing")({
   component: Pricing,
@@ -12,7 +12,9 @@ export const Route = createFileRoute("/pricing")({
       { property: "og:title", content: "Pricing — ReconIQ" },
       { property: "og:description", content: "Enterprise pricing designed for regulated financial services." },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://reconintelligence.app/pricing" },
     ],
+    links: [{ rel: "canonical", href: "https://reconintelligence.app/pricing" }],
   }),
 });
 
@@ -52,62 +54,49 @@ const TIERS = [
 
 function Pricing() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <header className="fvi-marketing-header sticky top-0 z-40 border-b border-border/60 bg-background/85 backdrop-blur">
-        <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-6">
-          <Link to="/" className="flex items-center gap-2">
-            <FviApprovedLogo className="h-11 w-11 rounded-sm" />
-            <span className="font-display text-sm font-semibold">ReconIQ</span>
-          </Link>
-          <BackButton fallbackTo="/" label="Back to home" className="fvi-marketing-header-back" />
-        </div>
-      </header>
+    <div className="min-h-screen bg-black text-[#f5f5f7]">
+      <MarketingNav />
 
-      <main className="mx-auto max-w-6xl px-6 py-20">
+      <main className="mx-auto max-w-6xl px-6 py-20 md:py-28">
         <div className="text-center">
-          <div className="inline-flex items-center rounded-full border border-border px-3 py-1 text-[11px] uppercase tracking-widest text-muted-foreground">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#86868b]">
             Pricing
-          </div>
-          <h1 className="mt-6 font-display text-4xl font-medium tracking-tight md:text-6xl">
-            Priced for enterprise scale — <span className="text-primary">not per seat</span>
+          </p>
+          <h1 className="mx-auto mt-6 max-w-3xl font-display text-4xl font-medium tracking-tight md:text-6xl">
+            Priced for enterprise scale — not per seat
           </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
+          <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-[#a1a1a6]">
             Published prices and active reconciliation counts are proposals pending application entitlement implementation. Request a commercial discussion to review fit.
           </p>
         </div>
 
-        <p className="mx-auto mt-6 max-w-3xl rounded-lg border border-border bg-card p-4 text-center text-sm text-muted-foreground">
+        <p className="mx-auto mt-10 max-w-3xl rounded-2xl border border-white/10 bg-[#161617] p-5 text-center text-sm leading-relaxed text-[#a1a1a6]">
           Published prices and reconciliation limits are proposals, not active subscription controls. Feature entitlements, including AI capabilities, are pending application implementation. Requesting pricing does not create a subscription or provision access.
         </p>
 
-        <div className="mt-16 grid gap-6 md:grid-cols-3">
+        <div className="mt-16 grid gap-5 md:grid-cols-3">
           {TIERS.map((t) => (
             <div
               key={t.name}
-              className={`relative flex flex-col rounded-2xl border p-8 ${
-                t.highlight ? "border-primary/60 bg-primary/5 shadow-xl" : "border-border bg-card"
+              className={`flex flex-col rounded-2xl border p-8 ${
+                t.highlight ? "border-white/25 bg-[#1c1c1f]" : "border-white/10 bg-[#161617]"
               }`}
             >
-              {t.highlight && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-3 py-1 text-[10px] font-semibold uppercase tracking-widest text-primary-foreground">
-                  Most requested
-                </div>
-              )}
-              <h2 className="font-display text-2xl font-semibold">{t.name}</h2>
-              <p className="mt-1 text-sm text-muted-foreground">{t.tag}</p>
-              <div className="mt-6 font-display text-3xl font-medium">{t.price}</div>
+              <h2 className="font-display text-2xl font-medium tracking-tight">{t.name}</h2>
+              <p className="mt-1.5 text-sm leading-relaxed text-[#a1a1a6]">{t.tag}</p>
+              <div className="mt-6 font-display text-3xl font-medium tracking-tight">{t.price}</div>
               <ul className="mt-8 space-y-3 text-sm">
                 {t.bullets.map((b) => (
                   <li key={b} className="flex gap-2">
-                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                    <span className="text-muted-foreground">{b}</span>
+                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#2997ff]" />
+                    <span className="text-[#a1a1a6]">{b}</span>
                   </li>
                 ))}
               </ul>
               <div className="mt-auto pt-8">
                 <a
                   href={`/contact?plan=${encodeURIComponent(t.name)}`}
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:brightness-110"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black transition hover:bg-white/85"
                 >
                   {t.cta.label} <ArrowRight className="h-4 w-4" />
                 </a>
@@ -116,16 +105,18 @@ function Pricing() {
           ))}
         </div>
 
-        <div className="mt-16 rounded-xl border border-border bg-card p-8 text-center">
-          <h3 className="font-display text-xl font-semibold">Need to model the ROI first?</h3>
-          <p className="mt-2 text-sm text-muted-foreground">
+        <div className="mt-20 text-center">
+          <h2 className="font-display text-2xl font-medium tracking-tight md:text-3xl">Need to model the ROI first?</h2>
+          <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-[#a1a1a6]">
             Use the interactive ROI estimator to project MTTR reduction, cost avoidance and payback period against your current recon volumes.
           </p>
-          <Link to="/roi" className="mt-6 inline-flex items-center gap-2 rounded-full border border-border px-5 py-2.5 text-sm font-semibold hover:bg-accent">
+          <Link to="/roi" className="mt-6 inline-flex items-center gap-2 rounded-full border border-white/15 px-6 py-3 text-sm font-medium text-[#f5f5f7] transition hover:bg-white/10">
             Open ROI estimator <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
       </main>
+
+      <MarketingFooter />
     </div>
   );
 }

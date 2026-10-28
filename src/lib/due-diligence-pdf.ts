@@ -8,10 +8,10 @@ export type PackRecipient = {
   reference: string;
 };
 
-const GOLD = "#d4af6a";
-const INK = "#0a0f1c";
-const CREAM = "#f5efe0";
-const MUTED = "#9aa3b2";
+const GOLD = "#2997ff";
+const INK = "#000000";
+const CREAM = "#f5f5f7";
+const MUTED = "#a1a1a6";
 
 export async function generateDueDiligencePdf(r: PackRecipient): Promise<void> {
   const doc = new jsPDF({ unit: "pt", format: "a4" });
@@ -86,7 +86,7 @@ export async function generateDueDiligencePdf(r: PackRecipient): Promise<void> {
     M,
     H - 40
   );
-  doc.text("app.reconiq.example  ·  security@reconiq.example", M, H - 26);
+  doc.text("reconintelligence.app  ·  via the contact form at reconintelligence.app/contact", M, H - 26);
 
   // ---------- Content pages ----------
   for (const section of SECTIONS) {
@@ -160,7 +160,7 @@ function renderContentPage(
   doc.setTextColor(MUTED);
   doc.setFontSize(8);
   doc.text(`Reference ${(r.reference || "PENDING").slice(0, 8).toUpperCase()}  ·  Confidential`, M, H - 38);
-  doc.text("app.reconiq.example", W - M, H - 38, { align: "right" });
+  doc.text("reconintelligence.app", W - M, H - 38, { align: "right" });
 }
 
 function renderBackPage(doc: jsPDF, r: PackRecipient): void {
@@ -224,9 +224,9 @@ function renderBackPage(doc: jsPDF, r: PackRecipient): void {
   doc.setFont("helvetica", "normal");
   doc.setFontSize(10);
   doc.setTextColor(CREAM);
-  doc.text("Security & Compliance   security@reconiq.example", M + 18, y + 48);
-  doc.text("Enterprise Sales            sales@reconiq.example", M + 18, y + 66);
-  doc.text("Data Protection Officer   dpo@reconiq.example", M + 18, y + 84);
+  doc.text("All enquiries — Security & Compliance, Enterprise Sales, and", M + 18, y + 48);
+  doc.text("Data Protection — via the contact form at", M + 18, y + 66);
+  doc.text("reconintelligence.app/contact", M + 18, y + 84);
   doc.setTextColor(MUTED);
   doc.setFontSize(9);
   doc.text(

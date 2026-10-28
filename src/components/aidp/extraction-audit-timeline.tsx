@@ -170,7 +170,7 @@ function TimelineRow({
         {p.row_hash ? (
           <div className="mt-1 flex items-center gap-1 font-mono text-[10px] text-muted-foreground">
             <Hash className="h-3 w-3" />
-            {String(p.row_hash).slice(0, 24)}…
+            Fingerprint · {String(p.row_hash).replace(/^\\x/, "").slice(0, 12)}…
           </div>
         ) : null}
       </li>

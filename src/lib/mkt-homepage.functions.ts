@@ -96,8 +96,8 @@ export const HOMEPAGE_DEFAULTS: Record<HomepageSectionKey, SectionContent> = {
       "Zero-trust",
       "BYO-LLM",
       "SHA-256 audit",
-      "SOC 2 aligned",
-      "DORA-ready",
+      "SOC 2-aligned controls",
+      "DORA-aligned resilience",
     ],
   },
   stats_band: {
@@ -151,7 +151,7 @@ export const HOMEPAGE_DEFAULTS: Record<HomepageSectionKey, SectionContent> = {
     items: [
       { q: "Is this an AI wrapper?", a: "No — reconciliation engine first, agents on top, all auditable." },
       { q: "Can we bring our own LLM keys?", a: "Yes — per-tenant BYO-LLM with envelope-encrypted key vault." },
-      { q: "What are the security certifications?", a: "SOC 2 Type II aligned, DORA-ready, hash-chained audit trail." },
+      { q: "What are the security certifications?", a: "None yet — we claim only what we've earned. Controls are aligned by design to the SOC 2 Trust Services Criteria, with DORA-aligned resilience practices and a hash-chained audit trail. Formal certifications are on the roadmap." },
       { q: "How is data isolated?", a: "Per-tenant RLS everywhere and optional per-tenant KMS/schema." },
     ],
   },
@@ -190,7 +190,7 @@ export const HOMEPAGE_DEFAULTS: Record<HomepageSectionKey, SectionContent> = {
   },
   seo_meta: {
     site_title: "ReconIQ — AI-native reconciliation for regulated finance",
-    site_description: "Enterprise reconciliation with agentic AI, hash-chained audit, and BYO-LLM. SOC 2 aligned, DORA-ready.",
+    site_description: "Enterprise reconciliation with agentic AI, hash-chained audit, and BYO-LLM. Controls aligned by design to SOC 2 and DORA.",
     og_image_url: "",
     twitter_handle: "@falconveritas",
     canonical_domain: "reconiq.example",

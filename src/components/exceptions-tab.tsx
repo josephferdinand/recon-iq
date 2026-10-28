@@ -26,6 +26,7 @@ import { SavedViews } from "@/components/saved-views";
 import { exportCSV, exportXLSX, exportJSON } from "@/lib/export-utils";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { MobileTriage } from "@/components/mobile-triage";
+import { PayloadEvidenceSummary } from "@/components/payload-evidence-summary";
 import { useKeyboardShortcuts, type Shortcut } from "@/hooks/use-keyboard-shortcuts";
 import { KeyboardShortcutsDialog } from "@/components/keyboard-shortcuts-dialog";
 import { autoAssignExceptions, listAssignmentRules } from "@/lib/assignment-rules.functions";
@@ -357,9 +358,10 @@ export function ExceptionsTab({ tenantId, canWrite }: { tenantId: string; canWri
         ) : total === 0 ? (
           <div className="rounded-md border border-dashed p-8 text-center">
             <ShieldAlert className="mx-auto h-8 w-8 text-muted-foreground" />
-            <p className="mt-3 text-sm font-medium">Nothing to triage</p>
+            <p className="mt-3 text-sm font-medium">Nothing To Display Yet</p>
             <p className="mt-1 text-xs text-muted-foreground">
-              No exceptions match the current filters. Clear a filter or search term and try again.
+              There are currently no exceptions matching your selection. Try adjusting your
+              filters or clear your search to see more.
             </p>
           </div>
         ) : (
@@ -421,14 +423,14 @@ export function ExceptionsTab({ tenantId, canWrite }: { tenantId: string; canWri
                           </Button>
                           <span className="mt-1 block text-xs text-muted-foreground">{x.root_cause ?? "Root cause not recorded"}</span>
                         </td>
-                        <td className="px-3 py-3 align-top text-xs">{x.side ?? "Not recorded"}</td>
+                        <td className="px-3 py-3 align-top text-xs">{sideLabel(x.side)}</td>
                         <td className="whitespace-nowrap px-3 py-3 align-top text-xs">
                           <span className="block font-medium">{formatExceptionAge(x.created_at, dashboardQ.isError ? undefined : dashboardQ.data?.as_of)}</span>
                           <span className="mt-1 block text-muted-foreground">{formatDueDateState(x.due_date, dashboardQ.isError ? undefined : dashboardQ.data?.as_of)}</span>
                         </td>
                         <td className="px-3 py-3 align-top text-xs">
-                          <span className="block font-medium">{x.priority ?? "Not set"}</span>
-                          <span className="mt-1 block text-muted-foreground">Severity · {x.severity ?? "Not set"}</span>
+                          <span className="block font-medium">{priorityLabel(x.priority)}</span>
+                          <span className="mt-1 block text-muted-foreground">Severity · {severityLabel(x.severity)}</span>
                         </td>
                         <td className="px-3 py-3 align-top text-xs">{assigneeLabel(x.assignee, membersQ.data, membersQ.isError)}</td>
                         <td className="px-3 py-3 align-top text-xs">
@@ -696,7 +698,7 @@ function BreakInspector({
   const transitionsFn = useServerFn(listExceptionTransitions);
   const comments = useQuery({
     queryKey: ["break-comments", active?.id],
-    queryFn: () => commentsFn({ data: { exception_id: active.id } }),
+    queryFn: () => commentsFn({ data: { tenant_id: tenantId, exception_id: active.id } }),
     enabled: !!active?.id,
   });
   const attachments = useQuery({
@@ -709,6 +711,13 @@ function BreakInspector({
     queryFn: () => transitionsFn({ data: { tenant_id: tenantId, exception_id: active.id } }),
     enabled: !!active?.id,
   });
+  const payload = active?.payload ?? {};
+  const sides = useMemo(() => extractSides(payload), [payload]);
+  const allKeys = useMemo(() => {
+    const set = new Set<string>();
+    for (const s of sides) for (const row of s.rows) for (const k of Object.keys(row)) set.add(k);
+    return Array.from(set);
+  }, [sides]);
   if (!active) {
     return (
       <Card className="xl:sticky xl:top-4 xl:max-h-[80vh]">
@@ -720,13 +729,6 @@ function BreakInspector({
       </Card>
     );
   }
-  const payload = active?.payload ?? {};
-  const sides = useMemo(() => extractSides(payload), [payload]);
-  const allKeys = useMemo(() => {
-    const set = new Set<string>();
-    for (const s of sides) for (const row of s.rows) for (const k of Object.keys(row)) set.add(k);
-    return Array.from(set);
-  }, [sides]);
 
   return (
     <Card className="xl:sticky xl:top-4 xl:max-h-[80vh] xl:overflow-hidden xl:flex xl:flex-col">
@@ -746,9 +748,9 @@ function BreakInspector({
           <InspectorField label="Reconciliation">{active?.run?.definition?.name ?? "Not recorded"}</InspectorField>
           <InspectorField label="Run ID">{active?.run?.run_uid ?? "Not recorded"}</InspectorField>
           <InspectorField label="Run started">{active?.run?.started_at ? formatExceptionDate(active.run.started_at) : "Not recorded"}</InspectorField>
-          <InspectorField label="Severity">{active?.severity ?? "Not recorded"}</InspectorField>
-          <InspectorField label="Priority">{active?.priority ?? "Not recorded"}</InspectorField>
-          <InspectorField label="Source side">{active?.side ?? "Not recorded"}</InspectorField>
+          <InspectorField label="Severity">{severityLabel(active?.severity)}</InspectorField>
+          <InspectorField label="Priority">{priorityLabel(active?.priority)}</InspectorField>
+          <InspectorField label="Source side">{sideLabel(active?.side)}</InspectorField>
           <InspectorField label="Due date">{active?.due_date ? formatExceptionDate(active.due_date) : "Not set"}</InspectorField>
           <InspectorField label="Root cause" className="sm:col-span-2">{active?.root_cause ?? "Not recorded"}</InspectorField>
         </div>
@@ -786,9 +788,7 @@ function BreakInspector({
             </table>
           </div>
         ) : (
-          <pre className="max-h-[50vh] overflow-auto rounded bg-muted p-2 text-[11px]">
-            {JSON.stringify(payload, null, 2)}
-          </pre>
+          <PayloadEvidenceSummary payload={payload} />
         )}
 
         <section className="space-y-2 border-t pt-3" aria-labelledby="exception-comments-heading">
@@ -932,6 +932,31 @@ function queueStatusLabel(status?: string | null): string {
     case "resolved": return "Resolved";
     case "wont_fix": return "Won't fix";
     default: return "Not recorded";
+  }
+}
+
+function severityLabel(severity?: string | null): string {
+  switch (severity) {
+    case "critical": return "Critical";
+    case "high": return "High";
+    case "medium": return "Medium";
+    case "low": return "Low";
+    default: return "Not set";
+  }
+}
+
+function priorityLabel(priority?: string | null): string {
+  if (!priority) return "Not set";
+  const clean = priority.replaceAll("_", " ").trim();
+  return clean ? clean.charAt(0).toUpperCase() + clean.slice(1) : "Not set";
+}
+
+function sideLabel(side?: string | null): string {
+  switch (side) {
+    case "left": return "Left side only";
+    case "right": return "Right side only";
+    case "both": return "Both sides";
+    default: return side ? side.replaceAll("_", " ") : "Not recorded";
   }
 }
 

@@ -99,11 +99,10 @@ function buildSystemPrompt(scope: string, tenantId: string | null, isPlatformAdm
 }
 
 function copilotStreamErrorMessage(error: unknown): string {
-  const raw = error instanceof Error ? error.message : String(error ?? "Unknown error");
-  const message = raw.includes("Invalid JSON")
-    ? "The configured LLM gateway returned a response that was not valid Muse-compatible JSON. Check the provider base URL and gateway response format."
-    : raw;
-  return `LLM call failed: ${message}`;
+  // Raw provider detail is logged by the caller; clients only get the
+  // standard service copy (see user-facing-errors registry).
+  void error;
+  return "Unable To Reach The Service — the AI service is currently unavailable. Please try again shortly. If the issue continues, contact support.";
 }
 
 function rateLimitErrorCode(error: unknown) {

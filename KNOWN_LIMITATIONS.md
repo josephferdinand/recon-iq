@@ -1,13 +1,34 @@
-# Qualification and remaining setup
+# Known limitations — stated plainly
 
-- The source is a recovered working snapshot, containing unfinished changes. It is not certified as the exact source of the last deployed application. No claim is made that all original backlog gaps are fixed.
-- The database export is a current production structure-only capture, not a customer-data backup. The generated restore SQL has not been executed in a fresh personal project. Review extension provisioning, custom roles, grants, defaults, dependencies and bootstrap memberships.
-- Existing thirteen unvalidated security/performance candidates remain inherited, especially tenant scope and notification fanout. The copy is not a new security certification. No old production credential is included.
-- Muse integration was configured for direct Meta chat requests. Live model access, account-specific model availability, deployment bindings, media/tool capabilities and hosted operation require your own credentials and testing. Streaming responses are buffered by this adapter.
-- Optional AI features that use distinct protocols, image generation, audio, embeddings, PDF extraction services or external agents need separate qualification. Text chat wiring is not proof that every optional feature works.
-- Existing advanced governance and integrity workflows may expect configuration, actors, qualification records or native services that an empty database does not yet contain. No approvals, certificates or successful workflow states were fabricated.
-- Only placeholder deployment configs are supplied. Optional workers retain source but require review and your own new bindings. Do not run exported administrative/deployment scripts until their target environment and access are reviewed.
-- Dependencies were not installed, full typechecking/builds were not run and no public repository/deployment was created. Precise packaging checks and the offline adapter test are recorded separately.
-- Historical operational handovers, source Git objects, credentials, logs, reports, browser/QA sessions and compiled bundles were intentionally excluded. This protects the source project and does not omit the application's own runtime roots.
-- Your first personal demo should use small synthetic files and confirm permissions, isolation and negative paths before public access. Public submission and licensing decisions remain yours.
-- Three imports were already missing in the recovered source. This package adds a signed-PDF URL resolver, a browser-only resource type and an explicit fail-closed PDF/exception association module. The optional association action reports unavailable until its intended tenant-authorized implementation is qualified; it is not a completed linking feature. Quarantined historical writer code was not activated.
+ReconIQ is a live, working hackathon MVP. This file lists what is intentionally limited, unfinished, or cosmetic, so reviewers are never misled. Nothing here blocks the verified demo flow.
+
+## Demo & accounts
+
+- The judge account (`judge@demo-bank.example`, password in README's judge tour) is **read-only by design** (Recon Viewer role + business-unit view grants). Both seeded demo exceptions are already resolved — the tour shows the completed evidence and audit trail. Run the 2-minute CSV walkthrough (README) to watch a fresh break happen. **Revoke the judge grants or rotate the password after judging.**
+- The judge sign-in was verified through the account's own JWT against live RLS policies (auth API + row visibility). The agent deliberately did not type the password into a browser; the sign-in form itself was verified live with owner accounts.
+- Demo data is synthetic. The demo tenant is shared by all reviewers — please don't delete the seeded runs.
+
+## Product surface
+
+- The user-facing error standard (human title + what happened + what to do next, no raw technical detail) is fully applied across the public site, auth, and the demo path (reconciliation, exceptions, Copilot, audit). A number of admin/platform toasts still pass through raw messages; the shared pattern lives in `src/lib/user-facing-errors.ts` and remaining surfaces are migrated incrementally.
+- Marketing and auth surfaces use the Onyx theme. Inside the authenticated app, some charts and widgets still use functional accent colours (cyan/violet) from the data-visualisation palette.
+- Small cosmetic items tracked for polish: break-drawer comments appear after a reload rather than refreshing in place; reference-data open ranges render as "to 9999-12-31"; the guided tour contains one legacy "F" tile.
+- Homepage-era components (`fvi-neural`, `fvi-agentic-showcase`, `fvi-tenant-isolation`, `fvi-inline-admin`, `fvi-demo-player`) are no longer imported by the redesigned site but remain in `src/components/` for reference.
+- The request-invite page intentionally has no marketing footer (it mirrors the focused sign-in flow).
+
+## Platform & operations
+
+- No mailbox is provisioned on `reconintelligence.app` yet; contact happens through the `/contact` and `/support` forms. Social-preview images use the SVG monogram (`og:image`) — a raster 1200×630 card is a nice-to-have.
+- `*.reconiq.example` remains in internal placeholders, docs samples, email-template defaults, and the CSP allowlist (RFC 2606 `.example` — non-resolving by design). Public pages no longer link to it.
+- The internal codename **FVI / Falcon Veritas** persists in reference IDs (`FVI-EXC-…`), `x-fvi-*` headers, and some internal identifiers. This is deliberate provenance, not a second brand.
+- `supabase/migrations/` (397 historical files) must **not** be run against a fresh project; `database/production-schema.sql` is the supported restore path (see `database/README.md`).
+- Mobile sign-in was verified via browser device emulation, not on a physical device.
+
+## AI
+
+- The live demo's AI explanations route through an OpenAI-compatible provider configured server-side. The direct Meta Muse adapter is included and passes its offline smoke test (`bun run test:muse-adapter`); it was not exercised against the live Meta endpoint in this environment.
+- AI output is advisory only by design: it explains and suggests; deterministic code computes all financial truth and a human approves every state change.
+
+## Compliance honesty
+
+- ReconIQ holds **no** SOC 2, ISO 27001, or other certification. Controls are designed with reference to those frameworks; the product copy says exactly that and nothing more. The engineering standard targets certification-grade quality so a future audit has no surprises — that is a goal, not a claim.

@@ -170,7 +170,7 @@ function ReconEvidencePage() {
                   {packsQ.data.map((p: any) => (
                     <tr key={p.id} className="border-b border-border/40 hover:bg-muted/30">
                       <td className="py-2 pr-3 whitespace-nowrap">{new Date(p.generated_at).toLocaleString()}</td>
-                      <td className="py-2 pr-3"><span className="inline-flex items-center rounded bg-muted px-1.5 py-0.5 font-mono text-xs font-semibold tracking-wide" title={p.run_uid ? `Internal UUID: ${p.run_id}` : "Internal UUID; public Run ID unavailable"}>{p.run_uid ? formatReconRunId(p.run_uid, p.run_id) : String(p.run_id).toUpperCase()}</span></td>
+                      <td className="py-2 pr-3"><span className="inline-flex items-center rounded bg-muted px-1.5 py-0.5 font-mono text-xs font-semibold tracking-wide">{p.run_uid ? formatReconRunId(p.run_uid, p.run_id) : "Run ID unavailable"}</span></td>
                       <td className="py-2 pr-3"><Badge variant="secondary">v{p.pack_version}</Badge></td>
                       <td className="py-2 pr-3">{p.match_count}</td>
                       <td className="py-2 pr-3">{p.exception_count}</td>

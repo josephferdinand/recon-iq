@@ -1,9 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
 import { toast } from "sonner";
-import { ArrowLeft, Mail, MapPin, MessageSquare, Sparkles, Shield, Clock, Building2 } from "lucide-react";
+import { ArrowRight, MessageSquare } from "lucide-react";
 import { MarketingNav } from "@/components/marketing-nav";
+import { MarketingFooter } from "@/components/marketing-footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,6 +12,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AREAS_OF_INTEREST } from "@/lib/mkt-leads.functions";
 import { parsePublicLeadResponse, publicLeadEndpoint } from "@/lib/public-lead-client";
+import { appUrl } from "@/lib/cross-domain";
+import { notifyUserError } from "@/lib/user-feedback";
 
 const CONTACT_PLANS = ["Professional", "Institutional", "Enterprise", "Not sure yet"] as const;
 
@@ -23,7 +25,9 @@ export const Route = createFileRoute("/contact")({
       { name: "description", content: "Speak with ReconIQ about enterprise reconciliation, exception management, and AI automation. Book a demo, contact sales, or chat with ReconIQ Copilot." },
       { property: "og:title", content: "Contact ReconIQ" },
       { property: "og:description", content: "Enterprise reconciliation, AI automation — talk to our experts." },
+      { property: "og:url", content: "https://reconintelligence.app/contact" },
     ],
+    links: [{ rel: "canonical", href: "https://reconintelligence.app/contact" }],
   }),
 });
 
@@ -31,9 +35,12 @@ const COMPANY_SIZE = ["1–49","50–249","250–999","1,000–4,999","5,000–9
 const INDUSTRIES = ["Banking","Capital Markets","Asset Management","Insurance","Wealth Management","Fintech","Broker Dealer","Custody","Exchange","Clearing","Other"];
 const VOLUME = ["<10k","10k–100k","100k–1M","1M–10M","10M+"];
 
-const NOIR_BG = "var(--brand-coffee-deep)";
-const CREAM = "var(--brand-cream)";
-const GOLD = "var(--brand-gold)";
+const inputClass =
+  "h-11 rounded-xl border-white/15 bg-[#1c1c1f] px-3.5 text-[#f5f5f7] placeholder:text-[#86868b] focus-visible:ring-2 focus-visible:ring-[#2997ff]";
+const selectClass =
+  "h-11 rounded-xl border-white/15 bg-[#1c1c1f] px-3.5 text-[#f5f5f7] data-[placeholder]:text-[#86868b] focus:ring-2 focus:ring-[#2997ff]";
+const textareaClass =
+  "rounded-xl border-white/15 bg-[#1c1c1f] px-3.5 py-3 text-[#f5f5f7] placeholder:text-[#86868b] focus-visible:ring-2 focus-visible:ring-[#2997ff]";
 
 function ContactPage() {
   const [submitting, setSubmitting] = useState(false);
@@ -86,7 +93,7 @@ function ContactPage() {
       setOk({ notificationQueued: body.notification_queued });
       toast.success("Thanks — we’ve received your enquiry.");
     } catch (err) {
-      toast.error((err as Error).message);
+      notifyUserError(err, "contact_form");
     } finally {
       setSubmitting(false);
     }
@@ -97,428 +104,256 @@ function ContactPage() {
   }
 
   return (
-    <div className="min-h-screen" style={{ background: NOIR_BG, color: CREAM }}>
+    <div className="min-h-screen bg-black text-[#f5f5f7]">
       <MarketingNav />
 
-      {/* Hero — noir cinematic */}
-      <section className="relative overflow-hidden border-b" style={{ borderColor: `color-mix(in oklab, ${GOLD} 18%, transparent)` }}>
-        {/* Ambient gold aurora */}
-        <motion.div
-          aria-hidden
-          className="pointer-events-none absolute inset-0"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1.2 }}
-          style={{
-            background: `radial-gradient(600px 400px at 15% 20%, color-mix(in oklab, ${GOLD} 14%, transparent), transparent 65%), radial-gradient(500px 380px at 85% 80%, color-mix(in oklab, ${GOLD} 8%, transparent), transparent 70%)`,
-          }}
-        />
-        {/* Gold beam */}
-        <motion.div
-          aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 h-px"
-          initial={{ scaleX: 0, opacity: 0 }}
-          animate={{ scaleX: 1, opacity: 1 }}
-          transition={{ duration: 1.4, ease: "easeOut" }}
-          style={{
-            background: `linear-gradient(90deg, transparent, ${GOLD}, transparent)`,
-            boxShadow: `0 0 12px color-mix(in oklab, ${GOLD} 60%, transparent)`,
-            transformOrigin: "left",
-          }}
-        />
-
-        <div className="relative mx-auto max-w-6xl px-4 py-16 md:py-24">
-          <Link
-            to="/"
-            className="mb-8 inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs transition hover:opacity-80"
-            style={{
-              borderColor: `color-mix(in oklab, ${GOLD} 35%, transparent)`,
-              color: CREAM,
-              background: `color-mix(in oklab, ${GOLD} 6%, transparent)`,
-            }}
-          >
-            <ArrowLeft className="h-3.5 w-3.5" /> Back to main
-          </Link>
-
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-            className="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[11px] font-medium uppercase tracking-[0.18em]"
-            style={{
-              color: GOLD,
-              border: `1px solid color-mix(in oklab, ${GOLD} 35%, transparent)`,
-              background: `color-mix(in oklab, ${GOLD} 8%, transparent)`,
-            }}
-          >
-            <Sparkles className="h-3 w-3" /> Enterprise engagement
-          </motion.div>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.1, ease: "easeOut" }}
-            className="mt-5 font-display text-4xl font-semibold leading-[1.05] tracking-tight md:text-6xl"
-          >
-            Talk to the team behind{" "}
-            <span
-              style={{
-                background: `linear-gradient(90deg, ${CREAM}, ${GOLD}, ${CREAM})`,
-                backgroundSize: "200% 100%",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
-              }}
-            >
-              ReconIQ
-            </span>
-            .
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
-            className="mt-5 max-w-2xl text-base md:text-lg"
-            style={{ color: `color-mix(in oklab, ${CREAM} 78%, transparent)` }}
-          >
-            Enterprise reconciliation, exception management, and agentic AI —
-            engineered for regulated institutions. Book a demo, brief our architects,
-            or start a live conversation with ReconIQ Copilot.
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.3 }}
-            className="mt-8 flex flex-wrap gap-3"
-          >
-            <Button
-              asChild
-              size="lg"
-              style={{ background: GOLD, color: NOIR_BG }}
-              className="hover:opacity-90"
-            >
-              <Link to="/book-demo">Book a Demo</Link>
-            </Button>
-            <Button
-              asChild
-              size="lg"
-              variant="outline"
-              style={{ borderColor: `color-mix(in oklab, ${GOLD} 40%, transparent)`, color: CREAM, background: "transparent" }}
-            >
-              <a href="#form">Contact Sales</a>
-            </Button>
-            <Button
-              size="lg"
-              variant="ghost"
-              style={{ color: CREAM }}
-              onClick={() => window.dispatchEvent(new CustomEvent("dr-falcon:open"))}
-            >
-              <Sparkles className="mr-2 h-4 w-4" style={{ color: GOLD }} /> Talk to ReconIQ Copilot
-            </Button>
-          </motion.div>
-
-          {/* Trust ribbon */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.5 }}
-            className="mt-12 grid gap-4 sm:grid-cols-3"
-          >
-            {[
-              { icon: Shield, label: "SOC 2 · ISO 27001", sub: "Enterprise controls" },
-              { icon: Clock, label: "Personalized follow-up", sub: "From our sales team" },
-              { icon: Building2, label: "Global banks & FIs", sub: "Deployed in production" },
-            ].map(({ icon: Icon, label, sub }) => (
-              <div
-                key={label}
-                className="flex items-center gap-3 rounded-lg border px-4 py-3"
-                style={{
-                  borderColor: `color-mix(in oklab, ${GOLD} 18%, transparent)`,
-                  background: `color-mix(in oklab, ${CREAM} 3%, transparent)`,
-                }}
-              >
-                <Icon className="h-5 w-5" style={{ color: GOLD }} />
-                <div>
-                  <div className="text-sm font-medium" style={{ color: CREAM }}>{label}</div>
-                  <div className="text-[11px] uppercase tracking-wider" style={{ color: `color-mix(in oklab, ${CREAM} 60%, transparent)` }}>{sub}</div>
-                </div>
-              </div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Body: form + rail */}
-      <section id="form" className="mx-auto grid max-w-6xl gap-10 px-4 py-16 md:grid-cols-[1.6fr_1fr]">
-        {ok ? (
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="rounded-xl border p-8"
-            style={{
-              borderColor: `color-mix(in oklab, ${GOLD} 30%, transparent)`,
-              background: `color-mix(in oklab, ${CREAM} 4%, transparent)`,
-            }}
-          >
-            <h2 className="font-display text-2xl font-semibold">Received — thank you.</h2>
-            <p className="mt-2 text-sm" style={{ color: `color-mix(in oklab, ${CREAM} 75%, transparent)` }}>
-              {ok.notificationQueued
-                ? "We’ll follow up about your enquiry."
-                : "We’ve received your enquiry. For urgent follow-up, please email support@reconiq.example."}
+      <main>
+        <section className="border-b border-white/10">
+          <div className="mx-auto max-w-6xl px-6 pb-14 pt-16 md:pt-24">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#86868b]">Contact</p>
+            <h1 className="mt-4 max-w-3xl font-display text-4xl font-semibold leading-[1.08] tracking-tight md:text-6xl">
+              Talk to us about reconciliation.
+            </h1>
+            <p className="mt-5 max-w-2xl text-base leading-relaxed text-[#a1a1a6] md:text-lg">
+              Tell us about your reconciliation workflows and what you are evaluating. If you would
+              rather see the product first, book a demo or open the live product.
             </p>
-            <div className="mt-6 flex gap-3">
-              <Button asChild style={{ background: GOLD, color: NOIR_BG }}><Link to="/book-demo">Book a demo now</Link></Button>
-              <Button asChild variant="outline" style={{ borderColor: `color-mix(in oklab, ${GOLD} 40%, transparent)`, color: CREAM, background: "transparent" }}>
-                <Link to="/">Return home</Link>
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+              <Button asChild size="lg" className="bg-white text-black hover:bg-white/85">
+                <Link to="/book-demo">Book a demo</Link>
               </Button>
-            </div>
-          </motion.div>
-        ) : (
-          <motion.form
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-            onSubmit={onSubmit}
-            className="space-y-10 rounded-xl border p-6 md:p-8"
-            style={{
-              borderColor: `color-mix(in oklab, ${GOLD} 22%, transparent)`,
-              background: `color-mix(in oklab, ${CREAM} 4%, transparent)`,
-              backdropFilter: "blur(6px)",
-            }}
-          >
-            <FormSection title="Contact information" step="01">
-              <div className="grid gap-4 md:grid-cols-2">
-                <Field name="first_name" label="First name" required />
-                <Field name="last_name" label="Last name" required />
-                <Field name="email" type="email" label="Business email" required />
-                <Field name="mobile" label="Mobile number" required />
-                <Field name="company" label="Company name" required />
-                <Field name="job_title" label="Job title" />
-                <Field name="country" label="Country" required />
-                <div>
-                  <FieldLabel htmlFor="industry">Industry</FieldLabel>
-                  <Select value={industry} onValueChange={setIndustry}>
-                    <SelectTrigger id="industry" className="border-0" style={selectStyle}><SelectValue placeholder="Select…" /></SelectTrigger>
-                    <SelectContent>{INDUSTRIES.map((i) => <SelectItem key={i} value={i}>{i}</SelectItem>)}</SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </FormSection>
-
-            <FormSection title="Business details" step="02">
-              <div className="grid gap-4 md:grid-cols-2">
-                <div>
-                  <FieldLabel htmlFor="company-size">Company size</FieldLabel>
-                  <Select value={companySize} onValueChange={setCompanySize}>
-                    <SelectTrigger id="company-size" className="border-0" style={selectStyle}><SelectValue placeholder="Select…" /></SelectTrigger>
-                    <SelectContent>{COMPANY_SIZE.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <FieldLabel htmlFor="monthly-transaction-volume">Monthly transaction volume</FieldLabel>
-                  <Select value={volume} onValueChange={setVolume}>
-                    <SelectTrigger id="monthly-transaction-volume" className="border-0" style={selectStyle}><SelectValue placeholder="Select…" /></SelectTrigger>
-                    <SelectContent>{VOLUME.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
-                  </Select>
-                </div>
-                <Field name="current_recon_tool" label="Current reconciliation tool" />
-                <Field name="erp_platform" label="ERP platform" />
-              </div>
-
-              <div className="mt-6">
-                <FieldLabel>Areas of interest</FieldLabel>
-                <div className="flex flex-wrap gap-2">
-                  {AREAS_OF_INTEREST.map((a) => {
-                    const active = areas.includes(a);
-                    return (
-                      <motion.button
-                        type="button"
-                        key={a}
-                        whileTap={{ scale: 0.96 }}
-                        onClick={() => toggleArea(a)}
-                        className="rounded-full border px-3 py-1.5 text-xs transition-colors"
-                        style={
-                          active
-                            ? { borderColor: GOLD, background: GOLD, color: NOIR_BG }
-                            : {
-                                borderColor: `color-mix(in oklab, ${GOLD} 25%, transparent)`,
-                                background: `color-mix(in oklab, ${CREAM} 4%, transparent)`,
-                                color: `color-mix(in oklab, ${CREAM} 80%, transparent)`,
-                              }
-                        }
-                      >
-                        {a}
-                      </motion.button>
-                    );
-                  })}
-                </div>
-              </div>
-            </FormSection>
-
-            <FormSection title="Your inquiry" step="03">
-              <div className="mb-5">
-                <FieldLabel htmlFor="plan">Plan of interest</FieldLabel>
-                <Select required value={selectedPlan || requestedPlan || ""} onValueChange={setSelectedPlan}>
-                  <SelectTrigger id="plan" className="border-0" style={selectStyle}><SelectValue placeholder="Select a plan…" /></SelectTrigger>
-                  <SelectContent>{CONTACT_PLANS.map((p) => <SelectItem key={p} value={p}>{p}</SelectItem>)}</SelectContent>
-                </Select>
-              </div>
-              <FieldLabel htmlFor="purpose">Purpose of your request *</FieldLabel>
-              <Textarea
-                id="purpose"
-                name="purpose"
-                required
-                maxLength={240}
-                rows={2}
-                placeholder="For example: pricing, product briefing, or deployment discussion."
-                className="mb-5 border-0 focus-visible:ring-0"
-                style={{ background: `color-mix(in oklab, ${CREAM} 6%, transparent)`, color: CREAM, border: `1px solid color-mix(in oklab, ${GOLD} 22%, transparent)` }}
-              />
-              <FieldLabel htmlFor="message">Message / requirements</FieldLabel>
-              <Textarea
-                id="message"
-                name="message"
-                rows={5}
-                placeholder="Tell us about your reconciliation landscape, pain points, or RFP timeline."
-                className="border-0 focus-visible:ring-0"
-                style={{
-                  background: `color-mix(in oklab, ${CREAM} 6%, transparent)`,
-                  color: CREAM,
-                  border: `1px solid color-mix(in oklab, ${GOLD} 22%, transparent)`,
-                }}
-              />
-            </FormSection>
-
-            <label className="flex items-start gap-3 text-sm" style={{ color: `color-mix(in oklab, ${CREAM} 78%, transparent)` }}>
-              <Checkbox checked={consent} onCheckedChange={(v) => setConsent(Boolean(v))} />
-              <span>
-                I consent to ReconIQ contacting me regarding my inquiry. Read our{" "}
-                <Link to="/privacy" className="underline underline-offset-2">Privacy Notice</Link>.
-              </span>
-            </label>
-
-            <div>
               <Button
-                type="submit"
+                asChild
                 size="lg"
-                disabled={submitting}
-                style={{ background: GOLD, color: NOIR_BG }}
-                className="hover:opacity-90"
+                variant="outline"
+                className="border-white/20 bg-transparent text-[#f5f5f7] hover:bg-white/10 hover:text-white"
               >
-                {submitting ? "Submitting…" : "Request Consultation"}
+                <a href={appUrl("/auth")}>Open the live product</a>
+              </Button>
+              <button
+                type="button"
+                onClick={() => window.dispatchEvent(new CustomEvent("dr-falcon:open"))}
+                className="inline-flex h-10 items-center gap-2 px-2 text-sm font-medium text-[#2997ff] transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2997ff] rounded-md"
+              >
+                <MessageSquare className="h-4 w-4" /> Ask ReconIQ Copilot
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section id="form" className="mx-auto grid max-w-6xl gap-10 px-6 py-16 md:grid-cols-[1.6fr_1fr]">
+          {ok ? (
+            <div className="h-fit rounded-3xl border border-white/10 bg-[#161617] p-8">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#86868b]">Enquiry received</p>
+              <h2 className="mt-3 font-display text-2xl font-semibold">Thanks — we’ve received your enquiry.</h2>
+              <p className="mt-3 text-sm leading-relaxed text-[#a1a1a6]">
+                {ok.notificationQueued
+                  ? "We’ll follow up about your enquiry using the details you provided."
+                  : "We’ve received your enquiry. If you need help sooner, visit the Support center."}
+              </p>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <Button asChild className="bg-white text-black hover:bg-white/85"><Link to="/book-demo">Book a demo now</Link></Button>
+                <Button asChild variant="outline" className="border-white/20 bg-transparent text-[#f5f5f7] hover:bg-white/10 hover:text-white">
+                  <Link to="/support">Visit Support center</Link>
+                </Button>
+                <Button asChild variant="ghost" className="text-[#a1a1a6] hover:bg-white/10 hover:text-white">
+                  <Link to="/">Return home</Link>
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <form
+              onSubmit={onSubmit}
+              className="h-fit space-y-10 rounded-3xl border border-white/10 bg-[#161617] p-6 md:p-8"
+            >
+              <FormSection title="Contact information" step="01">
+                <div className="grid gap-5 md:grid-cols-2">
+                  <Field name="first_name" label="First name" required autoComplete="given-name" />
+                  <Field name="last_name" label="Last name" required autoComplete="family-name" />
+                  <Field name="email" type="email" label="Business email" required autoComplete="email" helper="We’ll only use this to reply to your enquiry." />
+                  <Field name="mobile" label="Mobile number" required autoComplete="tel" />
+                  <Field name="company" label="Company name" required autoComplete="organization" />
+                  <Field name="job_title" label="Job title" autoComplete="organization-title" />
+                  <Field name="country" label="Country" required autoComplete="country-name" />
+                  <div>
+                    <FieldLabel htmlFor="industry">Industry</FieldLabel>
+                    <Select value={industry} onValueChange={setIndustry}>
+                      <SelectTrigger id="industry" className={selectClass}><SelectValue placeholder="Select…" /></SelectTrigger>
+                      <SelectContent>{INDUSTRIES.map((i) => <SelectItem key={i} value={i}>{i}</SelectItem>)}</SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </FormSection>
+
+              <FormSection title="Business details" step="02">
+                <div className="grid gap-5 md:grid-cols-2">
+                  <div>
+                    <FieldLabel htmlFor="company-size">Company size</FieldLabel>
+                    <Select value={companySize} onValueChange={setCompanySize}>
+                      <SelectTrigger id="company-size" className={selectClass}><SelectValue placeholder="Select…" /></SelectTrigger>
+                      <SelectContent>{COMPANY_SIZE.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <FieldLabel htmlFor="monthly-transaction-volume">Monthly transaction volume</FieldLabel>
+                    <Select value={volume} onValueChange={setVolume}>
+                      <SelectTrigger id="monthly-transaction-volume" className={selectClass}><SelectValue placeholder="Select…" /></SelectTrigger>
+                      <SelectContent>{VOLUME.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+                    </Select>
+                  </div>
+                  <Field name="current_recon_tool" label="Current reconciliation tool" helper="For example, a spreadsheet process or an existing platform." />
+                  <Field name="erp_platform" label="ERP platform" />
+                </div>
+
+                <div className="mt-6">
+                  <FieldLabel>Areas of interest</FieldLabel>
+                  <p className="mb-3 text-xs text-[#86868b]">Select any that apply — this helps us route your enquiry.</p>
+                  <div className="flex flex-wrap gap-2">
+                    {AREAS_OF_INTEREST.map((a) => {
+                      const active = areas.includes(a);
+                      return (
+                        <button
+                          type="button"
+                          key={a}
+                          aria-pressed={active}
+                          onClick={() => toggleArea(a)}
+                          className={
+                            active
+                              ? "rounded-full border border-white bg-white px-3.5 py-1.5 text-xs font-medium text-black transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2997ff]"
+                              : "rounded-full border border-white/15 bg-white/5 px-3.5 py-1.5 text-xs text-[#d4d4da] transition-colors hover:border-white/30 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2997ff]"
+                          }
+                        >
+                          {a}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </FormSection>
+
+              <FormSection title="Your inquiry" step="03">
+                <div className="mb-5">
+                  <FieldLabel htmlFor="plan">Plan of interest *</FieldLabel>
+                  <Select required value={selectedPlan || requestedPlan || ""} onValueChange={setSelectedPlan}>
+                    <SelectTrigger id="plan" className={selectClass}><SelectValue placeholder="Select a plan…" /></SelectTrigger>
+                    <SelectContent>{CONTACT_PLANS.map((p) => <SelectItem key={p} value={p}>{p}</SelectItem>)}</SelectContent>
+                  </Select>
+                </div>
+                <FieldLabel htmlFor="purpose">Purpose of your request *</FieldLabel>
+                <Textarea
+                  id="purpose"
+                  name="purpose"
+                  required
+                  maxLength={240}
+                  rows={2}
+                  placeholder="For example: pricing, product briefing, or deployment discussion."
+                  className={textareaClass}
+                />
+                <div className="mt-5">
+                  <FieldLabel htmlFor="message">Message / requirements</FieldLabel>
+                  <Textarea
+                    id="message"
+                    name="message"
+                    rows={5}
+                    placeholder="Tell us about your reconciliation landscape, pain points, or RFP timeline."
+                    className={textareaClass}
+                  />
+                </div>
+              </FormSection>
+
+              <label className="flex cursor-pointer items-start gap-3 text-sm leading-relaxed text-[#a1a1a6]">
+                <Checkbox checked={consent} onCheckedChange={(v) => setConsent(Boolean(v))} className="mt-0.5 border-white/30 data-[state=checked]:border-white data-[state=checked]:bg-white data-[state=checked]:text-black" />
+                <span>
+                  I consent to ReconIQ contacting me regarding my inquiry. Read our{" "}
+                  <Link to="/privacy" className="text-[#2997ff] underline underline-offset-2 hover:text-white">Privacy Notice</Link>.
+                </span>
+              </label>
+
+              <div>
+                <Button
+                  type="submit"
+                  size="lg"
+                  disabled={submitting}
+                  className="bg-white text-black hover:bg-white/85"
+                >
+                  {submitting ? "Submitting…" : "Request Consultation"}
+                </Button>
+                <p className="mt-3 text-xs text-[#86868b]">Fields marked * are required. We’ll reply using the details above.</p>
+              </div>
+            </form>
+          )}
+
+          <aside className="space-y-4">
+            <div className="rounded-3xl border border-white/10 bg-[#161617] p-6">
+              <h3 className="text-xs font-semibold uppercase tracking-[0.18em] text-[#86868b]">Other ways to reach us</h3>
+              <ul className="mt-4 space-y-3 text-sm">
+                <li>
+                  <Link to="/support" className="inline-flex items-center gap-1.5 font-medium text-[#2997ff] hover:text-white">
+                    Support center <ArrowRight className="h-3.5 w-3.5" />
+                  </Link>
+                  <p className="mt-1 text-[#a1a1a6]">Guides, workflows, and troubleshooting.</p>
+                </li>
+                <li>
+                  <Link to="/book-demo" className="inline-flex items-center gap-1.5 font-medium text-[#2997ff] hover:text-white">
+                    Book a demo <ArrowRight className="h-3.5 w-3.5" />
+                  </Link>
+                  <p className="mt-1 text-[#a1a1a6]">See the platform with your use case in mind.</p>
+                </li>
+                <li>
+                  <a href={appUrl("/auth")} className="inline-flex items-center gap-1.5 font-medium text-[#2997ff] hover:text-white">
+                    Open the live product <ArrowRight className="h-3.5 w-3.5" />
+                  </a>
+                  <p className="mt-1 text-[#a1a1a6]">ReconIQ is live — explore the working product.</p>
+                </li>
+              </ul>
+            </div>
+
+            <div className="rounded-3xl border border-white/10 bg-[#161617] p-6">
+              <MessageSquare className="h-5 w-5 text-[#a1a1a6]" />
+              <h3 className="mt-3 font-display text-lg font-semibold">Ask ReconIQ Copilot</h3>
+              <p className="mt-1 text-sm leading-relaxed text-[#a1a1a6]">
+                Ask product questions and get pointed to the right demo or guide.
+              </p>
+              <Button
+                className="mt-4 border-white/20 bg-transparent text-[#f5f5f7] hover:bg-white/10 hover:text-white"
+                variant="outline"
+                onClick={() => window.dispatchEvent(new CustomEvent("dr-falcon:open"))}
+              >
+                Start conversation
               </Button>
             </div>
-          </motion.form>
-        )}
 
-        <motion.aside
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="space-y-6"
-        >
-          <div
-            className="rounded-xl border p-6"
-            style={{
-              borderColor: `color-mix(in oklab, ${GOLD} 22%, transparent)`,
-              background: `color-mix(in oklab, ${CREAM} 4%, transparent)`,
-            }}
-          >
-            <div className="flex items-start gap-3">
-              <Mail className="mt-0.5 h-5 w-5" style={{ color: GOLD }} />
-              <div>
-                <div className="text-xs uppercase tracking-wide" style={{ color: `color-mix(in oklab, ${CREAM} 60%, transparent)` }}>Customer support</div>
-                <a href="mailto:support@reconiq.example" className="text-sm font-medium hover:underline" style={{ color: CREAM }}>
-                  support@reconiq.example
-                </a>
-              </div>
+            <div className="rounded-3xl border border-white/10 bg-[#161617] p-6">
+              <h3 className="text-xs font-semibold uppercase tracking-[0.18em] text-[#86868b]">What ReconIQ does</h3>
+              <ul className="mt-3 space-y-2 text-sm leading-relaxed text-[#a1a1a6]">
+                <li>Deterministic matching for reconciliation workflows</li>
+                <li>Human-approved, AI-assisted break resolution</li>
+                <li>Hash-chained audit trail for every decision</li>
+                <li>Tenant-scoped data with database-enforced isolation</li>
+              </ul>
+              <p className="mt-4 border-t border-white/10 pt-4 text-xs leading-relaxed text-[#86868b]">
+                Security controls are designed with reference to SOC 2 and ISO 27001 frameworks.
+                ReconIQ does not claim SOC 2 or ISO certification — see the Security page for status.
+              </p>
             </div>
-            <div className="mt-5 flex items-start gap-3">
-              <MapPin className="mt-0.5 h-5 w-5" style={{ color: GOLD }} />
-              <div className="text-sm" style={{ color: `color-mix(in oklab, ${CREAM} 80%, transparent)` }}>
-                <div className="text-xs uppercase tracking-wide" style={{ color: `color-mix(in oklab, ${CREAM} 60%, transparent)` }}>Headquarters</div>
-                <div className="font-medium" style={{ color: CREAM }}>ReconIQ HQ</div>
-                <div>Solarium City</div>
-                <div>Bangalore – 560043</div>
-              </div>
-            </div>
-          </div>
+          </aside>
+        </section>
+      </main>
 
-          <div
-            className="relative overflow-hidden rounded-xl border p-6"
-            style={{
-              borderColor: `color-mix(in oklab, ${GOLD} 35%, transparent)`,
-              background: `linear-gradient(140deg, color-mix(in oklab, ${GOLD} 14%, transparent), transparent 70%)`,
-            }}
-          >
-            <motion.div
-              aria-hidden
-              className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full"
-              animate={{ scale: [1, 1.15, 1], opacity: [0.35, 0.6, 0.35] }}
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-              style={{ background: `radial-gradient(circle, ${GOLD}, transparent 70%)` }}
-            />
-            <MessageSquare className="h-6 w-6" style={{ color: GOLD }} />
-            <h3 className="mt-3 font-display text-lg font-semibold" style={{ color: CREAM }}>Talk to ReconIQ Copilot</h3>
-            <p className="mt-1 text-sm" style={{ color: `color-mix(in oklab, ${CREAM} 78%, transparent)` }}>
-              Our AI product advisor is available 24/7 to answer product questions and schedule demos.
-            </p>
-            <Button
-              className="mt-4"
-              variant="outline"
-              onClick={() => window.dispatchEvent(new CustomEvent("dr-falcon:open"))}
-              style={{ borderColor: `color-mix(in oklab, ${GOLD} 45%, transparent)`, color: CREAM, background: "transparent" }}
-            >
-              Start conversation
-            </Button>
-          </div>
-
-          <div
-            className="rounded-xl border p-6"
-            style={{
-              borderColor: `color-mix(in oklab, ${GOLD} 22%, transparent)`,
-              background: `color-mix(in oklab, ${CREAM} 4%, transparent)`,
-            }}
-          >
-            <div className="text-xs uppercase tracking-[0.18em]" style={{ color: GOLD }}>Why teams switch to ReconIQ</div>
-            <ul className="mt-3 space-y-2 text-sm" style={{ color: `color-mix(in oklab, ${CREAM} 82%, transparent)` }}>
-              <li>◂ Hours-to-live, not months</li>
-              <li>◂ Agentic exception resolution</li>
-              <li>◂ BYO-LLM &amp; data sovereignty</li>
-              <li>◂ SHA-256 hash-chained audit</li>
-            </ul>
-          </div>
-        </motion.aside>
-      </section>
+      <MarketingFooter />
     </div>
   );
 }
 
-const selectStyle: React.CSSProperties = {
-  background: `color-mix(in oklab, ${CREAM} 6%, transparent)`,
-  color: CREAM,
-  border: `1px solid color-mix(in oklab, ${GOLD} 22%, transparent)`,
-};
-
 function FormSection({ title, step, children }: { title: string; step: string; children: React.ReactNode }) {
   return (
     <section>
-      <div className="mb-4 flex items-center gap-3">
-        <span
-          className="inline-flex h-6 min-w-[2rem] items-center justify-center rounded-full px-2 font-mono text-[10px] tracking-wider"
-          style={{
-            color: GOLD,
-            border: `1px solid color-mix(in oklab, ${GOLD} 35%, transparent)`,
-            background: `color-mix(in oklab, ${GOLD} 8%, transparent)`,
-          }}
-        >
+      <div className="mb-5 flex items-center gap-3">
+        <span className="inline-flex h-6 min-w-8 items-center justify-center rounded-full border border-white/15 px-2 font-mono text-[10px] tracking-wider text-[#a1a1a6]">
           {step}
         </span>
-        <h2 className="font-display text-lg font-semibold" style={{ color: CREAM }}>{title}</h2>
-        <div className="ml-2 h-px flex-1" style={{ background: `color-mix(in oklab, ${GOLD} 22%, transparent)` }} />
+        <h2 className="font-display text-lg font-semibold text-[#f5f5f7]">{title}</h2>
+        <div className="ml-2 h-px flex-1 bg-white/10" />
       </div>
       {children}
     </section>
@@ -527,34 +362,34 @@ function FormSection({ title, step, children }: { title: string; step: string; c
 
 function FieldLabel({ children, htmlFor }: { children: React.ReactNode; htmlFor?: string }) {
   return (
-    <Label
-      htmlFor={htmlFor}
-      className="mb-1.5 block text-[11px] font-medium uppercase tracking-[0.14em]"
-      style={{ color: `color-mix(in oklab, ${CREAM} 65%, transparent)` }}
-    >
+    <Label htmlFor={htmlFor} className="mb-1.5 block text-sm font-medium text-[#f5f5f7]">
       {children}
     </Label>
   );
 }
 
-function Field({ name, label, type = "text", required = false }: { name: string; label: string; type?: string; required?: boolean }) {
+function Field({
+  name,
+  label,
+  type = "text",
+  required = false,
+  autoComplete,
+  helper,
+}: {
+  name: string;
+  label: string;
+  type?: string;
+  required?: boolean;
+  autoComplete?: string;
+  helper?: string;
+}) {
   return (
     <div>
       <FieldLabel htmlFor={name}>
         {label}{required ? " *" : ""}
       </FieldLabel>
-      <Input
-        id={name}
-        name={name}
-        type={type}
-        required={required}
-        className="border-0 focus-visible:ring-0"
-        style={{
-          background: `color-mix(in oklab, ${CREAM} 6%, transparent)`,
-          color: CREAM,
-          border: `1px solid color-mix(in oklab, ${GOLD} 22%, transparent)`,
-        }}
-      />
+      <Input id={name} name={name} type={type} required={required} autoComplete={autoComplete} className={inputClass} aria-describedby={helper ? `${name}-helper` : undefined} />
+      {helper ? <p id={`${name}-helper`} className="mt-1.5 text-xs text-[#86868b]">{helper}</p> : null}
     </div>
   );
 }

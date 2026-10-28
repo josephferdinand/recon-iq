@@ -135,23 +135,43 @@ export function buildCopilotTools(ctx: CopilotContext) {
 
     get_break: tool({
       description:
-        "Look up a single break/exception by UUID or id-prefix. Returns reason, status, severity, assignee and parent run/definition.",
+        "Look up a single break/exception by UUID, public case ID (e.g. FVI-EXC-…), id-prefix, or a business reference contained in the break reason (e.g. DEMO-002). Returns reason, status, severity, assignee and parent run/definition.",
       inputSchema: z.object({
-        id: z.string().min(4).max(80).describe("UUID or id prefix of the break."),
+        id: z.string().min(4).max(80).describe("UUID, public case ID, id prefix, or business reference of the break."),
       }),
       execute: async ({ id }) => {
         const raw = id.trim();
         const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(raw);
-        let q = supa
-          .from("recon_exceptions")
-          .select("id,reason,severity,status,priority,assignee,due_date,created_at,run_id,definition_id")
-          .limit(3);
-        if (isUuid) q = q.eq("id", raw);
-        else q = q.ilike("id::text", `${raw.replace(/[%_]/g, "")}%`);
-        const { data, error } = await q;
-        if (error) return { error: error.message };
-        if (!data || data.length === 0) return { found: false };
-        return { found: true, matches: data };
+        const cleaned = raw.replace(/[%_\\]/g, "");
+        const select =
+          "id,public_case_id,reason,severity,status,priority,assignee,due_date,created_at,run_id,run:recon_runs(id,run_uid,started_at,definition:recon_definitions(id,name))";
+        const attempts: Array<() => any> = [];
+        if (isUuid) {
+          attempts.push(() => withTenant(supa.from("recon_exceptions").select(select).limit(5), ctx).eq("id", raw));
+        } else {
+          if (/^FVI-EXC-[A-F0-9]{32}$/i.test(cleaned)) {
+            attempts.push(() =>
+              withTenant(supa.from("recon_exceptions").select(select).limit(5), ctx).eq("public_case_id", cleaned.toUpperCase()),
+            );
+          }
+          attempts.push(() =>
+            withTenant(supa.from("recon_exceptions").select(select).limit(5), ctx).ilike("reason", `%${cleaned}%`),
+          );
+          attempts.push(() =>
+            withTenant(supa.from("recon_exceptions").select(select).limit(5), ctx).ilike("public_case_id", cleaned),
+          );
+        }
+        let firstError: string | null = null;
+        for (const attempt of attempts) {
+          const { data, error } = await attempt();
+          if (error) {
+            if (!firstError) firstError = error.message;
+            continue;
+          }
+          if (data && data.length > 0) return { found: true, matches: data };
+        }
+        if (firstError) return { error: firstError };
+        return { found: false };
       },
     }),
 

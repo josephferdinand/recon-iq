@@ -20,6 +20,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { notifyUserError } from "@/lib/user-feedback";
 import { supabase } from "@/integrations/supabase/client";
 import { Check, X, Pencil, Search, History } from "lucide-react";
 
@@ -65,11 +66,11 @@ export function AidpReviewQueue({ tenantId }: { tenantId: string }) {
         ...(decision === "correct" ? { corrected_value: correctedValue } : {}),
         ...(notes ? { notes } : {}),
       } });
-      toast.success(`Field ${decision}ed`);
+      toast.success(decision === "accept" ? "Field Accepted Successfully" : decision === "reject" ? "Field Rejected Successfully" : "Field Corrected Successfully");
       setEditing(null); setCorrectedValue(""); setNotes("");
       qc.invalidateQueries({ queryKey });
     } catch (e: any) {
-      toast.error(e?.message || "Review failed");
+      notifyUserError(e, "aidp_field_review");
     }
   }
 

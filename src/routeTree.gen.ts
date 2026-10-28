@@ -21,6 +21,7 @@ import { Route as DevelopersRouteImport } from './routes/developers'
 import { Route as DueDiligenceRouteImport } from './routes/due-diligence'
 import { Route as EnterpriseFaqRouteImport } from './routes/enterprise-faq'
 import { Route as LegalRouteImport } from './routes/legal'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as MfaChallengeRouteImport } from './routes/mfa-challenge'
 import { Route as MktAdminRouteRouteImport } from './routes/mkt-admin/route'
 import { Route as PricingRouteImport } from './routes/pricing'
@@ -292,6 +293,11 @@ const EnterpriseFaqRoute = EnterpriseFaqRouteImport.update({
 const LegalRoute = LegalRouteImport.update({
   id: '/legal',
   path: '/legal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MfaChallengeRoute = MfaChallengeRouteImport.update({
@@ -1500,6 +1506,7 @@ export interface FileRoutesByFullPath {
   '/due-diligence': typeof DueDiligenceRoute
   '/enterprise-faq': typeof EnterpriseFaqRoute
   '/legal': typeof LegalRoute
+  '/login': typeof LoginRoute
   '/mfa-challenge': typeof MfaChallengeRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
@@ -1724,6 +1731,7 @@ export interface FileRoutesByTo {
   '/due-diligence': typeof DueDiligenceRoute
   '/enterprise-faq': typeof EnterpriseFaqRoute
   '/legal': typeof LegalRoute
+  '/login': typeof LoginRoute
   '/mfa-challenge': typeof MfaChallengeRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
@@ -1950,6 +1958,7 @@ export interface FileRoutesById {
   '/due-diligence': typeof DueDiligenceRoute
   '/enterprise-faq': typeof EnterpriseFaqRoute
   '/legal': typeof LegalRoute
+  '/login': typeof LoginRoute
   '/mfa-challenge': typeof MfaChallengeRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
@@ -2178,6 +2187,7 @@ export interface FileRouteTypes {
     | '/due-diligence'
     | '/enterprise-faq'
     | '/legal'
+    | '/login'
     | '/mfa-challenge'
     | '/pricing'
     | '/privacy'
@@ -2402,6 +2412,7 @@ export interface FileRouteTypes {
     | '/due-diligence'
     | '/enterprise-faq'
     | '/legal'
+    | '/login'
     | '/mfa-challenge'
     | '/pricing'
     | '/privacy'
@@ -2627,6 +2638,7 @@ export interface FileRouteTypes {
     | '/due-diligence'
     | '/enterprise-faq'
     | '/legal'
+    | '/login'
     | '/mfa-challenge'
     | '/pricing'
     | '/privacy'
@@ -2855,6 +2867,7 @@ export interface RootRouteChildren {
   DueDiligenceRoute: typeof DueDiligenceRoute
   EnterpriseFaqRoute: typeof EnterpriseFaqRoute
   LegalRoute: typeof LegalRoute
+  LoginRoute: typeof LoginRoute
   MfaChallengeRoute: typeof MfaChallengeRoute
   PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -3050,6 +3063,13 @@ declare module '@tanstack/react-router' {
       path: '/legal'
       fullPath: '/legal'
       preLoaderRoute: typeof LegalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/mfa-challenge': {
@@ -5019,6 +5039,7 @@ const rootRouteChildren: RootRouteChildren = {
   DueDiligenceRoute: DueDiligenceRoute,
   EnterpriseFaqRoute: EnterpriseFaqRoute,
   LegalRoute: LegalRoute,
+  LoginRoute: LoginRoute,
   MfaChallengeRoute: MfaChallengeRoute,
   PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,

@@ -1,22 +1,16 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { motion } from "framer-motion";
 import { toast } from "sonner";
-import {
-  ArrowLeft,
-  Calendar as CalendarIcon,
-  Clock,
-  CheckCircle2,
-  Sparkles,
-  Shield,
-  Building2,
-} from "lucide-react";
+import { Calendar as CalendarIcon, Clock, CheckCircle2 } from "lucide-react";
 import { MarketingNav } from "@/components/marketing-nav";
+import { MarketingFooter } from "@/components/marketing-footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { parsePublicLeadResponse, publicLeadEndpoint } from "@/lib/public-lead-client";
+import { appUrl } from "@/lib/cross-domain";
+import { notifyUserError } from "@/lib/user-feedback";
 
 export const Route = createFileRoute("/book-demo")({
   component: BookDemo,
@@ -34,13 +28,11 @@ export const Route = createFileRoute("/book-demo")({
         property: "og:description",
         content: "Product demo, discovery call, technical consultation, or executive discussion.",
       },
+      { property: "og:url", content: "https://reconintelligence.app/book-demo" },
     ],
+    links: [{ rel: "canonical", href: "https://reconintelligence.app/book-demo" }],
   }),
 });
-
-const NOIR_BG = "var(--brand-coffee-deep)";
-const CREAM = "var(--brand-cream)";
-const GOLD = "var(--brand-gold)";
 
 const TYPES = [
   {
@@ -87,6 +79,9 @@ export function nextBusinessSlots(anchorDate: string): { date: string; slots: st
   return out;
 }
 
+const inputClass =
+  "h-11 rounded-xl border-white/15 bg-[#1c1c1f] px-3.5 text-[#f5f5f7] placeholder:text-[#86868b] focus-visible:ring-2 focus-visible:ring-[#2997ff]";
+
 function BookDemo() {
   const { slotAnchorDate } = Route.useLoaderData();
   const [type, setType] = useState(TYPES[0].slug);
@@ -127,375 +122,222 @@ function BookDemo() {
       setDone({ when: `${date} at ${slot}`, type });
       toast.success("Request received; we’ll confirm availability.");
     } catch (err) {
-      toast.error((err as Error).message);
+      notifyUserError(err, "book_demo_form");
     } finally {
       setSubmitting(false);
     }
   }
 
-  const goldBorder = (pct: number) => `color-mix(in oklab, ${GOLD} ${pct}%, transparent)`;
-  const creamMix = (pct: number) => `color-mix(in oklab, ${CREAM} ${pct}%, transparent)`;
-
   return (
-    <div className="min-h-screen" style={{ background: NOIR_BG, color: CREAM }}>
+    <div className="min-h-screen bg-black text-[#f5f5f7]">
       <MarketingNav />
 
-      {/* Hero — noir cinematic */}
-      <section
-        className="relative overflow-hidden border-b"
-        style={{ borderColor: goldBorder(18) }}
-      >
-        <motion.div
-          aria-hidden
-          className="pointer-events-none absolute inset-0"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1.2 }}
-          style={{
-            background: `radial-gradient(600px 400px at 15% 20%, color-mix(in oklab, ${GOLD} 14%, transparent), transparent 65%), radial-gradient(500px 380px at 85% 80%, color-mix(in oklab, ${GOLD} 8%, transparent), transparent 70%)`,
-          }}
-        />
-        <motion.div
-          aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 h-px"
-          initial={{ scaleX: 0, opacity: 0 }}
-          animate={{ scaleX: 1, opacity: 1 }}
-          transition={{ duration: 1.4, ease: "easeOut" }}
-          style={{
-            background: `linear-gradient(90deg, transparent, ${GOLD}, transparent)`,
-            boxShadow: `0 0 12px color-mix(in oklab, ${GOLD} 60%, transparent)`,
-            transformOrigin: "left",
-          }}
-        />
-
-        <div className="relative mx-auto max-w-6xl px-4 py-16 md:py-20">
-          <Link
-            to="/"
-            className="mb-8 inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs transition hover:opacity-80"
-            style={{ borderColor: goldBorder(35), color: CREAM, background: goldBorder(6) }}
-          >
-            <ArrowLeft className="h-3.5 w-3.5" /> Back to main
-          </Link>
-
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-            className="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[11px] font-medium uppercase tracking-[0.18em]"
-            style={{
-              color: GOLD,
-              border: `1px solid ${goldBorder(35)}`,
-              background: goldBorder(8),
-            }}
-          >
-            <Sparkles className="h-3 w-3" /> Book a session
-          </motion.div>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.1, ease: "easeOut" }}
-            className="mt-5 font-display text-4xl font-semibold leading-[1.05] tracking-tight md:text-6xl"
-          >
-            Meet the team behind{" "}
-            <span
-              style={{
-                background: `linear-gradient(90deg, ${CREAM}, ${GOLD}, ${CREAM})`,
-                backgroundSize: "200% 100%",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
-              }}
-            >
-              ReconIQ
-            </span>
-            .
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
-            className="mt-5 max-w-2xl text-base md:text-lg"
-            style={{ color: creamMix(78) }}
-          >
-            Pick the format that fits your evaluation stage. Our team will review your request and
-            confirm availability.
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="mt-10 grid gap-4 sm:grid-cols-3"
-          >
-            {[
-              { icon: Shield, label: "SOC 2 · ISO 27001", sub: "Enterprise controls" },
-              { icon: Clock, label: "Availability confirmation", sub: "From our team" },
-              { icon: Building2, label: "Global banks & FIs", sub: "Deployed in production" },
-            ].map(({ icon: Icon, label, sub }) => (
-              <div
-                key={label}
-                className="flex items-center gap-3 rounded-lg border px-4 py-3"
-                style={{ borderColor: goldBorder(18), background: creamMix(3) }}
-              >
-                <Icon className="h-5 w-5" style={{ color: GOLD }} />
-                <div>
-                  <div className="text-sm font-medium" style={{ color: CREAM }}>
-                    {label}
-                  </div>
-                  <div
-                    className="text-[11px] uppercase tracking-wider"
-                    style={{ color: creamMix(60) }}
-                  >
-                    {sub}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Body */}
-      <section className="mx-auto max-w-6xl px-4 py-16">
-        {done ? (
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="rounded-xl border p-8"
-            style={{ borderColor: goldBorder(30), background: creamMix(4) }}
-          >
-            <CheckCircle2 className="h-8 w-8" style={{ color: GOLD }} />
-            <h2 className="mt-4 font-display text-2xl font-semibold">Booking request received</h2>
-            <p className="mt-2 text-sm" style={{ color: creamMix(78) }}>
-              We received your request for {TYPES.find((t) => t.slug === done.type)?.title} on{" "}
-              <b style={{ color: GOLD }}>{done.when}</b>. We’ll confirm availability by email.
+      <main>
+        <section className="border-b border-white/10">
+          <div className="mx-auto max-w-6xl px-6 pb-14 pt-16 md:pt-24">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#86868b]">Book a demo</p>
+            <h1 className="mt-4 max-w-3xl font-display text-4xl font-semibold leading-[1.08] tracking-tight md:text-6xl">
+              See ReconIQ with your team.
+            </h1>
+            <p className="mt-5 max-w-2xl text-base leading-relaxed text-[#a1a1a6] md:text-lg">
+              Pick the format that fits your evaluation stage. We’ll review your request and confirm
+              availability by email — or open the live product now and explore it yourself.
             </p>
-            <div className="mt-6 flex gap-3">
-              <p className="text-xs" style={{ color: creamMix(70) }}>
-                By confirming, you consent to ReconIQ contacting you about this booking. Read our{" "}
-                <Link to="/privacy" className="underline underline-offset-2">Privacy Notice</Link>.
-              </p>
-              <Button
-                asChild
-                style={{ background: GOLD, color: NOIR_BG }}
-                className="hover:opacity-90"
-              >
-                <Link to="/">Return home</Link>
-              </Button>
-              <Button
-                asChild
-                variant="outline"
-                style={{ borderColor: goldBorder(40), color: CREAM, background: "transparent" }}
-              >
-                <Link to="/contact">Contact sales</Link>
+            <div className="mt-8">
+              <Button asChild variant="outline" className="border-white/20 bg-transparent text-[#f5f5f7] hover:bg-white/10 hover:text-white">
+                <a href={appUrl("/auth")}>Open the live product</a>
               </Button>
             </div>
-          </motion.div>
-        ) : (
-          <div className="grid gap-8 md:grid-cols-[1fr_1.4fr]">
-            <motion.div
-              initial={{ opacity: 0, x: -16 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: "-80px" }}
-              transition={{ duration: 0.6 }}
-              className="space-y-3"
-            >
-              {TYPES.map((t, i) => {
-                const active = type === t.slug;
-                return (
-                  <motion.button
-                    key={t.slug}
-                    onClick={() => setType(t.slug)}
-                    whileHover={{ y: -2 }}
-                    transition={{ delay: i * 0.05 }}
-                    className="w-full rounded-xl border p-4 text-left transition"
-                    style={{
-                      borderColor: active ? goldBorder(60) : goldBorder(20),
-                      background: active ? goldBorder(10) : creamMix(3),
-                      boxShadow: active ? `0 0 24px ${goldBorder(20)}` : "none",
-                    }}
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="font-medium" style={{ color: CREAM }}>
-                        {t.title}
-                      </span>
-                      <span
-                        className="flex items-center gap-1 text-xs"
-                        style={{ color: creamMix(65) }}
-                      >
-                        <Clock className="h-3 w-3" /> {t.duration}
-                      </span>
-                    </div>
-                    <p className="mt-1 text-xs" style={{ color: creamMix(65) }}>
-                      {t.desc}
-                    </p>
-                  </motion.button>
-                );
-              })}
-            </motion.div>
+          </div>
+        </section>
 
-            <motion.form
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-80px" }}
-              transition={{ duration: 0.6, ease: "easeOut" }}
-              onSubmit={submit}
-              className="space-y-7 rounded-xl border p-6 md:p-8"
-              style={{
-                borderColor: goldBorder(22),
-                background: creamMix(4),
-                backdropFilter: "blur(6px)",
-              }}
-            >
-              <div>
-                <Label
-                  className="mb-2 block text-[11px] font-medium uppercase tracking-[0.18em]"
-                  style={{ color: GOLD }}
-                >
-                  <CalendarIcon className="mr-1 inline h-3.5 w-3.5" /> Choose a date
-                </Label>
-                <div className="grid grid-cols-5 gap-2">
-                  {days.map((d) => {
-                    const active = date === d.date;
-                    return (
-                      <button
-                        type="button"
-                        key={d.date}
-                        onClick={() => {
-                          setDate(d.date);
-                          setSlot(null);
-                        }}
-                        className="rounded-md border p-2 text-center text-xs transition"
-                        style={{
-                          borderColor: active ? goldBorder(60) : goldBorder(22),
-                          background: active ? goldBorder(15) : "transparent",
-                          color: CREAM,
-                        }}
-                      >
-                        {new Date(`${d.date}T12:00:00.000Z`).toLocaleDateString("en-GB", {
-                          weekday: "short",
-                          day: "numeric",
-                          timeZone: "UTC",
-                        })}
-                      </button>
-                    );
-                  })}
-                </div>
+        <section className="mx-auto max-w-6xl px-6 py-16">
+          {done ? (
+            <div className="max-w-2xl rounded-3xl border border-white/10 bg-[#161617] p-8">
+              <CheckCircle2 className="h-8 w-8 text-[#2997ff]" />
+              <h2 className="mt-4 font-display text-2xl font-semibold">Booking request received</h2>
+              <p className="mt-3 text-sm leading-relaxed text-[#a1a1a6]">
+                We received your request for {TYPES.find((t) => t.slug === done.type)?.title} on{" "}
+                <span className="font-medium text-[#f5f5f7]">{done.when}</span>. We’ll confirm availability by email.
+              </p>
+              <p className="mt-4 text-xs leading-relaxed text-[#86868b]">
+                By confirming, you consent to ReconIQ contacting you about this booking. Read our{" "}
+                <Link to="/privacy" className="text-[#2997ff] underline underline-offset-2 hover:text-white">Privacy Notice</Link>.
+              </p>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <Button asChild className="bg-white text-black hover:bg-white/85">
+                  <Link to="/">Return home</Link>
+                </Button>
+                <Button asChild variant="outline" className="border-white/20 bg-transparent text-[#f5f5f7] hover:bg-white/10 hover:text-white">
+                  <Link to="/contact">Contact sales</Link>
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="grid gap-8 md:grid-cols-[1fr_1.4fr]">
+              <div className="space-y-3">
+                <p className="text-sm font-medium text-[#f5f5f7]">1. Choose a session type</p>
+                {TYPES.map((t) => {
+                  const active = type === t.slug;
+                  return (
+                    <button
+                      type="button"
+                      key={t.slug}
+                      onClick={() => setType(t.slug)}
+                      aria-pressed={active}
+                      className={
+                        active
+                          ? "w-full rounded-2xl border border-white bg-white p-4 text-left text-black transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2997ff]"
+                          : "w-full rounded-2xl border border-white/10 bg-[#161617] p-4 text-left transition-colors hover:border-white/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2997ff]"
+                      }
+                    >
+                      <span className="flex items-center justify-between gap-3">
+                        <span className={active ? "font-medium text-black" : "font-medium text-[#f5f5f7]"}>{t.title}</span>
+                        <span className={active ? "flex items-center gap-1 text-xs text-black/60" : "flex items-center gap-1 text-xs text-[#86868b]"}>
+                          <Clock className="h-3 w-3" /> {t.duration}
+                        </span>
+                      </span>
+                      <span className={active ? "mt-1 block text-xs text-black/60" : "mt-1 block text-xs text-[#86868b]"}>{t.desc}</span>
+                    </button>
+                  );
+                })}
+                <p className="pt-2 text-xs leading-relaxed text-[#86868b]">
+                  Security controls are designed with reference to SOC 2 and ISO 27001 frameworks.
+                  ReconIQ does not claim SOC 2 or ISO certification — see the Security page for status.
+                </p>
               </div>
 
-              {date && (
-                <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
-                  <Label
-                    className="mb-2 block text-[11px] font-medium uppercase tracking-[0.18em]"
-                    style={{ color: GOLD }}
-                  >
-                    Time (your local time)
+              <form onSubmit={submit} className="h-fit space-y-7 rounded-3xl border border-white/10 bg-[#161617] p-6 md:p-8">
+                <div>
+                  <Label className="mb-2 block text-sm font-medium text-[#f5f5f7]">
+                    <CalendarIcon className="mr-1.5 inline h-4 w-4 text-[#a1a1a6]" /> 2. Choose a date
                   </Label>
-                  <div className="flex flex-wrap gap-2">
-                    {(days.find((d) => d.date === date)?.slots ?? []).map((s) => {
-                      const active = slot === s;
+                  <div className="grid grid-cols-5 gap-2">
+                    {days.map((d) => {
+                      const active = date === d.date;
                       return (
                         <button
                           type="button"
-                          key={s}
-                          onClick={() => setSlot(s)}
-                          className="rounded-md border px-3 py-1.5 text-xs transition"
-                          style={{
-                            borderColor: active ? GOLD : goldBorder(25),
-                            background: active ? GOLD : "transparent",
-                            color: active ? NOIR_BG : CREAM,
+                          key={d.date}
+                          onClick={() => {
+                            setDate(d.date);
+                            setSlot(null);
                           }}
+                          aria-pressed={active}
+                          className={
+                            active
+                              ? "rounded-xl border border-white bg-white p-2 text-center text-xs font-medium text-black transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2997ff]"
+                              : "rounded-xl border border-white/15 bg-[#1c1c1f] p-2 text-center text-xs text-[#f5f5f7] transition-colors hover:border-white/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2997ff]"
+                          }
                         >
-                          {s}
+                          {new Date(`${d.date}T12:00:00.000Z`).toLocaleDateString("en-GB", {
+                            weekday: "short",
+                            day: "numeric",
+                            month: "short",
+                            timeZone: "UTC",
+                          })}
                         </button>
                       );
                     })}
                   </div>
-                </motion.div>
-              )}
+                </div>
 
-              <div className="grid gap-4 md:grid-cols-2">
-                <NoirField name="first_name" label="First name" required />
-                <NoirField name="last_name" label="Last name" required />
-                <NoirField name="email" type="email" label="Business email" required />
-                <NoirField name="mobile" label="Mobile" />
-                <NoirField name="company" label="Company" required />
-                <NoirField name="job_title" label="Job title" />
-                <NoirField name="country" label="Country" />
-              </div>
+                {date ? (
+                  <div>
+                    <Label className="mb-2 block text-sm font-medium text-[#f5f5f7]">3. Choose a time <span className="font-normal text-[#86868b]">(your local time)</span></Label>
+                    <div className="flex flex-wrap gap-2">
+                      {(days.find((d) => d.date === date)?.slots ?? []).map((s) => {
+                        const active = slot === s;
+                        return (
+                          <button
+                            type="button"
+                            key={s}
+                            onClick={() => setSlot(s)}
+                            aria-pressed={active}
+                            className={
+                              active
+                                ? "rounded-full border border-white bg-white px-3.5 py-1.5 text-xs font-medium text-black transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2997ff]"
+                                : "rounded-full border border-white/15 bg-[#1c1c1f] px-3.5 py-1.5 text-xs text-[#f5f5f7] transition-colors hover:border-white/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2997ff]"
+                            }
+                          >
+                            {s}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-sm text-[#86868b]">Choose a date first — times will appear here.</p>
+                )}
 
-              <div>
-                <Label
-                  htmlFor="message"
-                  className="mb-1.5 block text-[11px] font-medium uppercase tracking-[0.18em]"
-                  style={{ color: GOLD }}
-                >
-                  Anything we should prepare?
-                </Label>
-                <Textarea
-                  id="message"
-                  name="message"
-                  rows={3}
-                  style={{
-                    background: creamMix(4),
-                    borderColor: goldBorder(25),
-                    color: CREAM,
-                  }}
-                />
-              </div>
+                <div>
+                  <p className="mb-4 text-sm font-medium text-[#f5f5f7]">{date ? "4. Your details" : "3. Your details"}</p>
+                  <div className="grid gap-5 md:grid-cols-2">
+                    <OnyxField name="first_name" label="First name" required autoComplete="given-name" />
+                    <OnyxField name="last_name" label="Last name" required autoComplete="family-name" />
+                    <OnyxField name="email" type="email" label="Business email" required autoComplete="email" helper="We’ll confirm your booking at this address." />
+                    <OnyxField name="mobile" label="Mobile" autoComplete="tel" />
+                    <OnyxField name="company" label="Company" required autoComplete="organization" />
+                    <OnyxField name="job_title" label="Job title" autoComplete="organization-title" />
+                    <OnyxField name="country" label="Country" autoComplete="country-name" />
+                  </div>
+                </div>
 
-              <Button
-                type="submit"
-                size="lg"
-                disabled={submitting || !date || !slot}
-                style={{ background: GOLD, color: NOIR_BG }}
-                className="hover:opacity-90 disabled:opacity-40"
-              >
-                {submitting ? "Booking…" : "Confirm booking"}
-              </Button>
-            </motion.form>
-          </div>
-        )}
-      </section>
+                <div>
+                  <Label htmlFor="message" className="mb-1.5 block text-sm font-medium text-[#f5f5f7]">
+                    Anything we should prepare?
+                  </Label>
+                  <Textarea
+                    id="message"
+                    name="message"
+                    rows={3}
+                    placeholder="For example, the reconciliation types or systems you want to cover."
+                    className="rounded-xl border-white/15 bg-[#1c1c1f] px-3.5 py-3 text-[#f5f5f7] placeholder:text-[#86868b] focus-visible:ring-2 focus-visible:ring-[#2997ff]"
+                  />
+                </div>
+
+                <div>
+                  <Button type="submit" size="lg" disabled={submitting || !date || !slot} className="bg-white text-black hover:bg-white/85 disabled:opacity-40">
+                    {submitting ? "Booking…" : "Confirm booking"}
+                  </Button>
+                  {!date || !slot ? (
+                    <p className="mt-3 text-xs text-[#86868b]">Choose a date and time above to continue.</p>
+                  ) : null}
+                </div>
+              </form>
+            </div>
+          )}
+        </section>
+      </main>
+
+      <MarketingFooter />
     </div>
   );
 }
 
-function NoirField({
+function OnyxField({
   name,
   label,
   type = "text",
   required = false,
+  autoComplete,
+  helper,
 }: {
   name: string;
   label: string;
   type?: string;
   required?: boolean;
+  autoComplete?: string;
+  helper?: string;
 }) {
-  const GOLD_LOCAL = "var(--brand-gold)";
-  const CREAM_LOCAL = "var(--brand-cream)";
   return (
     <div>
-      <Label
-        htmlFor={name}
-        className="mb-1.5 block text-[11px] font-medium uppercase tracking-[0.18em]"
-        style={{ color: GOLD_LOCAL }}
-      >
+      <Label htmlFor={name} className="mb-1.5 block text-sm font-medium text-[#f5f5f7]">
         {label}
         {required ? " *" : ""}
       </Label>
-      <Input
-        id={name}
-        name={name}
-        type={type}
-        required={required}
-        style={{
-          background: `color-mix(in oklab, ${CREAM_LOCAL} 4%, transparent)`,
-          borderColor: `color-mix(in oklab, ${GOLD_LOCAL} 25%, transparent)`,
-          color: CREAM_LOCAL,
-        }}
-      />
+      <Input id={name} name={name} type={type} required={required} autoComplete={autoComplete} className={inputClass} aria-describedby={helper ? `${name}-helper` : undefined} />
+      {helper ? <p id={`${name}-helper`} className="mt-1.5 text-xs text-[#86868b]">{helper}</p> : null}
     </div>
   );
 }

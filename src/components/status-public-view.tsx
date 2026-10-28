@@ -4,6 +4,7 @@ import type { StatusSnapshot } from "@/lib/status.functions";
 import { measuredState, overallState, historyMeasurement, type StatusHealth, type PublicStatusIncident } from "@/lib/status.model";
 import { statusDomains, statusCellEvidence, evidenceLabel, statusStateLabels as labels } from "@/lib/status-display";
 import { STATUS_PUBLIC_STYLES } from "@/components/status-public-view.styles";
+import { appUrl } from "@/lib/cross-domain";
 
 const stamp=(value:string|null,zone="UTC")=>value&&Number.isFinite(Date.parse(value))
   ?new Intl.DateTimeFormat("en-GB",{timeZone:zone,dateStyle:"medium",timeStyle:"medium"}).format(new Date(value))+` (${zone})`:"Not recorded";
@@ -36,7 +37,7 @@ export function StatusPublicView({snapshot,loading=false,refresh,subscribe,previ
  const firstDay=new Date(Date.now()-(days-1)*86400_000).toISOString().slice(0,10);
  async function onSubscribe(event:FormEvent){event.preventDefault();if(!consent){setSubscriptionState("Confirm your request for status updates before continuing.");return;}if(!subscribe||sending)return;setSending(true);setSubscriptionState("");try{await subscribe(email);setSubscriptionState(preview?"Preview only: no subscription was saved and no email was sent.":"Subscription request saved. Email confirmation delivery is awaiting verification; you are not subscribed to notifications yet.");}catch{setSubscriptionState("We could not confirm this subscription request. Try again shortly.");}finally{setSending(false);}}
  return <div className="fvi-status"><style>{STATUS_PUBLIC_STYLES}</style>
-  <header><div className="wrap head"><a className="brand" href="/"><img src="/fv-monogram.svg" alt="ReconIQ logo"/><span><strong>ReconIQ</strong><small>Regional service status</small></span></a><nav aria-label="Status navigation"><a href="#status-services">Services</a><a href="#status-timeline">Incidents</a><a href="#status-subscription">Email updates</a><a href="/api/public/status.json">JSON feed</a><a href="https://app.reconiq.example/auth">Sign in</a></nav></div></header>
+  <header><div className="wrap head"><a className="brand" href="/"><img src="/fv-monogram.svg" alt="ReconIQ logo"/><span><strong>ReconIQ</strong><small>Regional service status</small></span></a><nav aria-label="Status navigation"><a href="#status-services">Services</a><a href="#status-timeline">Incidents</a><a href="#status-subscription">Email updates</a><a href="/api/public/status.json">JSON feed</a><a href={appUrl("/auth")}>Sign in</a></nav></div></header>
   <main className="wrap">
    {preview&&<p className="preview-notice" role="status">Working source prototype. Known production/development labels come from the owner release evidence. Registry, geography and functional probes remain unverified. Synthetic examples are labelled; no public incident, subscription or email is created here.</p>}
    <div className="hero"><div><h1>System status</h1><p className="intro">Reconciliation, data operations and platform health, with the evidence behind each function in view.</p><div className="hero-actions"><button onClick={refresh} disabled={!refresh||loading}><RefreshCw size={16} aria-hidden="true"/>{loading?"Checking…":"Refresh status"}</button><a className="button" href="#status-timeline">View incident updates</a></div><p className="muted">Registered environments and regions only. Unverified geography stays explicit.</p></div>

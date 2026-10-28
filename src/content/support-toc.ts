@@ -126,7 +126,7 @@ function buildSupportCategories(): Category[] {
           },
           {
             heading: "Governance & Compliance",
-            body: "End-of-day signoffs, audit log hash-chaining, SOC 2 evidence bundles, DORA compliance, and configurable retention policies ensure enterprise-grade governance.",
+            body: "End-of-day signoffs, audit log hash-chaining, evidence bundles aligned to the SOC 2 Trust Services Criteria, DORA-aligned controls, and configurable retention policies support enterprise-grade governance.",
           },
         ],
       },
@@ -141,8 +141,8 @@ function buildSupportCategories(): Category[] {
         sections: [
           {
             heading: "Sign Up",
-            body: "Navigate to app.reconiq.example and click Sign Up. Enter your work email and set a strong password.",
-            steps: ["Go to https://app.reconiq.example/auth", "Enter work email", "Create a password (min 12 chars, one number, one symbol)", "Submit and check email for verification link"],
+            body: "Navigate to reconintelligence.app and click Sign Up. Enter your work email and set a strong password.",
+            steps: ["Go to https://reconintelligence.app/auth", "Enter work email", "Create a password (min 12 chars, one number, one symbol)", "Submit and check email for verification link"],
             callout: { type: "info", text: "If your organization uses SSO (SAML), your admin will provide a direct login link." },
           },
           {
@@ -425,7 +425,7 @@ function buildSupportCategories(): Category[] {
           { body: "Month-end adds extra rigor: freeze data sources, resolve all material breaks, generate signoff evidence." },
           { heading: "Data Freeze", body: "Lock data sources at COB on last business day. No late amendments." },
           { heading: "Final Signoffs", body: "Require manager countersignature for month-end runs." },
-          { heading: "Evidence Packs", body: "Export SOC 2-ready evidence bundles for external audit." },
+          { heading: "Evidence Packs", body: "Export evidence bundles aligned to the SOC 2 Trust Services Criteria for your external audit and vendor-risk reviews." },
         ],
       },
     ],
@@ -438,7 +438,7 @@ function buildSupportCategories(): Category[] {
     slug: "security",
     name: "Security & Compliance",
     icon: "shield-check",
-    description: "ReconIQ's security architecture, compliance certifications, and data privacy controls.",
+    description: "ReconIQ's security architecture and data privacy controls.",
     articles: [
       {
         slug: "security-overview",
@@ -456,10 +456,10 @@ function buildSupportCategories(): Category[] {
       },
       {
         slug: "soc2",
-        title: "SOC 2 Compliance",
-        summary: "How ReconIQ supports SOC 2 Type II evidence collection and audit readiness.",
-        seoTitle: "ReconIQ SOC 2 Compliance Guide",
-        seoDescription: "ReconIQ's SOC 2 Type II evidence bundles, control mappings, and audit support.",
+        title: "SOC 2 Alignment & Evidence",
+        summary: "How ReconIQ evidence exports map to the SOC 2 Trust Services Criteria for vendor-risk reviews.",
+        seoTitle: "ReconIQ SOC 2 Alignment & Evidence Guide",
+        seoDescription: "ReconIQ evidence bundles and control mappings aligned to the SOC 2 Trust Services Criteria.",
         tags: ["soc2", "audit", "compliance"],
         readTime: 4,
         sections: [
@@ -473,7 +473,7 @@ function buildSupportCategories(): Category[] {
         title: "GDPR & Data Privacy",
         summary: "ReconIQ's GDPR controls: data residency, retention, erasure, and DPA.",
         seoTitle: "ReconIQ GDPR & Data Privacy",
-        seoDescription: "ReconIQ's GDPR compliance: data residency options, retention policies, right to erasure, and DPA.",
+        seoDescription: "ReconIQ's GDPR controls: data residency options, retention policies, right to erasure, and DPA.",
         tags: ["gdpr", "privacy", "dpa"],
         readTime: 4,
         sections: [
@@ -531,9 +531,9 @@ function buildSupportCategories(): Category[] {
         tags: ["api", "reference", "rest"],
         readTime: 10,
         sections: [
-          { body: "Base URL: `https://api.reconiq.example/v1`. All requests require authentication." },
+          { body: "Base URL: `https://reconintelligence.app/api`. All requests require authentication with a tenant-scoped token." },
           { heading: "Core Resources", body: "Tenants, Workspaces, Recon Definitions, Runs, Breaks, Matches, Data Sources, Users." },
-          { heading: "Example: List Breaks", body: "GET `/v1/workspaces/{ws}/breaks?status=open`", code: { lang: "bash", code: "curl -H 'Authorization: Bearer $TOKEN' 'https://api.reconiq.example/v1/workspaces/abc/breaks?status=open'" } },
+          { heading: "Example: List Breaks", body: "GET `/api/workspaces/{ws}/breaks?status=open` — illustrative shape; run live requests in the in-app API sandbox (Developers → API sandbox).", code: { lang: "bash", code: "curl -H 'Authorization: Bearer $TOKEN' 'https://reconintelligence.app/api/workspaces/abc/breaks?status=open'" } },
         ],
       },
       {
@@ -553,15 +553,14 @@ function buildSupportCategories(): Category[] {
       {
         slug: "sdks",
         title: "SDKs & Libraries",
-        summary: "Official SDKs for Python, Node.js, and .NET. Community libraries and Postman collection.",
+        summary: "Integrate via the REST API today; language SDKs are on the roadmap.",
         seoTitle: "ReconIQ SDKs & Libraries",
-        seoDescription: "Official ReconIQ SDKs for Python, Node.js, .NET, and Postman collection.",
+        seoDescription: "ReconIQ integration options: REST API and in-app API sandbox today; SDKs on the roadmap.",
         tags: ["sdk", "libraries", "postman"],
         readTime: 3,
         sections: [
-          { heading: "Python SDK", body: "`pip install reconiq-sdk`. Docs at github.com/josephferdinand/recon-iq." },
-          { heading: "Node.js SDK", body: "`npm install @reconiq/sdk`. Supports TypeScript." },
-          { heading: "Postman Collection", body: "Import from Developer Portal → Postman. Pre-configured environments for sandbox and production." },
+          { heading: "REST API First", body: "SDKs for Python, Node.js and .NET are on the roadmap. Today, integrate directly with the REST API — every endpoint can be exercised in the in-app API sandbox before you write code." },
+          { heading: "Postman", body: "Build and save requests in the in-app API sandbox (Developers → API sandbox), then export them for Postman or your HTTP client of choice." },
         ],
       },
       {
@@ -574,7 +573,7 @@ function buildSupportCategories(): Category[] {
         readTime: 3,
         sections: [
           { body: "The sandbox mirrors production but with isolated data. Create a sandbox tenant in Settings → Environments." },
-          { heading: "Base URL", body: "`https://sandbox.api.reconiq.example/v1`" },
+          { heading: "Base URL", body: "`https://reconintelligence.app/api` (from your sandbox tenant)" },
           { heading: "Reset Data", body: "Click Reset Sandbox to clear all test data and start fresh." },
         ],
       },
@@ -685,7 +684,7 @@ function buildSupportCategories(): Category[] {
           { q: "How is pricing calculated?", a: "Pricing is based on the number of reconciliation rows processed per month and the tier of features enabled. Contact sales for a quote." },
           { q: "Does ReconIQ support SSO?", a: "Yes. ReconIQ supports SAML 2.0 SSO with any identity provider (Okta, Azure AD, etc.)." },
           { q: "Can I self-host ReconIQ?", a: "ReconIQ is a cloud-hosted SaaS platform. Private cloud or on-prem deployments are available for enterprise customers." },
-          { q: "How do I contact support?", a: "Submit a ticket via the Support Portal or email support@reconiq.example." },
+          { q: "How do I contact support?", a: "Submit a ticket via the Support Portal, or use the contact form at reconintelligence.app/contact." },
         ],
       },
     ],
@@ -709,8 +708,8 @@ function buildSupportCategories(): Category[] {
         tags: ["support", "ticket", "contact"],
         readTime: 2,
         sections: [
-          { body: "Use the form below or email support@reconiq.example. Include your tenant ID and a detailed description." },
-          { heading: "Response Times", body: "• Critical (P1): 1 hour\n• High (P2): 4 hours\n• Normal (P3): 1 business day\n• Low (P4): 3 business days" },
+          { body: "Use the form below, and include your tenant ID and a detailed description so we can help faster." },
+          { heading: "Response Times", body: "We triage every ticket by severity and respond as quickly as we can. Timelines below are targets, not contractual SLAs.\n• Critical (P1): target 1 hour\n• High (P2): target 4 hours\n• Normal (P3): target 1 business day\n• Low (P4): target 3 business days" },
         ],
       },
     ],

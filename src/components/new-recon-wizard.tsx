@@ -25,6 +25,7 @@ import {
   History, ShieldCheck, Plug, ListTree,
 } from "lucide-react";
 import { toast } from "sonner";
+import { notifyUserError } from "@/lib/user-feedback";
 import { cn } from "@/lib/utils";
 import { ReconOwnerPicker } from "@/components/recon-owner-picker";
 import { RECON_TYPE_LABELS, reconTypeLabel } from "@/lib/recon-labels";
@@ -848,7 +849,7 @@ function ConfigureNewConnectorDialog({
       auth_secret_ref: api.auth_secret_ref || null,
     } }),
     onSuccess: (r: any) => { toast.success("API source saved"); setOpen(false); onSaved(r.id); },
-    onError: (e: any) => toast.error(`Could not save API source: ${e.message}`),
+    onError: (e: any) => notifyUserError(e, "wizard_api_source_save"),
   });
   const mDb = useMutation({
     mutationFn: () => saveDb({ data: {
@@ -859,7 +860,7 @@ function ConfigureNewConnectorDialog({
       default_sql: db.default_sql || null,
     } }),
     onSuccess: (r: any) => { toast.success("DB connection saved"); setOpen(false); onSaved(r.id); },
-    onError: (e: any) => toast.error(`Could not save DB connection: ${e.message}`),
+    onError: (e: any) => notifyUserError(e, "wizard_db_source_save"),
   });
 
   return (

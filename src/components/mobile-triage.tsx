@@ -6,6 +6,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Smartphone, ChevronLeft, ChevronRight, Check, X } from "lucide-react";
+import { PayloadEvidenceSummary } from "@/components/payload-evidence-summary";
 import { toast } from "sonner";
 
 export function MobileTriage({ tenantId }: { tenantId: string }) {
@@ -25,7 +26,7 @@ export function MobileTriage({ tenantId }: { tenantId: string }) {
   async function act(status: "resolved" | "wont_fix") {
     if (!cur) return;
     await resolve({ data: { id: cur.id, tenant_id: tenantId, status } });
-    toast.success(`Marked ${status}`);
+    toast.success(status === "resolved" ? "Exception Resolved Successfully" : "Exception Marked as Won't Fix");
     if (idx >= rows.length - 1) setIdx(0); else q.refetch();
   }
 
@@ -37,16 +38,16 @@ export function MobileTriage({ tenantId }: { tenantId: string }) {
       <SheetContent side="bottom" className="h-[85dvh]">
         <SheetHeader><SheetTitle>Mobile triage</SheetTitle></SheetHeader>
         {!cur ? (
-          <p className="mt-8 text-center text-sm text-muted-foreground">No open exceptions.</p>
+          <p className="mt-8 text-center text-sm text-muted-foreground">Nothing To Display Yet — there are currently no open exceptions to triage.</p>
         ) : (
           <div className="mt-4 flex h-full flex-col">
             <div className="flex items-center justify-between text-xs text-muted-foreground">
               <span>{idx + 1} / {rows.length}</span>
-              <Badge variant={cur.severity === "critical" ? "destructive" : "outline"}>{cur.severity}</Badge>
+              <Badge variant={cur.severity === "critical" ? "destructive" : "outline"}>{cur.severity ? cur.severity.charAt(0).toUpperCase() + cur.severity.slice(1) : "Not set"}</Badge>
             </div>
             <div className="mt-4 flex-1 overflow-auto rounded border p-4">
               <h3 className="font-semibold">{cur.reason}</h3>
-              <pre className="mt-3 whitespace-pre-wrap text-xs text-muted-foreground">{JSON.stringify(cur.payload ?? {}, null, 2)}</pre>
+              <div className="mt-3"><PayloadEvidenceSummary payload={cur.payload ?? {}} /></div>
             </div>
             <div className="mt-3 grid grid-cols-4 gap-2">
               <Button variant="outline" size="lg" onClick={() => setIdx((i) => Math.max(0, i - 1))} aria-label="Previous"><ChevronLeft /></Button>

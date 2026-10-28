@@ -9,13 +9,13 @@ export const SOLUTIONS: Record<string, SolutionSpec> = {
   "cash-reconciliation": {
     slug: "cash-reconciliation",
     eyebrow: "Cash & Nostro Reconciliation",
-    title: "Cash and Nostro reconciliation, cleared 10× faster.",
+    title: "Cash and nostro reconciliation, without the manual chase.",
     subtitle:
-      "Reconcile MT940/MT950, CAMT.053/054 and internal ledger cash across every nostro, vostro and internal account — with agentic triage that resolves breaks before your operations team opens them.",
+      "Reconcile MT940/MT950, CAMT.053/054 and internal ledger cash across every nostro, vostro and internal account — with AI-assisted triage that groups breaks by likely cause for your team to review and approve.",
     heroStat: [
-      { value: "80%+", label: "Auto-match rate on cash" },
-      { value: "10×", label: "Faster break MTTR" },
-      { value: "T+0", label: "Same-day close" },
+      { value: "MT940 · CAMT.053", label: "Statement formats reconciled" },
+      { value: "1:1 · 1:N · N:N", label: "Matching modes supported" },
+      { value: "Intraday", label: "Runs on statement arrival" },
     ],
     personas: ["Treasury Operations", "Nostro Recon Teams", "Cash Management"],
     painPoints: [
@@ -26,8 +26,8 @@ export const SOLUTIONS: Record<string, SolutionSpec> = {
     ],
     capabilities: [
       { icon: BrainCircuit, title: "Agentic break triage", body: "AI clusters cash breaks by root cause (fee, FX, timing, duplicate) and drafts resolutions under policy gates." },
-      { icon: Workflow, title: "20+ matching rules", body: "1:1, 1:N, N:N, tolerance, fuzzy narrative, composite keys — tuned for MT940/CAMT semantics." },
-      { icon: Wand2, title: "Statement normalisation", body: "42 pre-built transforms map narratives, value dates and reference fields into a canonical cash model." },
+      { icon: Workflow, title: "Configurable matching rules", body: "1:1, 1:N, N:N, tolerance, fuzzy narrative, composite keys — tuned for MT940/CAMT semantics." },
+      { icon: Wand2, title: "Statement normalisation", body: "Pre-built transforms map narratives, value dates and reference fields into a canonical cash model." },
       { icon: Clock, title: "Ageing & MTTR SLAs", body: "Per-account ageing buckets, reviewer SLAs, escalation policies and near-real-time dashboards." },
       { icon: FileText, title: "Four-eyes write-off", body: "Purpose-built Break Manager with maker-checker approvals for tolerance write-offs and forced matches." },
       { icon: ShieldCheck, title: "Hash-chained audit", body: "Every match, break, comment and approval is signed into an immutable evidence chain for regulators." },
@@ -41,15 +41,15 @@ export const SOLUTIONS: Record<string, SolutionSpec> = {
       "Legacy fixed-width mainframe drops",
     ],
     outcomes: [
-      { metric: "80%+", label: "First-pass auto-match" },
-      { metric: "60%+", label: "Reduction in manual FTE effort" },
-      { metric: "<15 min", label: "Break MTTR (P50)" },
-      { metric: "100%", label: "Audit evidence coverage" },
+      { metric: "Automated", label: "First-pass matching with tolerance and fuzzy-narrative rules" },
+      { metric: "Grouped", label: "Breaks clustered by likely cause — fee, FX, timing, duplicate" },
+      { metric: "Four-eyes", label: "Approval required for write-offs and forced matches" },
+      { metric: "Hash-chained", label: "Audit evidence for every match, break and approval" },
     ],
     compliance: ["BCBS 239", "DORA", "SOX ICFR", "ISO 20022", "SWIFT CSP", "SOC 2 Type II (target)"],
     faq: [
       { q: "How does ReconIQ handle correspondent-bank fee breaks?", a: "Fees are matched using tolerance and fuzzy narrative rules; residuals are auto-clustered by counterparty and routed to a tolerance write-off queue that supports four-eyes approval and policy caps." },
-      { q: "Can we run cash recon intraday?", a: "Yes. The Rekon Orchestrator supports cron, event-driven and streaming triggers, so cash can be reconciled hourly or on statement arrival for T+0 close." },
+      { q: "Can we run cash recon intraday?", a: "Yes. ReconIQ supports scheduled, event-driven and streaming triggers, so cash can be reconciled hourly or on statement arrival, ahead of a same-day close." },
       { q: "Does ReconIQ support ISO 20022 migration?", a: "Both MT and CAMT formats are supported natively, and the Data Prep pipeline maps legacy MT narratives to canonical ISO fields so you can migrate without breaking historical rules." },
     ],
   },
@@ -57,13 +57,13 @@ export const SOLUTIONS: Record<string, SolutionSpec> = {
   "securities-reconciliation": {
     slug: "securities-reconciliation",
     eyebrow: "Securities & Position Reconciliation",
-    title: "Securities, positions and custody reconciliation at institutional scale.",
+    title: "Securities, positions and custody reconciliation in one place.",
     subtitle:
-      "Reconcile custody positions, trades, corporate actions and cash-vs-position across custodians, prime brokers and internal books — with agentic root-cause analysis and full T+1 evidence.",
+      "Reconcile custody positions, trades, corporate actions and cash-vs-position across custodians, prime brokers and internal books — with AI-assisted root-cause suggestions and evidence for every position.",
     heroStat: [
-      { value: "10M+", label: "Positions reconciled daily" },
-      { value: "T+1", label: "Position finality" },
-      { value: "99.9%", label: "Match confidence" },
+      { value: "MT535 · MT536", label: "Custody statement formats" },
+      { value: "Trade · Settlement", label: "Date-aware position matching" },
+      { value: "3-way", label: "Custodian · broker · internal book" },
     ],
     personas: ["Middle Office", "Custody Ops", "Fund Accounting", "Prime Brokerage Ops"],
     painPoints: [
@@ -89,10 +89,10 @@ export const SOLUTIONS: Record<string, SolutionSpec> = {
       "Internal instrument & entity masters",
     ],
     outcomes: [
-      { metric: "10M+", label: "Positions / day" },
-      { metric: "70%+", label: "Reduction in T+1 breaks" },
-      { metric: "<30 min", label: "Break MTTR (P50)" },
-      { metric: "Zero", label: "NAV-day surprises" },
+      { metric: "Lifecycle-aware", label: "Matching across pending, failed and settled states" },
+      { metric: "Cross-checked", label: "Cash movements tied back to position changes" },
+      { metric: "Sign-off ready", label: "Ageing and exposure views for fund accounting review" },
+      { metric: "Isolated", label: "Custodian books separated by row-level access controls" },
     ],
     compliance: ["SEC 17a-13", "AIFMD Annex IV", "UCITS", "MiFID II RTS 22", "DORA", "SOC 2 Type II (target)"],
     faq: [
@@ -105,13 +105,13 @@ export const SOLUTIONS: Record<string, SolutionSpec> = {
   "payments-reconciliation": {
     slug: "payments-reconciliation",
     eyebrow: "Payments & Card Scheme Reconciliation",
-    title: "Payments, cards and PSP reconciliation for the modern money movement stack.",
+    title: "Payments, cards and PSP reconciliation for modern money movement.",
     subtitle:
-      "Reconcile scheme settlements, PSP payouts, wallet ledgers and switch clearing with tolerance-aware matching, chargeback lifecycle handling and real-time exception routing.",
+      "Reconcile scheme settlements, PSP payouts, wallet ledgers and switch clearing with tolerance-aware matching, chargeback lifecycle handling and exception routing as files and events arrive.",
     heroStat: [
-      { value: "50M+", label: "Transactions/day" },
-      { value: "<1s", label: "Per-txn match latency" },
-      { value: "3-way", label: "Scheme · PSP · GL" },
+      { value: "3-way", label: "Scheme · PSP · GL matching" },
+      { value: "Scheme-native", label: "Parsers for card schemes and regional rails" },
+      { value: "Streaming", label: "Exception routing on file or event arrival" },
     ],
     personas: ["Payment Ops", "Merchant Services", "Wallet & Neobank Ops", "Card Issuers"],
     painPoints: [
@@ -137,29 +137,29 @@ export const SOLUTIONS: Record<string, SolutionSpec> = {
       "Switch, wallet ledger and core banking GL extracts",
     ],
     outcomes: [
-      { metric: "50M+", label: "Transactions / day" },
-      { metric: "99.5%+", label: "Auto-match rate" },
-      { metric: "<2 hr", label: "Scheme break MTTR" },
-      { metric: "Zero", label: "Merchant funding surprises" },
+      { metric: "N-way", label: "Authorisation, clearing, settlement and GL matched together" },
+      { metric: "Stateful", label: "Chargeback stages tied back to the original transaction" },
+      { metric: "Per-merchant", label: "Payout evidence packs for funding questions" },
+      { metric: "Tokenised", label: "No PAN stored — masked PAN, BIN and last-4 only" },
     ],
     compliance: ["PCI DSS 4.0 (aligned)", "PSD2 / PSD3", "Scheme mandates (Visa, MC)", "DORA", "SOC 2 Type II (target)"],
     faq: [
       { q: "Does ReconIQ store PANs?", a: "No. Card data is tokenised on ingest; only masked PAN, BIN and last-4 are retained. Full PCI-aligned isolation with BYO-KMS envelope encryption." },
       { q: "How does it handle scheme mandates?", a: "Parsers are versioned per scheme release; ReconIQ publishes mandate-tracking notes with each release so operations teams stay ahead of Visa and Mastercard bulletins." },
-      { q: "Can we reconcile in near real time?", a: "Yes. The Rekon Orchestrator supports streaming ingestion; typical scheme-vs-switch exceptions are surfaced within seconds of file arrival." },
+      { q: "Can we reconcile in near real time?", a: "Yes. ReconIQ supports streaming ingestion, so scheme-vs-switch exceptions can be surfaced as files or events arrive, rather than at end of day." },
     ],
   },
 
   "intercompany-reconciliation": {
     slug: "intercompany-reconciliation",
     eyebrow: "Intercompany & GL Reconciliation",
-    title: "Intercompany and GL reconciliation, closed without the month-end panic.",
+    title: "Intercompany and GL reconciliation for month-end close.",
     subtitle:
       "Reconcile intercompany balances, subledger-to-GL and GL-to-GL across ERPs and entities — with FX awareness, elimination rules and evidence-ready packs for group audit.",
     heroStat: [
-      { value: "3 days", label: "Faster monthly close" },
-      { value: "90%+", label: "IC auto-elimination" },
-      { value: "Zero", label: "Reconciliation-driven adjustments" },
+      { value: "Multi-ERP", label: "SAP, Oracle, Workday, NetSuite and file feeds" },
+      { value: "Pair-aware", label: "Elimination rules per trading-partner pair" },
+      { value: "Close-calendar", label: "Cut-off and sign-off controls built in" },
     ],
     personas: ["Group Finance", "Controllership", "Shared Services", "Internal Audit"],
     painPoints: [
@@ -185,10 +185,10 @@ export const SOLUTIONS: Record<string, SolutionSpec> = {
       "FX rate feeds (Bloomberg, Reuters, ECB)",
     ],
     outcomes: [
-      { metric: "3 days", label: "Faster close" },
-      { metric: "90%+", label: "IC auto-eliminated" },
-      { metric: "50%+", label: "Fewer post-close adjustments" },
-      { metric: "100%", label: "Attestation coverage" },
+      { metric: "Rule-based", label: "Intercompany elimination with materiality thresholds" },
+      { metric: "FX-aware", label: "Transaction and reporting currencies kept side by side" },
+      { metric: "Attested", label: "Preparer and reviewer attestation per account" },
+      { metric: "Hash-chained", label: "Evidence exportable for group audit" },
     ],
     compliance: ["SOX ICFR", "IFRS 10 / IAS 21", "US GAAP consolidation", "Local statutory audit", "SOC 2 Type II (target)"],
     faq: [
@@ -205,9 +205,9 @@ export const SOLUTIONS: Record<string, SolutionSpec> = {
     subtitle:
       "Reconcile what you reported to trade repositories, competent authorities and central banks against your source of truth — with lineage, evidence and completeness testing on every field.",
     heroStat: [
-      { value: "100%", label: "Field-level lineage" },
-      { value: "Same-day", label: "Break-of-completeness" },
-      { value: "Full", label: "Regulator evidence pack" },
+      { value: "Field-level", label: "Lineage on every reported field" },
+      { value: "Completeness", label: "Universe, duplicate and over-reporting checks" },
+      { value: "Exportable", label: "Signed evidence packs for supervisory review" },
     ],
     personas: ["Regulatory Reporting", "Compliance Ops", "Data Quality", "Head of Non-Financial Risk"],
     painPoints: [
@@ -233,10 +233,10 @@ export const SOLUTIONS: Record<string, SolutionSpec> = {
       "Reference data (LEI, ISIN, UPI, UTI)",
     ],
     outcomes: [
-      { metric: "100%", label: "Field-level lineage" },
-      { metric: "Same-day", label: "Completeness testing" },
-      { metric: "90%+", label: "Reduction in manual QA" },
-      { metric: "Zero", label: "Uninvestigated pairings" },
+      { metric: "Field-level", label: "Reported values reconciled back to the golden source" },
+      { metric: "Clustered", label: "Reporting breaks grouped by rule, jurisdiction and system" },
+      { metric: "Remediation", label: "Corrections and back-reporting tracked with linked history" },
+      { metric: "Exportable", label: "Evidence packs in CSV, JSON and PDF" },
     ],
     compliance: ["EMIR REFIT", "MiFID II / MiFIR", "SFTR", "Dodd-Frank Title VII", "DORA", "BCBS 239", "SOC 2 Type II (target)"],
     faq: [

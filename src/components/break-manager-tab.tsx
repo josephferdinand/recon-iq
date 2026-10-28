@@ -11,11 +11,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
+import { notifyUserError } from "@/lib/user-feedback";
 import { AlertOctagon, Clock, MessageSquare, Tag, User, CheckCircle2, XCircle, Keyboard } from "lucide-react";
 import { useKeyboardShortcuts, type Shortcut } from "@/hooks/use-keyboard-shortcuts";
 import { KeyboardShortcutsDialog } from "@/components/keyboard-shortcuts-dialog";
 import { BreakNotesGrid } from "@/components/break-notes-grid";
 import { ExceptionLifecycleDialog } from "@/components/rekon/exception-lifecycle-dialog";
+import { PayloadEvidenceSummary } from "@/components/payload-evidence-summary";
 
 const LIFECYCLE = [
   { key: "new", label: "New", tone: "bg-slate-500" },
@@ -63,14 +65,14 @@ export function BreakManagerTab({ tenantId, canWrite }: { tenantId: string; canW
 
   const update = useMutation({
     mutationFn: (v: { id: string; patch: any }) => updateBreak({ data: { tenant_id: tenantId, ...v } }),
-    onSuccess: () => { toast.success("Updated"); qc.invalidateQueries({ queryKey: ["breaks", tenantId] }); },
-    onError: (e: any) => toast.error(e?.message ?? "Failed"),
+    onSuccess: () => { toast.success("Break Updated Successfully"); qc.invalidateQueries({ queryKey: ["breaks", tenantId] }); },
+    onError: (e: any) => notifyUserError(e, "break_update"),
   });
 
   const bulk = useMutation({
     mutationFn: (patch: any) => bulkUpdateBreaks({ data: { tenant_id: tenantId, ids: Array.from(selected), patch } }),
-    onSuccess: (r: any) => { toast.success(`Updated ${r.count}`); setSelected(new Set()); qc.invalidateQueries({ queryKey: ["breaks", tenantId] }); },
-    onError: (e: any) => toast.error(e?.message ?? "Failed"),
+    onSuccess: (r: any) => { toast.success("Breaks Updated Successfully", { description: `${r.count} ${r.count === 1 ? "break" : "breaks"} updated.` }); setSelected(new Set()); qc.invalidateQueries({ queryKey: ["breaks", tenantId] }); },
+    onError: (e: any) => notifyUserError(e, "break_bulk_update"),
   });
 
   const filtered = useMemo(() => {
@@ -302,7 +304,7 @@ function BreakDetailSheet({ openId, onClose, tenantId, row, canWrite, onPatch, o
   const [rootCause, setRootCause] = useState("");
   const comments = useQuery({
     queryKey: ["break-comments", openId],
-    queryFn: () => listComments({ data: { exception_id: openId } }),
+    queryFn: () => listComments({ data: { tenant_id: tenantId, exception_id: openId } }),
     enabled: !!openId,
   });
   const addC = useMutation({
@@ -327,7 +329,7 @@ function BreakDetailSheet({ openId, onClose, tenantId, row, canWrite, onPatch, o
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>{LIFECYCLE.filter((l) => l.key !== "written_off").map((l) => <SelectItem key={l.key} value={l.key}>{l.label}</SelectItem>)}</SelectContent>
                   </Select>
-                ) : <Badge>{row.lifecycle_state}</Badge>}
+                ) : <Badge>{LIFECYCLE.find((l) => l.key === row.lifecycle_state)?.label ?? "Not recorded"}</Badge>}
               </Field>
               <Field label="Priority">
                 {canWrite ? (
@@ -335,10 +337,10 @@ function BreakDetailSheet({ openId, onClose, tenantId, row, canWrite, onPatch, o
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>{PRIORITIES.map((p) => <SelectItem key={p} value={p}>{p}</SelectItem>)}</SelectContent>
                   </Select>
-                ) : <Badge>{row.priority}</Badge>}
+                ) : <Badge>{row.priority ? row.priority.replaceAll("_", " ") : "Not set"}</Badge>}
               </Field>
               <Field label="Severity"><SeverityChip s={row.severity} /></Field>
-              <Field label="Side"><Badge variant="outline">{row.side ?? "—"}</Badge></Field>
+              <Field label="Side"><Badge variant="outline">{row.side ? row.side.replaceAll("_", " ") : "Not recorded"}</Badge></Field>
             </div>
 
             <div className="mt-4">
@@ -366,7 +368,7 @@ function BreakDetailSheet({ openId, onClose, tenantId, row, canWrite, onPatch, o
                     <div className="mt-1 whitespace-pre-wrap">{c.body}</div>
                   </div>
                 ))}
-                {(comments.data ?? []).length === 0 && <div className="text-xs text-muted-foreground">No comments yet. Example: “Confirmed with Demo Bank Treasury — FX cut-off difference, reversing T+1.” Example: “Confirmed with Demo Bank Treasury — FX cut-off difference, reversing T+1.”</div>}
+                {(comments.data ?? []).length === 0 && <div className="text-xs text-muted-foreground">No comments recorded yet. For example: “Confirmed with Demo Bank Treasury — FX cut-off difference, reversing T+1.”</div>}
               </div>
               {canWrite && (
                 <div className="mt-2 flex gap-2">
@@ -381,8 +383,8 @@ function BreakDetailSheet({ openId, onClose, tenantId, row, canWrite, onPatch, o
             </div>
 
             <div className="mt-6">
-              <div className="mb-2 flex items-center gap-2 text-sm font-semibold"><Tag className="h-4 w-4" /> Payload</div>
-              <pre className="overflow-x-auto rounded border bg-muted/40 p-2 text-xs">{JSON.stringify(row.payload, null, 2)}</pre>
+              <div className="mb-2 flex items-center gap-2 text-sm font-semibold"><Tag className="h-4 w-4" /> Recorded evidence</div>
+              <PayloadEvidenceSummary payload={row.payload} />
             </div>
 
             {canWrite && (

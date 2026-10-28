@@ -8,29 +8,29 @@
  * (independent of user theme so the brand always reads the same). */
 :root {
   /* Legacy warm brand tokens (retained for marketing/auth) */
-  --brand-coffee:       #0a0f1c;
-  --brand-coffee-deep:  #05080f;
-  --brand-coffee-soft:  #0f1524;
+  --brand-coffee:       #0b0b0f;
+  --brand-coffee-deep:  #000000;
+  --brand-coffee-soft:  #161617;
 
-  --brand-cream:        #f4ede0;
-  --brand-cream-soft:   #faf6ec;
-  --brand-gold:         #c9a44c;
-  --brand-gold-ink:     #765817;
+  --brand-cream:        #f5f5f7;
+  --brand-cream-soft:   #ffffff;
+  --brand-gold:         #2997ff;
+  --brand-gold-ink:     #0066cc;
 
   /* ===== ReconIQ — Neural Interface palette (app-wide) =====
    * Sourced from the reference HTML (fvi-main). These tokens are
    * available in every theme (light + dark, all palettes) so that
    * gold / cyan / violet accents render identically everywhere. */
-  --ink-void:   #030508;
-  --ink-0:      #050810;
-  --ink-1:      #0A0F1A;
-  --ink-2:      #0F1626;
-  --ink-3:      #141D33;
-  --ink-4:      #1B2742;
+  --ink-void:   #000000;
+  --ink-0:      #0b0b0f;
+  --ink-1:      #131316;
+  --ink-2:      #1c1c1f;
+  --ink-3:      #26262a;
+  --ink-4:      #323236;
 
   --line:       rgba(255,255,255,0.06);
   --line-2:     rgba(255,255,255,0.10);
-  --line-gold:  rgba(212,181,129,0.25);
+  --line-gold:  rgba(255,255,255,0.14);
 
   --fvi-text-100: #F6F8FC;
   --fvi-text-90:  rgba(246,248,252,0.86);
@@ -38,10 +38,10 @@
   --fvi-text-50:  rgba(246,248,252,0.40);
   --fvi-text-30:  rgba(246,248,252,0.22);
 
-  --fvi-gold:     #D4B581;
-  --fvi-gold-hi:  #F2DDB4;
-  --fvi-gold-lo:  #8C7651;
-  --fvi-gold-deep:#5C4F36;
+  --fvi-gold:     #d4d4da;
+  --fvi-gold-hi:  #f5f5f7;
+  --fvi-gold-lo:  #86868b;
+  --fvi-gold-deep:#3a3a3c;
 
   --fvi-cyan:     #6BE5FF;
   --fvi-cyan-hi:  #B3F1FF;

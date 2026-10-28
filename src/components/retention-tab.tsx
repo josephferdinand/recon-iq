@@ -156,7 +156,7 @@ export function RetentionTab({ tenantId, canWrite }: { tenantId: string; canWrit
                 </tr>
               ))}
               {ledger.data && ledger.data.length === 0 && (
-                <tr><td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">No archives yet. Once R2 is approved, ReconIQ audit events No archives yet. R2 cold-storage activates once the bucket connector is approved.gt; 90d auto-archive to cold storage with SHA-256 anchoring.</td></tr>
+                <tr><td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">Nothing To Display Yet — there are currently no archives. Audit events older than 90 days are archived to cold storage with SHA-256 anchoring once the storage connector is approved.</td></tr>
               )}
             </tbody>
           </table>

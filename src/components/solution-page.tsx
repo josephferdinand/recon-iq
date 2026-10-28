@@ -1,8 +1,9 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, Check, ShieldCheck } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, ShieldCheck } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { FviApprovedLogo } from "@/components/fvi-approved-logo";
-import { BackButton } from "@/components/back-button";
+import { MarketingNav } from "@/components/marketing-nav";
+import { MarketingFooter } from "@/components/marketing-footer";
+import { appUrl } from "@/lib/cross-domain";
 
 export interface SolutionSpec {
   slug: string;
@@ -27,38 +28,24 @@ const SOLUTIONS_NAV: { slug: string; label: string }[] = [
   { slug: "regulatory-reconciliation", label: "Regulatory Reporting" },
 ];
 
+const EYEBROW = "text-[11px] font-semibold uppercase tracking-[0.18em] text-[#86868b]";
+const PANEL = "rounded-2xl border border-white/10 bg-[#161617]";
+const BODY = "text-[#a1a1a6]";
+
 export function SolutionPage({ spec }: { spec: SolutionSpec }) {
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      {/* Header */}
-      <header className="fvi-marketing-header sticky top-0 z-40 border-b border-border/60 bg-background/85 backdrop-blur">
-        <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-6">
-          <Link to="/" className="flex items-center gap-2">
-            <FviApprovedLogo className="h-7 w-7" />
-            <span className="font-display text-sm font-semibold">ReconIQ</span>
-          </Link>
-          <nav className="hidden items-center gap-5 text-xs text-muted-foreground md:flex">
-            <Link to="/pricing" className="hover:text-foreground">Pricing</Link>
-            <Link to="/security" className="hover:text-foreground">Security</Link>
-            <Link to="/developers" className="hover:text-foreground">Developers</Link>
-            <Link to="/roi" className="hover:text-foreground">ROI</Link>
-            <Link to="/contact" className="hover:text-foreground">Contact</Link>
-          </nav>
-          <Link
-            to="/book-demo"
-            data-marketing-cta
-            className="rounded-full bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:opacity-90"
-          >
-            Book demo
-          </Link>
-        </div>
-      </header>
+    <div className="min-h-screen bg-black text-[#f5f5f7]">
+      <MarketingNav />
 
       {/* Solutions sub-nav */}
-      <div className="border-b border-border/40 bg-muted/20">
-        <div className="mx-auto flex max-w-7xl items-center gap-2 overflow-x-auto px-6 py-2 text-xs">
-          <BackButton fallbackTo="/solutions" label="Back" className="mr-1 shrink-0" />
-          <span className="whitespace-nowrap px-2 py-1 text-muted-foreground">Solutions:</span>
+      <div className="border-b border-white/10 bg-[#0b0b0f]">
+        <div className="mx-auto flex max-w-7xl items-center gap-2 overflow-x-auto px-6 py-2.5 text-xs">
+          <Link
+            to="/solutions"
+            className="mr-1 inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-white/10 px-3 py-1.5 text-[#a1a1a6] transition hover:bg-white/10 hover:text-white"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" /> All solutions
+          </Link>
           {SOLUTIONS_NAV.map((s) => {
             const active = s.slug === spec.slug;
             return (
@@ -66,10 +53,10 @@ export function SolutionPage({ spec }: { spec: SolutionSpec }) {
                 key={s.slug}
                 to="/solutions/$slug"
                 params={{ slug: s.slug }}
-                className={`whitespace-nowrap rounded-full px-3 py-1 transition ${
+                className={`whitespace-nowrap rounded-full px-3 py-1.5 transition ${
                   active
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                    ? "bg-white font-medium text-black"
+                    : "text-[#a1a1a6] hover:bg-white/10 hover:text-white"
                 }`}
               >
                 {s.label}
@@ -79,44 +66,42 @@ export function SolutionPage({ spec }: { spec: SolutionSpec }) {
         </div>
       </div>
 
-      <main className="mx-auto max-w-6xl px-6 py-16">
+      <main className="mx-auto max-w-6xl px-6 py-16 md:py-20">
         {/* Hero */}
         <section>
-          <div className="inline-flex items-center rounded-full border border-border px-3 py-1 text-[11px] uppercase tracking-widest text-muted-foreground">
-            {spec.eyebrow}
-          </div>
-          <h1 className="mt-6 font-display text-4xl font-medium tracking-tight md:text-5xl">
+          <p className={EYEBROW}>{spec.eyebrow}</p>
+          <h1 className="mt-6 max-w-3xl font-display text-4xl font-medium tracking-tight md:text-6xl">
             {spec.title}
           </h1>
-          <p className="mt-4 max-w-3xl text-lg text-muted-foreground">{spec.subtitle}</p>
+          <p className={`mt-5 max-w-2xl text-lg leading-relaxed ${BODY}`}>{spec.subtitle}</p>
 
-          <div className="mt-8 flex flex-wrap gap-3">
+          <div className="mt-9 flex flex-wrap gap-3">
             <Link
               to="/book-demo"
-              className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground hover:opacity-90"
+              className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-medium text-black transition hover:bg-white/85"
             >
-              Book a 30-min demo <ArrowRight className="h-4 w-4" />
+              Book a demo <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
               to="/roi"
-              className="inline-flex items-center gap-2 rounded-full border border-border px-5 py-2.5 text-sm font-medium hover:bg-muted"
+              className="inline-flex items-center gap-2 rounded-full border border-white/15 px-6 py-3 text-sm font-medium text-[#f5f5f7] transition hover:bg-white/10"
             >
               Estimate your ROI
             </Link>
           </div>
 
-          <div className="mt-10 grid gap-4 sm:grid-cols-3">
+          <div className="mt-12 grid gap-4 sm:grid-cols-3">
             {spec.heroStat.map((s) => (
-              <div key={s.label} className="rounded-lg border border-border/60 bg-card p-5">
-                <div className="font-display text-3xl font-medium tracking-tight">{s.value}</div>
-                <div className="mt-1 text-xs uppercase tracking-widest text-muted-foreground">{s.label}</div>
+              <div key={s.label} className={`${PANEL} p-6`}>
+                <div className="font-display text-2xl font-medium tracking-tight text-[#f5f5f7]">{s.value}</div>
+                <div className="mt-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#86868b]">{s.label}</div>
               </div>
             ))}
           </div>
 
           <div className="mt-6 flex flex-wrap gap-2">
             {spec.personas.map((p) => (
-              <span key={p} className="rounded-full border border-border/60 bg-muted/40 px-3 py-1 text-xs text-muted-foreground">
+              <span key={p} className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-[#a1a1a6]">
                 For {p}
               </span>
             ))}
@@ -124,56 +109,58 @@ export function SolutionPage({ spec }: { spec: SolutionSpec }) {
         </section>
 
         {/* Pain points */}
-        <section className="mt-20">
-          <h2 className="font-display text-2xl font-medium tracking-tight md:text-3xl">
+        <section className="mt-24">
+          <p className={EYEBROW}>The problem</p>
+          <h2 className="mt-4 font-display text-3xl font-medium tracking-tight md:text-4xl">
             The reconciliation problems this solves
           </h2>
-          <div className="mt-8 grid gap-4 md:grid-cols-2">
+          <div className="mt-10 grid gap-4 md:grid-cols-2">
             {spec.painPoints.map((p) => (
-              <div key={p.title} className="rounded-lg border border-border/60 bg-card p-6">
-                <div className="text-sm font-semibold">{p.title}</div>
-                <p className="mt-2 text-sm text-muted-foreground">{p.body}</p>
+              <div key={p.title} className={`${PANEL} p-7`}>
+                <div className="text-sm font-semibold text-[#f5f5f7]">{p.title}</div>
+                <p className={`mt-2 text-sm leading-relaxed ${BODY}`}>{p.body}</p>
               </div>
             ))}
           </div>
         </section>
 
         {/* Capabilities */}
-        <section className="mt-20">
-          <h2 className="font-display text-2xl font-medium tracking-tight md:text-3xl">
+        <section className="mt-24">
+          <p className={EYEBROW}>Capabilities</p>
+          <h2 className="mt-4 font-display text-3xl font-medium tracking-tight md:text-4xl">
             What ReconIQ does for this use case
           </h2>
-          <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {spec.capabilities.map((c) => (
-              <div key={c.title} className="rounded-lg border border-border/60 bg-card p-5">
-                <c.icon className="h-5 w-5 text-primary" />
-                <div className="mt-3 text-sm font-semibold">{c.title}</div>
-                <p className="mt-1.5 text-sm text-muted-foreground">{c.body}</p>
+              <div key={c.title} className={`${PANEL} p-6`}>
+                <c.icon className="h-5 w-5 text-[#2997ff]" />
+                <div className="mt-3 text-sm font-semibold text-[#f5f5f7]">{c.title}</div>
+                <p className={`mt-1.5 text-sm leading-relaxed ${BODY}`}>{c.body}</p>
               </div>
             ))}
           </div>
         </section>
 
         {/* Data sources + outcomes */}
-        <section className="mt-20 grid gap-8 md:grid-cols-2">
-          <div className="rounded-lg border border-border/60 bg-card p-6">
-            <div className="text-xs uppercase tracking-widest text-muted-foreground">Data sources supported</div>
-            <ul className="mt-4 space-y-2 text-sm">
+        <section className="mt-24 grid gap-4 md:grid-cols-2">
+          <div className={`${PANEL} p-7`}>
+            <p className={EYEBROW}>Data sources supported</p>
+            <ul className="mt-5 space-y-2.5 text-sm text-[#f5f5f7]">
               {spec.dataSources.map((d) => (
                 <li key={d} className="flex items-start gap-2">
-                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#2997ff]" />
                   <span>{d}</span>
                 </li>
               ))}
             </ul>
           </div>
-          <div className="rounded-lg border border-border/60 bg-card p-6">
-            <div className="text-xs uppercase tracking-widest text-muted-foreground">Measurable outcomes</div>
-            <div className="mt-4 grid grid-cols-2 gap-4">
+          <div className={`${PANEL} p-7`}>
+            <p className={EYEBROW}>What this gives you</p>
+            <div className="mt-5 grid grid-cols-2 gap-6">
               {spec.outcomes.map((o) => (
                 <div key={o.label}>
-                  <div className="font-display text-2xl font-medium">{o.metric}</div>
-                  <div className="mt-1 text-xs text-muted-foreground">{o.label}</div>
+                  <div className="font-display text-xl font-medium tracking-tight text-[#f5f5f7]">{o.metric}</div>
+                  <div className={`mt-1 text-xs leading-relaxed ${BODY}`}>{o.label}</div>
                 </div>
               ))}
             </div>
@@ -181,59 +168,68 @@ export function SolutionPage({ spec }: { spec: SolutionSpec }) {
         </section>
 
         {/* Compliance */}
-        <section className="mt-20 rounded-xl border border-border/60 bg-gradient-to-br from-muted/40 to-transparent p-8">
+        <section className={`mt-24 ${PANEL} p-8 md:p-10`}>
           <div className="flex items-start gap-3">
-            <ShieldCheck className="mt-1 h-6 w-6 text-primary" />
+            <ShieldCheck className="mt-1 h-6 w-6 shrink-0 text-[#2997ff]" />
             <div>
-              <h2 className="font-display text-2xl font-medium tracking-tight">Aligned to the regulations that matter here</h2>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Controls designed against the frameworks Tier-1 buyers require. See <Link to="/security" className="underline">Security &amp; Compliance</Link> for the full matrix.
+              <h2 className="font-display text-2xl font-medium tracking-tight md:text-3xl">Designed with reference to the frameworks that matter here</h2>
+              <p className={`mt-3 max-w-2xl text-sm leading-relaxed ${BODY}`}>
+                Controls are designed with reference to these frameworks and regimes. See{" "}
+                <Link to="/security" className="text-[#2997ff] hover:underline">Security &amp; Compliance</Link>{" "}
+                for the full picture.
               </p>
-              <div className="mt-5 flex flex-wrap gap-2">
+              <div className="mt-6 flex flex-wrap gap-2">
                 {spec.compliance.map((c) => (
-                  <span key={c} className="rounded-full border border-border/60 bg-background px-3 py-1 text-xs">{c}</span>
+                  <span key={c} className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-[#f5f5f7]">{c}</span>
                 ))}
               </div>
+              <p className="mt-6 max-w-2xl text-xs leading-relaxed text-[#86868b]">
+                ReconIQ does not hold SOC 2 or ISO 27001 certification. Entries marked
+                &ldquo;(target)&rdquo; or &ldquo;(aligned)&rdquo; describe design references and
+                roadmap targets, not certifications we have earned.
+              </p>
             </div>
           </div>
         </section>
 
         {/* FAQ */}
-        <section className="mt-20">
-          <h2 className="font-display text-2xl font-medium tracking-tight md:text-3xl">Frequently asked</h2>
-          <div className="mt-8 divide-y divide-border/60 rounded-lg border border-border/60 bg-card">
+        <section className="mt-24">
+          <p className={EYEBROW}>Questions</p>
+          <h2 className="mt-4 font-display text-3xl font-medium tracking-tight md:text-4xl">Frequently asked</h2>
+          <div className="mt-10 divide-y divide-white/10 rounded-2xl border border-white/10 bg-[#161617]">
             {spec.faq.map((f) => (
-              <details key={f.q} className="group p-5">
-                <summary className="flex cursor-pointer list-none items-center justify-between text-sm font-medium">
+              <details key={f.q} className="group p-6">
+                <summary className="flex cursor-pointer list-none items-center justify-between text-sm font-medium text-[#f5f5f7]">
                   {f.q}
-                  <span className="text-muted-foreground transition group-open:rotate-45">+</span>
+                  <span className="text-[#86868b] transition group-open:rotate-45">+</span>
                 </summary>
-                <p className="mt-3 text-sm text-muted-foreground">{f.a}</p>
+                <p className={`mt-3 text-sm leading-relaxed ${BODY}`}>{f.a}</p>
               </details>
             ))}
           </div>
         </section>
 
         {/* CTA */}
-        <section className="mt-20 rounded-xl border border-border bg-gradient-to-br from-primary/10 via-background to-background p-10 text-center">
-          <h2 className="font-display text-3xl font-medium tracking-tight">See it on your data</h2>
-          <p className="mx-auto mt-3 max-w-xl text-sm text-muted-foreground">
-            30 minutes with a solutions engineer, walking a real {spec.eyebrow.toLowerCase()} workflow end-to-end.
+        <section className="mt-24 py-10 text-center">
+          <h2 className="font-display text-3xl font-medium tracking-tight md:text-4xl">See it on your data.</h2>
+          <p className={`mx-auto mt-4 max-w-xl text-sm leading-relaxed ${BODY}`}>
+            Try the live demo, or book a session to walk a {spec.eyebrow.toLowerCase()} workflow end to end.
           </p>
-          <div className="mt-6 flex flex-wrap justify-center gap-3">
-            <Link to="/book-demo" className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground hover:opacity-90">
-              Book a demo <ArrowRight className="h-4 w-4" />
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
+            <a href={appUrl("/auth")} className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-medium text-black transition hover:bg-white/85">
+              Try the live demo <ArrowRight className="h-4 w-4" />
+            </a>
+            <Link to="/book-demo" className="inline-flex items-center gap-2 rounded-full border border-white/15 px-6 py-3 text-sm font-medium text-[#f5f5f7] transition hover:bg-white/10">
+              Book a demo
             </Link>
-            <Link to="/due-diligence" className="inline-flex items-center gap-2 rounded-full border border-border px-6 py-3 text-sm font-medium hover:bg-muted">
+            <Link to="/due-diligence" className="inline-flex items-center gap-2 rounded-full border border-white/15 px-6 py-3 text-sm font-medium text-[#f5f5f7] transition hover:bg-white/10">
               Request due-diligence pack
             </Link>
           </div>
         </section>
       </main>
 
-      <footer className="mt-16 border-t border-border/60 py-8 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} ReconIQ. All rights reserved.
-      </footer>
+      <MarketingFooter />
     </div>
   );
 }

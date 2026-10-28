@@ -28,7 +28,13 @@ export const listMyWorkspaceAudit = createServerFn({ method: "GET" })
       if (error.code === "42501") throw new Error("Forbidden: your access does not allow personal audit records.");
       throw new Error("Your audit trail is temporarily unavailable. Please try again.");
     }
-    const visible = rows ?? [];
+    const visible = (rows ?? []).map((row) => ({
+      ...row,
+      // PostgREST returns bytea as a "\x…" literal; expose plain hex so the
+      // client can render a labelled fingerprint instead of a raw literal.
+      row_hash: typeof row.row_hash === "string" && row.row_hash.startsWith("\\x") ? row.row_hash.slice(2) : row.row_hash,
+      prev_hash: typeof row.prev_hash === "string" && row.prev_hash.startsWith("\\x") ? row.prev_hash.slice(2) : row.prev_hash,
+    }));
     return {
       actor_id: context.userId,
       rows: visible.slice(0, PAGE_SIZE),

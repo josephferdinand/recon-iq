@@ -150,14 +150,10 @@ function TenantAuthPage() {
               {tagline}
             </p>
 
-            <div className="mt-10 flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px]" style={{ color: `color-mix(in oklab, ${palette.surface_hex} 70%, transparent)` }}>
-              <span className="inline-flex items-center gap-1.5" style={{ color: palette.accent_hex }}>
-                <ShieldCheck className="h-3 w-3" /> SOC 2
-              </span>
-              <span>· ISO 27001</span>
-              <span>· GDPR</span>
-              <span>· DORA-ready</span>
-            </div>
+            <p className="mt-10 flex max-w-md items-start gap-1.5 text-[11px] leading-relaxed" style={{ color: `color-mix(in oklab, ${palette.surface_hex} 70%, transparent)` }}>
+              <ShieldCheck className="mt-0.5 h-3 w-3 shrink-0" style={{ color: palette.accent_hex }} />
+              Security controls aligned to SOC 2 and ISO 27001 frameworks. We don&rsquo;t claim certifications we haven&rsquo;t earned.
+            </p>
           </div>
 
           <div className="pt-6 text-[11px]" style={{ color: `color-mix(in oklab, ${palette.surface_hex} 60%, transparent)` }}>

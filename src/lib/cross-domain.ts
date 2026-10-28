@@ -16,7 +16,7 @@
  * carries public origin URLs.
  */
 
-const DEFAULT_APP_URL = "https://app.reconiq.example";
+const DEFAULT_APP_URL = "https://reconintelligence.app";
 
 function resolveAppOrigin(): string {
   // Vite injects only VITE_* at build time for the client bundle.
@@ -47,7 +47,7 @@ export function appUrl(path: string): string {
 export function isAppDomain(): boolean {
   if (typeof window === "undefined") return false;
   const h = window.location.hostname;
-  return h === "app.reconiq.example" || h === "app.fvi.localhost" || h === "app.localhost";
+  return h === "reconintelligence.app" || h === "app.reconiq.example" || h === "app.fvi.localhost" || h === "app.localhost";
 }
 
 /** True when on the marketing surface. SSR-safe (returns false). */

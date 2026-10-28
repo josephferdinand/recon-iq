@@ -50,7 +50,7 @@ export function DrFalconWidget() {
       {!open && (
         <button
           onClick={() => setOpen(true)}
-          className="fixed bottom-20 right-5 z-40 flex items-center gap-2 rounded-full bg-primary px-4 py-3 text-sm font-medium text-primary-foreground shadow-lg transition-transform hover:scale-105 md:bottom-24"
+          className="fixed bottom-20 right-5 z-40 flex items-center gap-2 rounded-full border border-white/15 bg-white px-4 py-3 text-sm font-medium text-black shadow-lg transition-colors hover:bg-white/85 md:bottom-24"
           aria-label="Talk to ReconIQ Copilot"
         >
           <Sparkles className="h-4 w-4" />
@@ -61,9 +61,9 @@ export function DrFalconWidget() {
       {open && (
         <div className="fixed bottom-20 right-5 z-40 flex h-[620px] w-[440px] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-xl border border-border bg-background shadow-2xl md:bottom-24">
 
-          <header className="flex items-center justify-between border-b border-border bg-gradient-to-r from-primary/10 to-transparent px-4 py-3">
+          <header className="flex items-center justify-between border-b border-border bg-white/5 px-4 py-3">
             <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-black">
                 <Sparkles className="h-4 w-4" />
               </div>
               <div>

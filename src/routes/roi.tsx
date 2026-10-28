@@ -15,6 +15,7 @@ import {
 import { ROI_BENCHMARKS as B, ROI_SOURCES } from "@/lib/roi-benchmarks";
 import { BackButton } from "@/components/back-button";
 import { MarketingNav } from "@/components/marketing-nav";
+import { MarketingFooter } from "@/components/marketing-footer";
 import { parsePublicLeadResponse, publicLeadEndpoint } from "@/lib/public-lead-client";
 
 export const Route = createFileRoute("/roi")({
@@ -34,24 +35,22 @@ export const Route = createFileRoute("/roi")({
           "Interactive, benchmark-anchored ROI model for reconciliation modernisation. Every constant editable, every source cited.",
       },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://reconintelligence.app/roi" },
     ],
-    links: [{ rel: "canonical", href: "https://www.reconiq.example/roi" }],
+    links: [{ rel: "canonical", href: "https://reconintelligence.app/roi" }],
   }),
 });
 
 /* ------------------------------------------------------------------ */
 
-const CARD_BG = "color-mix(in oklab, var(--brand-coffee-deep) 55%, transparent)";
-const CARD_BORDER = "1px solid color-mix(in oklab, var(--brand-gold) 22%, transparent)";
-const TILE_BG = "color-mix(in oklab, var(--ink-void) 80%, transparent)";
-const TILE_BORDER = "1px solid color-mix(in oklab, var(--brand-gold) 18%, transparent)";
+const CARD_BG = "#161617";
+const CARD_BORDER = "1px solid rgba(255,255,255,0.1)";
+const TILE_BG = "#1c1c1f";
+const TILE_BORDER = "1px solid rgba(255,255,255,0.1)";
 
 function Kicker({ children }: { children: React.ReactNode }) {
   return (
-    <div
-      className="text-[11px] font-semibold uppercase tracking-[0.28em]"
-      style={{ color: "color-mix(in oklab, var(--brand-gold) 85%, var(--brand-cream))" }}
-    >
+    <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#86868b]">
       {children}
     </div>
   );
@@ -60,16 +59,10 @@ function Kicker({ children }: { children: React.ReactNode }) {
 function LabelRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-baseline justify-between gap-4">
-      <span
-        className="text-[11px] font-semibold uppercase tracking-[0.22em]"
-        style={{ color: "color-mix(in oklab, var(--brand-gold) 78%, var(--brand-cream))" }}
-      >
+      <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#86868b]">
         {label}
       </span>
-      <span
-        className="font-display text-sm tabular-nums"
-        style={{ color: "var(--brand-cream)" }}
-      >
+      <span className="font-display text-sm tabular-nums text-[#f5f5f7]">
         {value}
       </span>
     </div>
@@ -126,19 +119,10 @@ function RoiPage() {
   }, [inp]);
 
   return (
-    <div className="relative min-h-screen" style={{ background: "var(--ink-void)" }}>
+    <div className="relative min-h-screen bg-black text-[#f5f5f7]">
       <MarketingNav />
-      {/* Ambient background */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-60"
-        style={{
-          background:
-            "radial-gradient(60% 40% at 20% 10%, color-mix(in oklab, var(--brand-gold) 10%, transparent), transparent 70%), radial-gradient(50% 40% at 80% 30%, color-mix(in oklab, #4b6bff 8%, transparent), transparent 70%)",
-        }}
-      />
 
-      <div className="relative mx-auto max-w-[1200px] px-6 pt-24 pb-32 md:px-10">
+      <div className="relative mx-auto max-w-[1200px] px-6 pt-16 pb-24 md:px-10">
         <div className="mb-6"><BackButton fallbackTo="/" label="Back to home" /></div>
         {/* Hero */}
         <motion.header
@@ -148,28 +132,16 @@ function RoiPage() {
           className="mb-10"
         >
           <div className="mb-3 flex items-center gap-3">
-            <div
-              className="grid h-11 w-11 place-items-center rounded-xl"
-              style={{
-                background: "color-mix(in oklab, var(--brand-gold) 14%, transparent)",
-                border: "1px solid color-mix(in oklab, var(--brand-gold) 35%, transparent)",
-              }}
-            >
-              <Calculator className="h-5 w-5" style={{ color: "var(--brand-gold)" }} />
+            <div className="grid h-11 w-11 place-items-center rounded-xl border border-white/10 bg-white/5">
+              <Calculator className="h-5 w-5 text-[#2997ff]" />
             </div>
             <Kicker>ROI Estimator · v1</Kicker>
           </div>
 
-          <h1
-            className="font-display text-4xl font-semibold leading-[1.05] md:text-6xl"
-            style={{ color: "var(--brand-cream)" }}
-          >
+          <h1 className="font-display text-4xl font-medium leading-[1.05] tracking-tight text-[#f5f5f7] md:text-6xl">
             Model your reconciliation ROI.
           </h1>
-          <p
-            className="mt-4 max-w-[720px] text-[15px] md:text-base"
-            style={{ color: "color-mix(in oklab, var(--brand-cream) 70%, transparent)" }}
-          >
+          <p className="mt-4 max-w-[720px] text-[15px] leading-relaxed text-[#a1a1a6] md:text-base">
             A defensible, benchmark-anchored model of the labour, audit, and incident savings from
             moving reconciliation to ReconIQ. Every constant is editable, every
             source cited. Outputs are <strong>indicative</strong> — we validate them on your data
@@ -183,12 +155,11 @@ function RoiPage() {
             <button
               key={t}
               onClick={() => setTab(t)}
-              className="rounded-full px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.22em] transition"
-              style={{
-                background: tab === t ? "color-mix(in oklab, var(--brand-gold) 18%, transparent)" : "transparent",
-                border: `1px solid color-mix(in oklab, var(--brand-gold) ${tab === t ? 55 : 20}%, transparent)`,
-                color: tab === t ? "var(--brand-cream)" : "color-mix(in oklab, var(--brand-cream) 65%, transparent)",
-              }}
+              className={`rounded-full px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.18em] transition ${
+                tab === t
+                  ? "bg-white text-black"
+                  : "border border-white/15 text-[#a1a1a6] hover:bg-white/10 hover:text-white"
+              }`}
             >
               {t === "simple" ? "Simple · 4 inputs" : "Advanced · full model"}
             </button>
@@ -196,21 +167,13 @@ function RoiPage() {
           <div className="ml-auto flex items-center gap-2">
             <button
               onClick={() => setInp(ROI_DEFAULTS)}
-              className="rounded-full px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] transition hover:brightness-125"
-              style={{
-                border: "1px solid color-mix(in oklab, var(--brand-cream) 22%, transparent)",
-                color: "color-mix(in oklab, var(--brand-cream) 75%, transparent)",
-              }}
+              className="rounded-full border border-white/15 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#a1a1a6] transition hover:bg-white/10 hover:text-white"
             >
               Reset defaults
             </button>
             <button
               onClick={copyShare}
-              className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] transition hover:brightness-125"
-              style={{
-                border: "1px solid color-mix(in oklab, var(--brand-gold) 40%, transparent)",
-                color: "var(--brand-cream)",
-              }}
+              className="inline-flex items-center gap-1.5 rounded-full border border-white/15 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#f5f5f7] transition hover:bg-white/10"
             >
               <Share2 className="h-3.5 w-3.5" />
               {copied ? "Link copied" : "Share model"}
@@ -225,7 +188,7 @@ function RoiPage() {
             style={{ background: CARD_BG, border: CARD_BORDER }}
           >
             <div className="mb-5 flex items-center gap-2">
-              <Sliders className="h-4 w-4" style={{ color: "var(--brand-gold)" }} />
+              <Sliders className="h-4 w-4 text-[#2997ff]" />
               <Kicker>Inputs</Kicker>
             </div>
 
@@ -261,7 +224,7 @@ function RoiPage() {
 
               {tab === "advanced" && (
                 <>
-                  <div className="my-2 h-px" style={{ background: "color-mix(in oklab, var(--brand-gold) 15%, transparent)" }} />
+                  <div className="my-2 h-px bg-white/10" />
                   <Slider
                     label="Fully-loaded FTE cost / yr"
                     value={inp.fteFullyLoadedUsd}
@@ -315,10 +278,7 @@ function RoiPage() {
               )}
             </div>
 
-            <p
-              className="mt-6 text-[11px]"
-              style={{ color: "color-mix(in oklab, var(--brand-cream) 40%, transparent)" }}
-            >
+            <p className="mt-6 text-[11px] text-[#86868b]">
               Defaults from public industry benchmarks — see the Assumptions panel below.
             </p>
           </div>
@@ -331,7 +291,7 @@ function RoiPage() {
               style={{ background: CARD_BG, border: CARD_BORDER }}
             >
               <div className="mb-4 flex items-center gap-2">
-                <TrendingUp className="h-4 w-4" style={{ color: "var(--brand-gold)" }} />
+                <TrendingUp className="h-4 w-4 text-[#2997ff]" />
                 <Kicker>Estimated annual impact · range</Kicker>
               </div>
 
@@ -381,10 +341,7 @@ function RoiPage() {
                 <LabelRow label="Incident savings / yr" value={fmtUsd(out.mid.incidentSavingsYr)} />
               </div>
 
-              <p
-                className="mt-5 text-[11px]"
-                style={{ color: "color-mix(in oklab, var(--brand-cream) 45%, transparent)" }}
-              >
+              <p className="mt-5 text-[11px] leading-relaxed text-[#86868b]">
                 * Indicative. Ranges reflect ReconIQ target auto-match {(inp.fviAutoMatchLow * 100).toFixed(0)}%
                 – {(inp.fviAutoMatchHigh * 100).toFixed(0)}%. Actual performance is validated on your data during a POC.
               </p>
@@ -396,34 +353,34 @@ function RoiPage() {
               style={{ background: CARD_BG, border: CARD_BORDER }}
             >
               <div className="mb-4 flex items-center gap-2">
-                <BarChart3 className="h-4 w-4" style={{ color: "var(--brand-gold)" }} />
+                <BarChart3 className="h-4 w-4 text-[#2997ff]" />
                 <Kicker>Sensitivity · savings vs ReconIQ auto-match %</Kicker>
               </div>
               <div className="h-[240px] w-full">
                 <ResponsiveContainer>
                   <AreaChart data={sensitivity} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                     <defs>
-                      <linearGradient id="gGold" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="var(--brand-gold)" stopOpacity={0.6} />
-                        <stop offset="100%" stopColor="var(--brand-gold)" stopOpacity={0} />
+                      <linearGradient id="gAccent" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#2997ff" stopOpacity={0.35} />
+                        <stop offset="100%" stopColor="#2997ff" stopOpacity={0} />
                       </linearGradient>
                     </defs>
                     <CartesianGrid stroke="rgba(255,255,255,0.06)" vertical={false} />
                     <XAxis
                       dataKey="match"
-                      tick={{ fill: "rgba(240,232,214,0.55)", fontSize: 11 }}
+                      tick={{ fill: "#86868b", fontSize: 11 }}
                       tickFormatter={(v: number) => `${v}%`}
                     />
                     <YAxis
-                      tick={{ fill: "rgba(240,232,214,0.55)", fontSize: 11 }}
+                      tick={{ fill: "#86868b", fontSize: 11 }}
                       tickFormatter={(v: number) => `$${(v / 1_000_000).toFixed(1)}M`}
                     />
                     <RTooltip
                       contentStyle={{
-                        background: "var(--ink-void)",
-                        border: "1px solid color-mix(in oklab, var(--brand-gold) 35%, transparent)",
+                        background: "#161617",
+                        border: "1px solid rgba(255,255,255,0.1)",
                         borderRadius: 12,
-                        color: "var(--brand-cream)",
+                        color: "#f5f5f7",
                       }}
                       formatter={(v: number) => [fmtUsd(v), "Total savings / yr"]}
                       labelFormatter={(v: number) => `ReconIQ match ${v}%`}
@@ -431,17 +388,14 @@ function RoiPage() {
                     <Area
                       type="monotone"
                       dataKey="savings"
-                      stroke="var(--brand-gold)"
+                      stroke="#2997ff"
                       strokeWidth={2}
-                      fill="url(#gGold)"
+                      fill="url(#gAccent)"
                     />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
-              <p
-                className="mt-3 text-[11px]"
-                style={{ color: "color-mix(in oklab, var(--brand-cream) 45%, transparent)" }}
-              >
+              <p className="mt-3 text-[11px] text-[#86868b]">
                 Every 1% lift in auto-match rate compounds against your annual transaction volume.
               </p>
             </div>
@@ -458,30 +412,30 @@ function RoiPage() {
             className="flex w-full items-center justify-between p-6 md:p-8"
           >
             <div className="flex items-center gap-2">
-              <Info className="h-4 w-4" style={{ color: "var(--brand-gold)" }} />
+              <Info className="h-4 w-4 text-[#2997ff]" />
               <Kicker>Assumptions & sources</Kicker>
             </div>
             {showAssumptions ? (
-              <ChevronUp className="h-4 w-4" style={{ color: "var(--brand-cream)" }} />
+              <ChevronUp className="h-4 w-4 text-[#f5f5f7]" />
             ) : (
-              <ChevronDown className="h-4 w-4" style={{ color: "var(--brand-cream)" }} />
+              <ChevronDown className="h-4 w-4 text-[#f5f5f7]" />
             )}
           </button>
           {showAssumptions && (
-            <div className="border-t px-6 pb-8 md:px-8" style={{ borderColor: "color-mix(in oklab, var(--brand-gold) 15%, transparent)" }}>
+            <div className="border-t border-white/10 px-6 pb-8 md:px-8">
               <ul className="mt-5 grid gap-3 md:grid-cols-2">
                 {ROI_SOURCES.map((s) => (
                   <li key={s.label} className="rounded-xl p-4" style={{ background: TILE_BG, border: TILE_BORDER }}>
-                    <div className="text-[11px] font-semibold uppercase tracking-[0.22em]" style={{ color: "color-mix(in oklab, var(--brand-gold) 82%, var(--brand-cream))" }}>
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#86868b]">
                       {s.label}
                     </div>
-                    <div className="mt-1 text-[13px]" style={{ color: "color-mix(in oklab, var(--brand-cream) 78%, transparent)" }}>
+                    <div className="mt-1 text-[13px] leading-relaxed text-[#a1a1a6]">
                       {s.source}
                     </div>
                   </li>
                 ))}
               </ul>
-              <p className="mt-5 text-[12px]" style={{ color: "color-mix(in oklab, var(--brand-cream) 55%, transparent)" }}>
+              <p className="mt-5 text-[12px] leading-relaxed text-[#a1a1a6]">
                 ReconIQ target auto-match ({(B.fviAutoMatchPct.low * 100).toFixed(0)}–{(B.fviAutoMatchPct.high * 100).toFixed(0)}%) is a design target validated during POC on your data.
                 ReconIQ does not publish production customer metrics; all figures on this page are model outputs, not observed benchmarks.
               </p>
@@ -495,14 +449,13 @@ function RoiPage() {
         }} />
 
         {/* Trust footer */}
-        <p
-          className="mt-10 text-center text-[11px]"
-          style={{ color: "color-mix(in oklab, var(--brand-cream) 40%, transparent)" }}
-        >
-          ReconIQ · Architected to Tier-1 banking control requirements · Built for
-          enterprise procurement · Intended for regulated financial-services deployments.
+        <p className="mt-10 text-center text-[11px] leading-relaxed text-[#86868b]">
+          Indicative model only — figures are estimates from the inputs and benchmarks above,
+          not observed customer results. ReconIQ does not hold SOC 2 or ISO 27001 certification;
+          controls are designed with reference to those frameworks.
         </p>
       </div>
+      <MarketingFooter />
     </div>
   );
 }
@@ -518,14 +471,14 @@ function Tile({
 }) {
   return (
     <div className="rounded-2xl p-4" style={{ background: TILE_BG, border: TILE_BORDER }}>
-      <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.22em]" style={{ color: "color-mix(in oklab, var(--brand-gold) 78%, var(--brand-cream))" }}>
-        <span style={{ color: "var(--brand-gold)" }}>{icon}</span>
+      <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#86868b]">
+        <span className="text-[#2997ff]">{icon}</span>
         {label}
       </div>
-      <div className="mt-1 font-display text-2xl font-semibold tabular-nums" style={{ color: "var(--brand-cream)" }}>
+      <div className="mt-1 font-display text-2xl font-medium tabular-nums text-[#f5f5f7]">
         {primary}
       </div>
-      <div className="text-[11px] tabular-nums" style={{ color: "color-mix(in oklab, var(--brand-cream) 55%, transparent)" }}>
+      <div className="text-[11px] tabular-nums text-[#86868b]">
         {range}
       </div>
     </div>
@@ -541,16 +494,16 @@ function Slider({
   return (
     <div>
       <label className="mb-2 flex items-baseline justify-between gap-3">
-        <span className="text-[11px] font-semibold uppercase tracking-[0.22em]" style={{ color: "color-mix(in oklab, var(--brand-gold) 85%, var(--brand-cream))" }}>
+        <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#86868b]">
           {label}
         </span>
-        <span className="font-display text-sm tabular-nums" style={{ color: "var(--brand-cream)" }}>{display}</span>
+        <span className="font-display text-sm tabular-nums text-[#f5f5f7]">{display}</span>
       </label>
       <input
         type="range" min={min} max={max} step={step} value={value}
         aria-label={label}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="fvi-scrub w-full"
+        className="w-full accent-[#2997ff]"
       />
     </div>
   );
@@ -565,10 +518,10 @@ function RangeSlider({
   return (
     <div>
       <label className="mb-2 flex items-baseline justify-between gap-3">
-        <span className="text-[11px] font-semibold uppercase tracking-[0.22em]" style={{ color: "color-mix(in oklab, var(--brand-gold) 85%, var(--brand-cream))" }}>
+        <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#86868b]">
           {label}
         </span>
-        <span className="font-display text-sm tabular-nums" style={{ color: "var(--brand-cream)" }}>{low.toFixed(0)}% – {high.toFixed(0)}%</span>
+        <span className="font-display text-sm tabular-nums text-[#f5f5f7]">{low.toFixed(0)}% – {high.toFixed(0)}%</span>
       </label>
       <div className="grid gap-2">
         <input
@@ -578,7 +531,7 @@ function RangeSlider({
             const v = Number(e.target.value);
             onChange(Math.min(v, high), high);
           }}
-          className="fvi-scrub w-full"
+          className="w-full accent-[#2997ff]"
         />
         <input
           type="range" min={min} max={max} step={step} value={high}
@@ -587,7 +540,7 @@ function RangeSlider({
             const v = Number(e.target.value);
             onChange(low, Math.max(v, low));
           }}
-          className="fvi-scrub w-full"
+          className="w-full accent-[#2997ff]"
         />
       </div>
     </div>
@@ -651,8 +604,8 @@ function TailoredCta({
       });
       await parsePublicLeadResponse(res);
       setOk(true);
-    } catch (e2) {
-      setErr(e2 instanceof Error ? e2.message : "Something went wrong.");
+    } catch {
+      setErr("Something Didn't Go As Planned — we couldn't send your model just now. Please check your connection and try again in a few moments.");
     } finally {
       setBusy(false);
     }
@@ -665,30 +618,23 @@ function TailoredCta({
     >
       <div>
         <Kicker>Take it further</Kicker>
-        <h2 className="mt-3 font-display text-2xl font-semibold md:text-3xl" style={{ color: "var(--brand-cream)" }}>
+        <h2 className="mt-3 font-display text-2xl font-medium tracking-tight text-[#f5f5f7] md:text-3xl">
           Get a tailored business case with your data.
         </h2>
-        <p className="mt-3 text-[14px]" style={{ color: "color-mix(in oklab, var(--brand-cream) 68%, transparent)" }}>
+        <p className="mt-3 text-[14px] leading-relaxed text-[#a1a1a6]">
           Our solutions team will validate every constant against a representative slice of your
-          reconciliation workload and return a defensible model your CFO and audit team can sign off.
-          Typical working session: 45 minutes.
+          reconciliation workload and return a model you can review with your finance and audit teams.
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
           <Link
             to="/book-demo"
-            className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition hover:brightness-110"
-            style={{
-              background: "linear-gradient(180deg, var(--brand-gold), color-mix(in oklab, var(--brand-gold) 76%, black))",
-              color: "var(--ink-void)",
-              boxShadow: "0 8px 24px -8px color-mix(in oklab, var(--brand-gold) 55%, transparent)",
-            }}
+            className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black transition hover:bg-white/85"
           >
             Book a working session <ArrowRight className="h-4 w-4" />
           </Link>
           <Link
             to="/contact"
-            className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition"
-            style={{ border: "1px solid color-mix(in oklab, var(--brand-cream) 20%, transparent)", color: "var(--brand-cream)" }}
+            className="inline-flex items-center gap-2 rounded-full border border-white/15 px-5 py-2.5 text-sm font-medium text-[#f5f5f7] transition hover:bg-white/10"
           >
             Talk to sales
           </Link>
@@ -701,12 +647,12 @@ function TailoredCta({
           style={{ background: TILE_BG, border: TILE_BORDER }}
         >
           <div>
-            <div className="mx-auto mb-3 grid h-12 w-12 place-items-center rounded-full" style={{ background: "color-mix(in oklab, var(--brand-gold) 18%, transparent)", border: "1px solid color-mix(in oklab, var(--brand-gold) 40%, transparent)" }}>
-              <Send className="h-5 w-5" style={{ color: "var(--brand-gold)" }} />
+            <div className="mx-auto mb-3 grid h-12 w-12 place-items-center rounded-full border border-white/10 bg-white/5">
+              <Send className="h-5 w-5 text-[#2997ff]" />
             </div>
-            <div className="font-display text-lg font-semibold" style={{ color: "var(--brand-cream)" }}>Model sent.</div>
-            <p className="mt-2 text-[13px]" style={{ color: "color-mix(in oklab, var(--brand-cream) 65%, transparent)" }}>
-              A solutions engineer will reach out within one business day.
+            <div className="font-display text-lg font-medium text-[#f5f5f7]">Model sent.</div>
+            <p className="mt-2 text-[13px] leading-relaxed text-[#a1a1a6]">
+              Thanks — we&apos;ll be in touch by email.
             </p>
           </div>
         </div>
@@ -721,20 +667,15 @@ function TailoredCta({
             <Field label="Company" value={company} onChange={setCompany} required />
             <Field label="Job title" value={jobTitle} onChange={setJobTitle} />
           </div>
-          <label className="mt-1 flex items-start gap-2 text-[12px]" style={{ color: "color-mix(in oklab, var(--brand-cream) 65%, transparent)" }}>
-            <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} className="mt-0.5" />
+          <label className="mt-1 flex items-start gap-2 text-[12px] leading-relaxed text-[#a1a1a6]">
+            <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} className="mt-0.5 accent-[#2997ff]" />
             I agree ReconIQ may contact me about this ROI model.
           </label>
-          {err && <p className="text-[12px] text-red-400">{err}</p>}
+          {err && <p className="text-[12px] leading-relaxed text-red-400">{err}</p>}
           <button
             type="submit"
             disabled={busy}
-            className="mt-1 inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition hover:brightness-110 disabled:opacity-60"
-            style={{
-              background: "linear-gradient(180deg, var(--brand-gold), color-mix(in oklab, var(--brand-gold) 76%, black))",
-              color: "var(--ink-void)",
-              boxShadow: "0 8px 24px -8px color-mix(in oklab, var(--brand-gold) 55%, transparent)",
-            }}
+            className="mt-1 inline-flex items-center justify-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black transition hover:bg-white/85 disabled:opacity-60"
           >
             {busy ? "Sending…" : "Email me this model"} <Send className="h-4 w-4" />
           </button>
@@ -751,17 +692,12 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.22em]" style={{ color: "color-mix(in oklab, var(--brand-gold) 82%, var(--brand-cream))" }}>
+      <span className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.18em] text-[#86868b]">
         {label}{required && " *"}
       </span>
       <input
         type={type} value={value} onChange={(e) => onChange(e.target.value)} required={required}
-        className="w-full rounded-lg px-3 py-2 text-sm outline-none transition focus:brightness-125"
-        style={{
-          background: "color-mix(in oklab, var(--ink-void) 70%, transparent)",
-          border: "1px solid color-mix(in oklab, var(--brand-gold) 22%, transparent)",
-          color: "var(--brand-cream)",
-        }}
+        className="w-full rounded-lg border border-white/10 bg-[#0b0b0f] px-3 py-2 text-sm text-[#f5f5f7] outline-none transition placeholder:text-[#86868b] focus:border-white/25"
       />
     </label>
   );

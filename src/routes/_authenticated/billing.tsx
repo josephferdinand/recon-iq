@@ -54,7 +54,7 @@ const PLANS = [
       'Unlimited everything',
       'Dedicated infrastructure (silo)',
       'Data residency pinning',
-      'SOC 2 + ISO 27001 + GDPR pack',
+      'Audit-evidence & compliance pack',
       'Custom matching rules',
       'Hash-chained immutable audit',
       '24/7 SLA support + named CSM',

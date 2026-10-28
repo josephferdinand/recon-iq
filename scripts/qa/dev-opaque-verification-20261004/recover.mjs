@@ -1,0 +1,18 @@
+import {readFile,writeFile} from 'node:fs/promises';
+import {fileURLToPath} from 'node:url';
+import {loadFrozen,rewritePacket,sha} from './rewrite.mjs';
+import {query,identity} from './diagnose.mjs';
+const out=fileURLToPath(new URL('./output/',import.meta.url));
+const stamp=new Date().toISOString().replaceAll(':','-').replaceAll('.','-');
+const ready=JSON.parse(await readFile(out+'READY.json','utf8'));
+const frozen=await loadFrozen();
+const expected=rewritePacket(frozen.packet);
+const packet=await readFile(out+'DEV-REVIEW-ONLY-DRY-RUN.sql','utf8');
+if(sha(packet)!==ready.candidateDryRunSha256||packet!==expected.candidate)throw Error('Review packet drift');
+const state=await query('recovery-identity-'+stamp,identity);
+const active=await query('recovery-activity-'+stamp,`SELECT pid,state,wait_event_type,wait_event FROM pg_stat_activity WHERE datname=current_database() AND pid<>pg_backend_pid() AND state='active' AND (position('_oa_oldrows' in query)>0 OR position('_oa_probe' in query)>0) ORDER BY pid`);
+const stable=state.rows[0].ledger===431&&state.rows[0].latest==='20261004080000'&&active.rows.length===0;
+const report={at:new Date().toISOString(),frozenSourceSha256:frozen.prepared.sourceSha256,candidateDryRunSha256:sha(packet),packetUnchanged:true,state:state.rows,activeVerifierBackends:active.rows.length,ready:stable,priorProof:ready.fullScopeProof,noMigrationExecuted:true};
+await writeFile(out+'recovery-ready-'+stamp+'.json',JSON.stringify(report,null,2),{flag:'wx'});
+console.log(JSON.stringify(report));
+if(!stable)process.exitCode=1;

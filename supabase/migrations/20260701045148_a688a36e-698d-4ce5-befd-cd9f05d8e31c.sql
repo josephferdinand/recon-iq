@@ -1,0 +1,1 @@
+ALTER TABLE public.tenants ADD COLUMN IF NOT EXISTS allowed_regions TEXT[] NOT NULL DEFAULT '{}';

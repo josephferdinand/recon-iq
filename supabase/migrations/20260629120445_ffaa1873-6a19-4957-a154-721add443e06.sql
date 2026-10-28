@@ -1,0 +1,1 @@
+GRANT INSERT, UPDATE, DELETE ON public.agent_action_hourly_limits TO authenticated;

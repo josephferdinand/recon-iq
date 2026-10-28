@@ -1,0 +1,1 @@
+ALTER TABLE public.user_ui_preferences ADD COLUMN IF NOT EXISTS palette_slug text;

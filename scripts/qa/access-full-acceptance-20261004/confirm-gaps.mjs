@@ -1,0 +1,10 @@
+import {readFile} from 'node:fs/promises';
+import path from 'node:path';
+import {signIn,actorProof,tenant,out,evidence,rest,rpc} from './common.mjs';
+const s=JSON.parse(await readFile(path.join(out,'OWNED.json'),'utf8')),a=await signIn('volta-recon-dataprep'),v=await signIn('kepler-scoped-observer');
+if(!a.tenantAdmin||a.platformAdmin||v.tenantAdmin||v.platformAdmin)throw Error('Exact roles changed');
+const pipeline=await rest(a,'data_prep_pipelines',{select:'id,name,created_by,updated_at',id:'eq.'+s.owned.pipeline,tenant_id:'eq.'+tenant});
+const permissions=await rpc(v,'effective_user_permissions',{_user_id:a.id,_tenant_id:tenant});
+const currentGroup=await rest(a,'tenant_group_members',{select:'user_id',group_id:'eq.'+s.owned.group,user_id:'eq.'+v.id});
+const data={at:new Date().toISOString(),actors:[a,v].map(actorProof),actualRevokedMembershipAbsent:currentGroup.http===200&&currentGroup.data.length===0,actualRevokedPipelineEditPersisted:pipeline.http===200&&pipeline.data[0]?.name===s.label+' revoked edit must fail',pipeline,publicPermissionRPCReturnedOtherUserCount:Array.isArray(permissions.data)?permissions.data.length:null,publicPermissionRPCHttp:permissions.http,zeroBusinessMutations:true};
+await evidence('CONFIRMED-GAPS-'+Date.now()+'.json',data);console.log(JSON.stringify(data));

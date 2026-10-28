@@ -1,0 +1,30 @@
+import {readFile,writeFile} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
+const privateRoot='./LOCAL_USER/AppData/Local/FVI-QA-Private-20260925';
+const vault=await readFile('./.private/CREDENTIALS.md','utf8');
+const a=vault.indexOf('<!-- FVI_CANONICAL_OPERATIONAL_CREDENTIALS_BEGIN -->'),b=vault.indexOf('<!-- FVI_CANONICAL_OPERATIONAL_CREDENTIALS_END -->');if(a<0||b<=a)throw Error('Canonical markers absent');
+const token=vault.slice(a,b).split(/\r?\n/).find(x=>/^\|\s*`SUPABASE_ACCESS_TOKEN`\s*\|/.test(x))?.split('|')[2]?.trim().replace(/^`|`$/g,'');if(!/^sbp_[A-Za-z0-9_-]{20,}$/.test(token??''))throw Error('Named management access absent');
+const tables="('kb_articles','kb_categories','sla_policies','support_tickets','ticket_messages')";
+const query=`SELECT jsonb_build_object(
+'ledger',(SELECT jsonb_build_object('count',count(*),'latest',max(version::text)) FROM supabase_migrations.schema_migrations),
+'engine',current_setting('server_version_num'),
+'columns',(SELECT jsonb_agg(jsonb_build_object('acl',at.attacl::text,'name',at.attname,'type',format_type(at.atttypid,at.atttypmod),'table',c.relname,'schema',n.nspname,'default',pg_get_expr(d.adbin,d.adrelid),'identity',at.attidentity,'not_null',at.attnotnull,'position',at.attnum,'generated',at.attgenerated) ORDER BY n.nspname,c.relname,at.attnum) FROM pg_attribute at JOIN pg_class c ON c.oid=at.attrelid JOIN pg_namespace n ON n.oid=c.relnamespace LEFT JOIN pg_attrdef d ON d.adrelid=c.oid AND d.adnum=at.attnum WHERE n.nspname='public' AND c.relname IN ${tables} AND at.attnum>0 AND NOT at.attisdropped),
+'constraints',(SELECT jsonb_agg(jsonb_build_object('name',t.conname,'type',t.contype,'table',c.relname,'schema',n.nspname,'validated',t.convalidated,'definition',pg_get_constraintdef(t.oid)) ORDER BY n.nspname,c.relname,t.conname) FROM pg_constraint t JOIN pg_class c ON c.oid=t.conrelid JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND c.relname IN ${tables}),
+'triggers',(SELECT coalesce(jsonb_agg(jsonb_build_object('name',t.tgname,'table',c.relname,'schema',n.nspname,'enabled',t.tgenabled,'definition',pg_get_triggerdef(t.oid),'function_name',p.proname,'function_schema',pn.nspname,'function_identity',pg_get_function_identity_arguments(p.oid)) ORDER BY n.nspname,c.relname,t.tgname),'[]') FROM pg_trigger t JOIN pg_class c ON c.oid=t.tgrelid JOIN pg_namespace n ON n.oid=c.relnamespace JOIN pg_proc p ON p.oid=t.tgfoid JOIN pg_namespace pn ON pn.oid=p.pronamespace WHERE n.nspname='public' AND c.relname IN ${tables} AND NOT t.tgisinternal),
+'policies',(SELECT jsonb_agg(to_jsonb(p) ORDER BY schemaname,tablename,policyname) FROM pg_policies p WHERE schemaname='public' AND tablename IN ${tables}),
+'table_state',(SELECT jsonb_agg(jsonb_build_object('schema',n.nspname,'name',c.relname,'rls',c.relrowsecurity,'force_rls',c.relforcerowsecurity,'owner',pg_get_userbyid(c.relowner),'acl',c.relacl::text) ORDER BY c.relname) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND c.relname IN ${tables}),
+'helpers',(SELECT jsonb_agg(jsonb_build_object('schema',n.nspname,'name',p.proname,'identity',pg_get_function_identity_arguments(p.oid),'definition',pg_get_functiondef(p.oid),'acl',p.proacl::text,'owner',pg_get_userbyid(p.proowner)) ORDER BY n.nspname,p.proname,pg_get_function_identity_arguments(p.oid)) FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace WHERE p.prokind='f' AND ((n.nspname='auth' AND p.proname IN ('uid','role')) OR (n.nspname IN ('public','private') AND p.proname IN ('is_platform_admin','is_tenant_member','is_tenant_admin','user_has_permission','resolve_user_permissions','set_updated_at')) OR p.oid IN (SELECT t.tgfoid FROM pg_trigger t JOIN pg_class c ON c.oid=t.tgrelid JOIN pg_namespace tn ON tn.oid=c.relnamespace WHERE tn.nspname='public' AND c.relname IN ${tables} AND NOT t.tgisinternal))),
+'permissions',(SELECT coalesce(jsonb_agg(to_jsonb(p) ORDER BY id),'[]') FROM public.permissions p WHERE id IN ('support.ticket.read','support.ticket.respond')),
+'new_object_conflicts',(SELECT coalesce(jsonb_agg(jsonb_build_object('schema',n.nspname,'name',p.proname,'identity',pg_get_function_identity_arguments(p.oid)) ORDER BY n.nspname,p.proname),'[]') FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace WHERE n.nspname IN ('public','private') AND p.proname LIKE 'ticket_%'),
+'new_relation_conflict',to_regclass('private.ticket_workflow_requests')::text
+) AS catalog;`;
+await writeFile(`${privateRoot}/VOLTA-PARENT-CURRENT-TICKET-CATALOG-QUERY-20261002.sql`,query);
+const pinned=JSON.parse(await readFile(`${privateRoot}/VOLTA-TICKETS-NAVIGATOR-PINNED-CATALOG-431-20261002.json`,'utf8'));
+const canonical=x=>Array.isArray(x)?x.map(canonical).sort((a,b)=>JSON.stringify(a).localeCompare(JSON.stringify(b))):x&&typeof x==='object'?Object.fromEntries(Object.keys(x).sort().map(k=>[k,canonical(x[k])])):x;
+for(const [environment,ref] of [['PROD','YOUR_PROJECT_REF'],['DEV','YOUR_PROJECT_REF']]){
+ const res=await fetch(`https://api.supabase.com/v1/projects/${ref}/database/query`,{method:'POST',headers:{authorization:`Bearer ${token}`,'content-type':'application/json'},body:JSON.stringify({read_only:true,query}),signal:AbortSignal.timeout(30000)});if(!res.ok)throw Error(`${environment} HTTP${res.status}, body withheld`);
+ const rows=await res.json(),c=rows?.[0]?.catalog;if(!c?.ledger||!c.columns)throw Error('Catalog shape absent');
+ const file=`${privateRoot}/VOLTA-PARENT-CURRENT-TICKET-CATALOG-${environment}-20261002.json`,bytes=JSON.stringify({at:new Date().toISOString(),read_only:true,ref,query,rows},null,2);await writeFile(file,bytes);
+ const comparison=Object.fromEntries(['columns','constraints','triggers','policies'].map(k=>[k,JSON.stringify(canonical(c[k]))===JSON.stringify(canonical(pinned[k]))]));
+ console.log(JSON.stringify({environment,http:res.status,file,sha256:createHash('sha256').update(bytes).digest('hex'),ledger:c.ledger,engine:c.engine,comparison,helpers:c.helpers.length,permissions:c.permissions.map(p=>p.id),newRelationConflict:c.new_relation_conflict,newFunctionConflicts:c.new_object_conflicts.length}));
+}

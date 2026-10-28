@@ -1,0 +1,6 @@
+import {createReadStream} from 'node:fs';
+import {createInterface} from 'node:readline';
+import {writeFile} from 'node:fs/promises';
+const source='./LOCAL_USER/.codex/sessions/2026/09/28/rollout-2026-09-28T20-56-57-01a0e8a0-57a5-7e30-a678-4c2c14c19f85.jsonl';let lineNo=0;const found=[];
+for await(const line of createInterface({input:createReadStream(source),crlfDelay:Infinity})){lineNo++;if(!line.includes('recons-tab.tsx'))continue;let e;try{e=JSON.parse(line);}catch{continue;}const p=e.payload;if(e.type!=='response_item'||!['custom_tool_call','function_call'].includes(p?.type))continue;const input=p.input??p.arguments;if(typeof input!=='string'||/vault|password|authorization|\.cred|service.role/i.test(input))continue;if(!/writeFile|write_text|apply_patch|\.replace\(/.test(input))continue;found.push({line:lineNo,call:p.call_id,chars:input.length,applyPatch:input.includes('apply_patch'),write:input.includes('writeFile')||input.includes('write_text'),replace:input.includes('.replace('),first:input.slice(0,100)});}
+await writeFile('output/recon-retained-source-recovery-20261005/PARENT-UI-MUTATION-CALLS.json',JSON.stringify(found,null,2),{flag:'wx'});console.log(JSON.stringify(found));

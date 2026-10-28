@@ -1,0 +1,1 @@
+ALTER VIEW public.v_recon_matches_consolidated SET (security_invoker = true);

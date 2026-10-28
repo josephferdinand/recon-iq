@@ -1,0 +1,1041 @@
+{
+  "source": "FVI PROD published Starter Kit catalogue",
+  "captured_at": "2026-09-14T16:46:06.303Z",
+  "templates": [
+    {
+      "code": "acct_nostro_v1",
+      "keys": [
+        "value_date",
+        "reference"
+      ],
+      "legs": [
+        {
+          "name": "bank"
+        },
+        {
+          "name": "internal"
+        }
+      ],
+      "rules": [
+        {
+          "type": "exact",
+          "fields": [
+            "reference"
+          ]
+        }
+      ],
+      "title": "Nostro account close",
+      "status": "published",
+      "tolerances": {
+        "amount": {
+          "abs": 0.01,
+          "pct": 0
+        }
+      },
+      "asset_class": "cash",
+      "sample_fields": [
+        "amount",
+        "currency",
+        "value_date",
+        "reference"
+      ]
+    },
+    {
+      "code": "acct_vostro_v1",
+      "keys": [
+        "value_date",
+        "reference"
+      ],
+      "legs": [
+        {
+          "name": "counterparty"
+        },
+        {
+          "name": "internal"
+        }
+      ],
+      "rules": [
+        {
+          "type": "exact",
+          "fields": [
+            "reference"
+          ]
+        }
+      ],
+      "title": "Vostro counterparty close",
+      "status": "published",
+      "tolerances": {
+        "amount": {
+          "abs": 0.01,
+          "pct": 0
+        }
+      },
+      "asset_class": "cash",
+      "sample_fields": [
+        "amount",
+        "currency",
+        "value_date",
+        "reference"
+      ]
+    },
+    {
+      "code": "cash_nostro_v1",
+      "keys": [
+        "value_date",
+        "reference"
+      ],
+      "legs": [
+        {
+          "name": "bank"
+        },
+        {
+          "name": "internal"
+        }
+      ],
+      "rules": [
+        {
+          "type": "exact",
+          "fields": [
+            "reference"
+          ]
+        }
+      ],
+      "title": "Nostro account close",
+      "status": "published",
+      "tolerances": {
+        "amount": {
+          "abs": 0.01,
+          "pct": 0
+        }
+      },
+      "asset_class": "cash",
+      "sample_fields": [
+        "amount",
+        "currency",
+        "value_date",
+        "reference"
+      ]
+    },
+    {
+      "code": "intra_day_cash_sweep",
+      "keys": [
+        "account_number",
+        "value_date",
+        "sweep_window"
+      ],
+      "legs": [
+        {
+          "name": "Internal Cash"
+        },
+        {
+          "name": "Bank Intraday"
+        }
+      ],
+      "rules": [
+        {
+          "kind": "exact",
+          "type": "deterministic",
+          "stage": "exact_match",
+          "fields": [
+            "account_number",
+            "value_date"
+          ],
+          "priority": 1
+        },
+        {
+          "pct": 0.00001,
+          "kind": "tolerance",
+          "type": "deterministic",
+          "field": "balance",
+          "stage": "exact_match",
+          "priority": 2
+        }
+      ],
+      "title": "Cash — Intra-day Sweep",
+      "status": "published",
+      "tolerances": {
+        "balance_pct": 0.00001
+      },
+      "asset_class": "cash",
+      "sample_fields": [
+        "account_number",
+        "value_date",
+        "sweep_window",
+        "balance",
+        "currency"
+      ]
+    },
+    {
+      "code": "equities_position_vs_custody",
+      "keys": [
+        "account_number",
+        "isin",
+        "position_date"
+      ],
+      "legs": [
+        {
+          "name": "Internal Positions"
+        },
+        {
+          "name": "Custodian Positions"
+        }
+      ],
+      "rules": [
+        {
+          "kind": "exact",
+          "type": "deterministic",
+          "stage": "exact_match",
+          "fields": [
+            "account_number",
+            "isin",
+            "position_date"
+          ],
+          "priority": 1
+        },
+        {
+          "abs": 0,
+          "kind": "tolerance",
+          "type": "deterministic",
+          "field": "quantity",
+          "stage": "exact_match",
+          "priority": 2
+        }
+      ],
+      "title": "Equities — Position vs Custodian",
+      "status": "published",
+      "tolerances": {
+        "quantity_abs": 0
+      },
+      "asset_class": "equities",
+      "sample_fields": [
+        "account_number",
+        "isin",
+        "position_date",
+        "quantity",
+        "market_value",
+        "currency"
+      ]
+    },
+    {
+      "code": "equities_trade_vs_confirm",
+      "keys": [
+        "trade_id",
+        "isin",
+        "trade_date"
+      ],
+      "legs": [
+        {
+          "name": "OMS Trades"
+        },
+        {
+          "name": "Broker Confirms"
+        }
+      ],
+      "rules": [
+        {
+          "kind": "exact",
+          "type": "deterministic",
+          "stage": "exact_match",
+          "fields": [
+            "trade_id",
+            "isin",
+            "side"
+          ],
+          "priority": 1
+        },
+        {
+          "abs": 0,
+          "kind": "tolerance",
+          "type": "deterministic",
+          "field": "quantity",
+          "stage": "exact_match",
+          "priority": 2
+        },
+        {
+          "pct": 0.0005,
+          "kind": "tolerance",
+          "type": "deterministic",
+          "field": "price",
+          "stage": "exact_match",
+          "priority": 3
+        }
+      ],
+      "title": "Equities — Trade vs Broker Confirm",
+      "status": "published",
+      "tolerances": {
+        "price_pct": 0.0005,
+        "amount_abs": 0.01
+      },
+      "asset_class": "equities",
+      "sample_fields": [
+        "trade_id",
+        "isin",
+        "ticker",
+        "trade_date",
+        "settlement_date",
+        "side",
+        "quantity",
+        "price",
+        "gross_amount",
+        "currency"
+      ]
+    },
+    {
+      "code": "securities_lending",
+      "keys": [
+        "loan_id",
+        "isin"
+      ],
+      "legs": [
+        {
+          "name": "Internal Loans"
+        },
+        {
+          "name": "Lending Agent"
+        }
+      ],
+      "rules": [
+        {
+          "kind": "exact",
+          "type": "deterministic",
+          "stage": "exact_match",
+          "fields": [
+            "loan_id",
+            "isin"
+          ],
+          "priority": 1
+        },
+        {
+          "abs": 0,
+          "kind": "tolerance",
+          "type": "deterministic",
+          "field": "quantity",
+          "stage": "exact_match",
+          "priority": 2
+        },
+        {
+          "abs": 0.0001,
+          "kind": "tolerance",
+          "type": "deterministic",
+          "field": "fee_rate",
+          "stage": "exact_match",
+          "priority": 3
+        }
+      ],
+      "title": "Securities Lending — Open Loans",
+      "status": "published",
+      "tolerances": {
+        "fee_rate_abs": 0.0001
+      },
+      "asset_class": "equities",
+      "sample_fields": [
+        "loan_id",
+        "isin",
+        "quantity",
+        "fee_rate",
+        "start_date",
+        "status"
+      ]
+    },
+    {
+      "code": "acct_fee_v1",
+      "keys": [
+        "invoice_no"
+      ],
+      "legs": [
+        {
+          "name": "vendor"
+        },
+        {
+          "name": "gl"
+        }
+      ],
+      "rules": [
+        {
+          "type": "exact",
+          "fields": [
+            "invoice_no"
+          ]
+        }
+      ],
+      "title": "Fee accrual recon",
+      "status": "published",
+      "tolerances": {
+        "amount": {
+          "abs": 1,
+          "pct": 0.005
+        }
+      },
+      "asset_class": "fees",
+      "sample_fields": [
+        "amount",
+        "invoice_no"
+      ]
+    },
+    {
+      "code": "fi_trade_vs_confirm",
+      "keys": [
+        "trade_id",
+        "cusip",
+        "trade_date"
+      ],
+      "legs": [
+        {
+          "name": "OMS"
+        },
+        {
+          "name": "Dealer Confirm"
+        }
+      ],
+      "rules": [
+        {
+          "kind": "exact",
+          "type": "deterministic",
+          "stage": "exact_match",
+          "fields": [
+            "trade_id",
+            "cusip"
+          ],
+          "priority": 1
+        },
+        {
+          "abs": 0,
+          "kind": "tolerance",
+          "type": "deterministic",
+          "field": "notional",
+          "stage": "exact_match",
+          "priority": 2
+        },
+        {
+          "abs": 0.001,
+          "kind": "tolerance",
+          "type": "deterministic",
+          "field": "yield",
+          "stage": "exact_match",
+          "priority": 3
+        }
+      ],
+      "title": "Fixed Income — Trade vs Confirm",
+      "status": "published",
+      "tolerances": {
+        "price_pct": 0.001,
+        "yield_abs": 0.001
+      },
+      "asset_class": "fixed_income",
+      "sample_fields": [
+        "trade_id",
+        "cusip",
+        "isin",
+        "trade_date",
+        "settlement_date",
+        "notional",
+        "price",
+        "yield",
+        "accrued_interest",
+        "currency"
+      ]
+    },
+    {
+      "code": "repo_collateral",
+      "keys": [
+        "repo_id",
+        "cusip"
+      ],
+      "legs": [
+        {
+          "name": "Internal Repo"
+        },
+        {
+          "name": "CP File"
+        }
+      ],
+      "rules": [
+        {
+          "kind": "exact",
+          "type": "deterministic",
+          "stage": "exact_match",
+          "fields": [
+            "repo_id",
+            "cusip"
+          ],
+          "priority": 1
+        },
+        {
+          "abs": 0.001,
+          "kind": "tolerance",
+          "type": "deterministic",
+          "field": "haircut",
+          "stage": "exact_match",
+          "priority": 2
+        },
+        {
+          "pct": 0.001,
+          "kind": "tolerance",
+          "type": "deterministic",
+          "field": "collateral_value",
+          "stage": "exact_match",
+          "priority": 3
+        }
+      ],
+      "title": "Repo — Collateral Recon",
+      "status": "published",
+      "tolerances": {
+        "haircut_abs": 0.001
+      },
+      "asset_class": "fixed_income",
+      "sample_fields": [
+        "repo_id",
+        "cusip",
+        "haircut",
+        "collateral_value",
+        "start_date",
+        "end_date"
+      ]
+    },
+    {
+      "code": "fx_settlement_cls",
+      "keys": [
+        "trade_id",
+        "value_date"
+      ],
+      "legs": [
+        {
+          "name": "CLS"
+        },
+        {
+          "name": "Internal Cash"
+        }
+      ],
+      "rules": [
+        {
+          "kind": "exact",
+          "type": "deterministic",
+          "stage": "exact_match",
+          "fields": [
+            "trade_id"
+          ],
+          "priority": 1
+        },
+        {
+          "pct": 0.00001,
+          "kind": "tolerance",
+          "type": "deterministic",
+          "field": "amount",
+          "stage": "exact_match",
+          "priority": 2
+        }
+      ],
+      "title": "FX Settlement — CLS vs Internal",
+      "status": "published",
+      "tolerances": {
+        "amount_pct": 0.00001
+      },
+      "asset_class": "fx",
+      "sample_fields": [
+        "trade_id",
+        "value_date",
+        "ccy",
+        "amount",
+        "status"
+      ]
+    },
+    {
+      "code": "fx_trade_vs_confirm",
+      "keys": [
+        "trade_id",
+        "ccy_pair",
+        "trade_date"
+      ],
+      "legs": [
+        {
+          "name": "Internal FX"
+        },
+        {
+          "name": "CP Confirm"
+        }
+      ],
+      "rules": [
+        {
+          "kind": "exact",
+          "type": "deterministic",
+          "stage": "exact_match",
+          "fields": [
+            "trade_id",
+            "ccy_pair",
+            "value_date"
+          ],
+          "priority": 1
+        },
+        {
+          "pct": 0.00005,
+          "kind": "tolerance",
+          "type": "deterministic",
+          "field": "rate",
+          "stage": "exact_match",
+          "priority": 2
+        },
+        {
+          "abs": 0,
+          "kind": "tolerance",
+          "type": "deterministic",
+          "field": "notional",
+          "stage": "exact_match",
+          "priority": 3
+        }
+      ],
+      "title": "FX — Trade vs Confirm",
+      "status": "published",
+      "tolerances": {
+        "rate_pct": 0.00005
+      },
+      "asset_class": "fx",
+      "sample_fields": [
+        "trade_id",
+        "ccy_pair",
+        "trade_date",
+        "value_date",
+        "notional",
+        "rate",
+        "counterparty_lei"
+      ]
+    },
+    {
+      "code": "acct_clearing_v1",
+      "keys": [
+        "txn_id"
+      ],
+      "legs": [
+        {
+          "name": "gl"
+        }
+      ],
+      "rules": [
+        {
+          "type": "zero_balance"
+        }
+      ],
+      "title": "Clearing account close",
+      "status": "published",
+      "tolerances": {
+        "amount": {
+          "abs": 0.01
+        }
+      },
+      "asset_class": "gl",
+      "sample_fields": [
+        "amount",
+        "txn_id"
+      ]
+    },
+    {
+      "code": "acct_intercompany_v1",
+      "keys": [
+        "ic_ref"
+      ],
+      "legs": [
+        {
+          "name": "entity_a"
+        },
+        {
+          "name": "entity_b"
+        }
+      ],
+      "rules": [
+        {
+          "type": "exact",
+          "fields": [
+            "ic_ref"
+          ]
+        }
+      ],
+      "title": "Intercompany match",
+      "status": "published",
+      "tolerances": {
+        "amount": {
+          "abs": 0.01,
+          "pct": 0.001
+        }
+      },
+      "asset_class": "gl",
+      "sample_fields": [
+        "amount",
+        "ccy",
+        "ic_ref"
+      ]
+    },
+    {
+      "code": "acct_payroll_v1",
+      "keys": [
+        "run_id"
+      ],
+      "legs": [
+        {
+          "name": "provider"
+        },
+        {
+          "name": "gl"
+        }
+      ],
+      "rules": [
+        {
+          "type": "exact",
+          "fields": [
+            "run_id"
+          ]
+        }
+      ],
+      "title": "Payroll close",
+      "status": "published",
+      "tolerances": {
+        "amount": {
+          "abs": 0.5
+        }
+      },
+      "asset_class": "gl",
+      "sample_fields": [
+        "amount",
+        "run_id"
+      ]
+    },
+    {
+      "code": "acct_suspense_v1",
+      "keys": [
+        "txn_id"
+      ],
+      "legs": [
+        {
+          "name": "gl"
+        }
+      ],
+      "rules": [
+        {
+          "type": "ageing",
+          "buckets": [
+            0,
+            30,
+            60,
+            90
+          ]
+        }
+      ],
+      "title": "Suspense ageing",
+      "status": "published",
+      "tolerances": {
+        "amount": {
+          "abs": 0
+        }
+      },
+      "asset_class": "gl",
+      "sample_fields": [
+        "amount",
+        "txn_id",
+        "posted_at"
+      ]
+    },
+    {
+      "code": "acct_tax_v1",
+      "keys": [
+        "period",
+        "tax_code"
+      ],
+      "legs": [
+        {
+          "name": "authority"
+        },
+        {
+          "name": "gl"
+        }
+      ],
+      "rules": [
+        {
+          "type": "exact",
+          "fields": [
+            "period",
+            "tax_code"
+          ]
+        }
+      ],
+      "title": "Tax liability close",
+      "status": "published",
+      "tolerances": {
+        "amount": {
+          "abs": 1
+        }
+      },
+      "asset_class": "gl",
+      "sample_fields": [
+        "amount",
+        "period",
+        "tax_code"
+      ]
+    },
+    {
+      "code": "acct_trust_v1",
+      "keys": [
+        "client_id",
+        "value_date"
+      ],
+      "legs": [
+        {
+          "name": "trust"
+        },
+        {
+          "name": "bank"
+        }
+      ],
+      "rules": [
+        {
+          "type": "exact",
+          "fields": [
+            "client_id",
+            "value_date"
+          ]
+        }
+      ],
+      "title": "Client trust close",
+      "status": "published",
+      "tolerances": {
+        "amount": {
+          "abs": 0.01
+        }
+      },
+      "asset_class": "gl",
+      "sample_fields": [
+        "amount",
+        "client_id",
+        "value_date"
+      ]
+    },
+    {
+      "code": "etd_margin",
+      "keys": [
+        "account_number",
+        "margin_date"
+      ],
+      "legs": [
+        {
+          "name": "Internal Margin"
+        },
+        {
+          "name": "Clearing Broker"
+        }
+      ],
+      "rules": [
+        {
+          "kind": "exact",
+          "type": "deterministic",
+          "stage": "exact_match",
+          "fields": [
+            "account_number",
+            "margin_date"
+          ],
+          "priority": 1
+        },
+        {
+          "pct": 0.0005,
+          "kind": "tolerance",
+          "type": "deterministic",
+          "field": "im",
+          "stage": "exact_match",
+          "priority": 2
+        },
+        {
+          "pct": 0.0005,
+          "kind": "tolerance",
+          "type": "deterministic",
+          "field": "vm",
+          "stage": "exact_match",
+          "priority": 3
+        }
+      ],
+      "title": "ETD — Initial & Variation Margin",
+      "status": "published",
+      "tolerances": {
+        "margin_pct": 0.0005
+      },
+      "asset_class": "listed_derivatives",
+      "sample_fields": [
+        "account_number",
+        "margin_date",
+        "im",
+        "vm",
+        "total_margin"
+      ]
+    },
+    {
+      "code": "listed_derivs_position",
+      "keys": [
+        "account_number",
+        "contract_code",
+        "position_date"
+      ],
+      "legs": [
+        {
+          "name": "Internal Positions"
+        },
+        {
+          "name": "Clearing Broker"
+        }
+      ],
+      "rules": [
+        {
+          "kind": "exact",
+          "type": "deterministic",
+          "stage": "exact_match",
+          "fields": [
+            "account_number",
+            "contract_code"
+          ],
+          "priority": 1
+        },
+        {
+          "abs": 0,
+          "kind": "tolerance",
+          "type": "deterministic",
+          "field": "long_qty",
+          "stage": "exact_match",
+          "priority": 2
+        },
+        {
+          "abs": 0,
+          "kind": "tolerance",
+          "type": "deterministic",
+          "field": "short_qty",
+          "stage": "exact_match",
+          "priority": 3
+        }
+      ],
+      "title": "Listed Derivatives — Position vs CCP",
+      "status": "published",
+      "tolerances": {
+        "qty_abs": 0
+      },
+      "asset_class": "listed_derivatives",
+      "sample_fields": [
+        "account_number",
+        "contract_code",
+        "position_date",
+        "long_qty",
+        "short_qty",
+        "margin"
+      ]
+    },
+    {
+      "code": "ibor_vs_abor",
+      "keys": [
+        "account_number",
+        "instrument_id",
+        "as_of_date"
+      ],
+      "legs": [
+        {
+          "name": "IBOR"
+        },
+        {
+          "name": "ABOR"
+        }
+      ],
+      "rules": [
+        {
+          "kind": "exact",
+          "type": "deterministic",
+          "stage": "exact_match",
+          "fields": [
+            "account_number",
+            "instrument_id"
+          ],
+          "priority": 1
+        },
+        {
+          "abs": 0,
+          "kind": "tolerance",
+          "type": "deterministic",
+          "field": "quantity",
+          "stage": "exact_match",
+          "priority": 2
+        },
+        {
+          "pct": 0.0001,
+          "kind": "tolerance",
+          "type": "deterministic",
+          "field": "market_value",
+          "stage": "exact_match",
+          "priority": 3
+        }
+      ],
+      "title": "IBOR vs ABOR",
+      "status": "published",
+      "tolerances": {
+        "market_value_pct": 0.0001
+      },
+      "asset_class": "multi_asset",
+      "sample_fields": [
+        "account_number",
+        "instrument_id",
+        "as_of_date",
+        "quantity",
+        "cost_basis",
+        "market_value",
+        "unrealized_pnl"
+      ]
+    },
+    {
+      "code": "trade_lifecycle",
+      "keys": [
+        "trade_id"
+      ],
+      "legs": [
+        {
+          "name": "OMS"
+        },
+        {
+          "name": "Middle Office"
+        },
+        {
+          "name": "Back Office"
+        }
+      ],
+      "rules": [
+        {
+          "kind": "exact",
+          "type": "deterministic",
+          "stage": "exact_match",
+          "fields": [
+            "trade_id"
+          ],
+          "priority": 1
+        },
+        {
+          "abs": 0,
+          "kind": "tolerance",
+          "type": "deterministic",
+          "field": "quantity",
+          "stage": "exact_match",
+          "priority": 2
+        },
+        {
+          "pct": 0.0001,
+          "kind": "tolerance",
+          "type": "deterministic",
+          "field": "price",
+          "stage": "exact_match",
+          "priority": 3
+        }
+      ],
+      "title": "Trade Lifecycle — Front-to-Back",
+      "status": "published",
+      "tolerances": {
+        "price_pct": 0.0001
+      },
+      "asset_class": "multi_asset",
+      "sample_fields": [
+        "trade_id",
+        "stage",
+        "quantity",
+        "price",
+        "status",
+        "settlement_status"
+      ]
+    }
+  ]
+}

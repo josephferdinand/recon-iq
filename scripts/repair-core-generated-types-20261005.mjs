@@ -1,0 +1,32 @@
+import{readFile,writeFile,readdir,mkdir}from'node:fs/promises';
+import{createHash}from'node:crypto';
+import path from'node:path';
+import{Generator,getConfig}from'@tanstack/router-generator';
+const candidate='./LOCAL_USER/AppData/Local/Temp/fvi-batch4-candidate-20260928';
+const output=path.resolve('output/parent-integrated-next-20261005/core-successors/generated-types');
+const sha=x=>createHash('sha256').update(x).digest('hex');
+await mkdir(output,{recursive:true});
+const metadata=JSON.parse(await readFile('./LOCAL_USER/AppData/Local/FVI-QA-Private-20260925/FVI-STRUCTURE-PROD-REGISTERED-20261005-POSTREADBACK.json','utf8'));
+const rpc=metadata.authority.routines.find(x=>x.schema==='public'&&x.name==='seed_tenant_group_presets_for_bu');
+if(metadata.actual.ledger!==458||rpc?.args!=='_tenant_id uuid, _bu_id uuid'||rpc.result!=='integer')throw Error('Actual RPC argument/result contract mismatch');
+const typesFile=path.join(candidate,'src/integrations/supabase/types.ts'),before=await readFile(typesFile,'utf8');
+const anchor='      seed_default_tenant_groups: {';if(before.split(anchor).length!==2||before.includes('      seed_tenant_group_presets_for_bu:'))throw Error('Unique generated public function insertion required');
+const newline=before.includes('\r\n')?'\r\n':'\n';
+const delta=['      seed_tenant_group_presets_for_bu: {','        Args: { _tenant_id: string; _bu_id: string }','        Returns: number','      }',''].join(newline);
+await writeFile(output+'/types.ts.before',before,{flag:'wx'});await writeFile(typesFile,before.replace(anchor,delta+anchor));
+// Generate in a source mirror so the installed generator cannot rewrite qualified runtime files.
+const shadow=path.join(output,'mirror'),sourceRoutes=path.join(candidate,'src/routes'),mirrorRoutes=path.join(shadow,'src/routes');let copied=0;
+async function copy(dir,relative=''){for(const entry of await readdir(dir,{withFileTypes:true})){const next=path.join(relative,entry.name);if(entry.isDirectory())await copy(path.join(dir,entry.name),next);else{const target=path.join(mirrorRoutes,next);await mkdir(path.dirname(target),{recursive:true});await writeFile(target,await readFile(path.join(dir,entry.name)),{flag:'wx'});copied++;}}}
+await copy(sourceRoutes);
+const treeFile=path.join(candidate,'src/routeTree.gen.ts'),treeBefore=await readFile(treeFile);
+await writeFile(output+'/routeTree.gen.ts.before',treeBefore,{flag:'wx'});
+const footerMarker="import type { getRouter } from './router.tsx'",footerAt=treeBefore.toString('utf8').indexOf(footerMarker);
+if(footerAt<0)throw Error('Existing React Start application type-registration footer must be preserved');
+const config=getConfig({routesDirectory:'./src/routes',generatedRouteTree:'./src/routeTree.gen.ts',quoteStyle:'double',semicolons:true,disableLogging:true,routeTreeFileFooter:treeBefore.toString('utf8').slice(footerAt).split(/\r?\n/)},shadow);
+await new Generator({config,root:shadow}).run();
+const tree=await readFile(path.join(shadow,'src/routeTree.gen.ts'));
+for(const route of['/request-invite','/api/v1/$tenantSlug/recons/$reconId/runs/history','/api/v1/$tenantSlug/recons/$reconId/runs/$runId/results'])if(!tree.toString('utf8').includes(route))throw Error('Expected restored route missing from generated tree');
+if(tree.toString('utf8').includes(shadow))throw Error('Generated tree embeds mirror path');
+await writeFile(treeFile,tree);
+const receipt={at:new Date().toISOString(),scope:'Generated RPC signature from actual committed metadata + regenerated route tree for restored routes only',rpcSignature:rpc.args,result:rpc.result,sourceRouteFilesUntouched:true,mirrorFiles:copied,types:{pre:sha(before),post:sha(await readFile(typesFile))},routeTree:{pre:sha(treeBefore),post:sha(tree)},compilerPass:false,appUploaded:false};
+await writeFile(output+'/REPAIR-RECEIPT.json',JSON.stringify(receipt,null,2),{flag:'wx'});console.log(JSON.stringify(receipt));

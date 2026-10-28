@@ -1,0 +1,10 @@
+payment_ref,scenario,expected_classification,expected_variance_inr,rule_note
+623409230001,UPI three-way exact,MATCH,0.00,One ledger bank and rail row
+TESTN20260923000000001,NEFT three-way exact,MATCH,0.00,Reference and amount agree
+TEST202609230000000001,RTGS three-way exact,MATCH,0.00,Reference and amount agree
+623409230004,UPI reversal group,GROUP_MATCH,0.00,Aggregate original and reversal to net zero
+TESTN20260923000000006,Bank service fee,BREAK_FEE,5.00,Bank net is INR 5 below ledger and rail gross
+TEST202609230000000007,Pending RTGS bank posting,BREAK_MISSING_BANK,300000.00,Rail is pending and must not be marked settled
+623409230008,Paise tolerance,MATCH_WITH_TOLERANCE,0.01,Only if explicit INR 0.01 tolerance rule is enabled
+623409230009,Duplicate bank credit,BREAK_DUPLICATE,250.00,Two bank credits for one ledger and rail event
+TESTN20260923000000010,Internal posting cutoff,DATE_TOLERANCE_MATCH,0.00,One-day bank value date difference

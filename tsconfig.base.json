@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "jsx": "react-jsx",
+    "module": "ESNext",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "moduleResolution": "Bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": false,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedSideEffectImports": true,
+    "noImplicitOverride": true,
+    "forceConsistentCasingInFileNames": true,
+    "useDefineForClassFields": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@fvi/ui": ["./packages/ui/src/index.ts"],
+      "@fvi/brand": ["./packages/brand/src/index.ts"],
+      "@fvi/lib-shared": ["./packages/lib-shared/src/index.ts"],
+      "@fvi/api-contracts": ["./packages/api-contracts/src/index.ts"],
+      "@fvi/supabase-client": ["./packages/supabase-client/src/index.ts"]
+    }
+  }
+}

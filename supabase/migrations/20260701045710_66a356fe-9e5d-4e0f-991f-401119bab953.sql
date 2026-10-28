@@ -1,0 +1,1 @@
+ALTER TABLE public.tenants ALTER COLUMN family_id DROP NOT NULL;

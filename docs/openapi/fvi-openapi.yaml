@@ -1,0 +1,1687 @@
+openapi: 3.1.0
+info:
+  title: ReconIQ API
+  version: "1.0.0"
+  summary: Source-backed ReconIQ HTTP route contract
+  description: |
+    This document describes HTTP handlers present in the ReconIQ repository. It is
+    not deployment evidence and does not guarantee that a particular ReconIQ
+    environment has the routes, schema migrations, token scopes, or provider
+    configuration needed to serve them. See the API reference for availability
+    boundaries and the current token-scope provisioning gap.
+
+    The primary workspace API is `/api/v1/{tenantSlug}/...` and uses an opaque
+    bearer token stored in `api_tokens`. The token's tenant must match the path
+    tenant and its `scopes` must include each operation's `x-required-scope`.
+    OAuth/MCP and SCIM use distinct authentication systems. App-internal server
+    functions and service-only cron/worker routes are not part of this contract.
+tags:
+  - name: Platform
+    description: Public specification/status and OAuth-related integration routes. General platform-administration REST is not exposed here.
+  - name: Tenant
+    description: Requests are tenant-bound by the opaque API token and tenantSlug path segment.
+  - name: Workspace
+    description: Reconciliation, breaks, connectors, watchers, Data Prep, reference data, reports, and workflow jobs.
+  - name: Governance
+    description: Separate maker/checker decisions and environment change-request lifecycle operations.
+  - name: Identity
+    description: SCIM and OAuth/MCP identity integration routes with their own credentials.
+components:
+  securitySchemes:
+    tenantApiToken:
+      type: http
+      scheme: bearer
+      bearerFormat: Opaque API token
+      description: Tenant-bound opaque bearer value from `api_tokens`; not a Supabase JWT or OAuth client-credentials sandbox JWT.
+    aidpToken:
+      type: apiKey
+      in: header
+      name: x-aidp-token
+      description: The AIDP extraction route accepts this header or the tenant API bearer header.
+    scimToken:
+      type: http
+      scheme: bearer
+      bearerFormat: Opaque SCIM token
+      description: Dedicated token stored in `scim_tokens`; it is not a tenant API token.
+    userSession:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Signed-in ReconIQ user session, used only by the MCP OAuth authorize step.
+  parameters:
+    TenantSlug:
+      name: tenantSlug
+      in: path
+      required: true
+      schema: { type: string }
+      description: Must identify the same tenant to which the bearer API token is bound.
+    Limit:
+      name: limit
+      in: query
+      required: false
+      schema: { type: integer, minimum: 1, maximum: 200, default: 50 }
+      description: Bounded page size. This is not a general offset/cursor-paginated list contract.
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      schema: { type: string, minLength: 1, maxLength: 128 }
+      description: Required by the specific mutation operations that reference this parameter. Reuse the same key only for a retry of the same logical request.
+    BreakCursor:
+      name: cursor
+      in: query
+      required: false
+      schema: { type: string, format: date-time }
+      description: Timestamp from `next_cursor` on the prior breaks response; this route uses a timestamp cursor, not an opaque token.
+  schemas:
+    ApiError:
+      type: object
+      required: [error]
+      properties:
+        error: { type: string }
+        error_description: { type: string }
+        required: { type: string }
+        details: { type: object, additionalProperties: true }
+        retry_after_seconds: { type: integer, minimum: 0 }
+    JsonObject:
+      type: object
+      additionalProperties: true
+    QueuedJob:
+      type: object
+      required: [api_version, job_id, status, idempotent_replay]
+      properties:
+        api_version: { type: string, const: "v1" }
+        job_id: { type: string, format: uuid }
+        status: { type: string, enum: [queued, running, succeeded, failed, dead] }
+        idempotent_replay: { type: boolean }
+    DataPrepPipelineInput:
+      type: object
+      required: [name, steps, dq_rules, on_failure, enabled]
+      properties:
+        name: { type: string, minLength: 2, maxLength: 120 }
+        description: { type: [string, "null"], maxLength: 1000 }
+        source_data_source_id: { type: [string, "null"], format: uuid }
+        output_data_source_id: { type: [string, "null"], format: uuid }
+        steps: { type: array, maxItems: 100, items: { $ref: "#/components/schemas/JsonObject" } }
+        dq_rules: { type: array, maxItems: 50, items: { $ref: "#/components/schemas/JsonObject" } }
+        on_failure: { type: string, enum: [block, warn, drop_rows] }
+        enabled: { type: boolean }
+    DataPrepPipelinePatch:
+      type: object
+      minProperties: 1
+      properties:
+        name: { type: string, minLength: 2, maxLength: 120 }
+        description: { type: [string, "null"], maxLength: 1000 }
+        source_data_source_id: { type: [string, "null"], format: uuid }
+        output_data_source_id: { type: [string, "null"], format: uuid }
+        steps: { type: array, maxItems: 100, items: { $ref: "#/components/schemas/JsonObject" } }
+        dq_rules: { type: array, maxItems: 50, items: { $ref: "#/components/schemas/JsonObject" } }
+        on_failure: { type: string, enum: [block, warn, drop_rows] }
+        enabled: { type: boolean }
+    WatcherInput:
+      type: object
+      required: [data_source_id, name, watch_type]
+      properties:
+        data_source_id: { type: string, format: uuid }
+        name: { type: string, minLength: 2, maxLength: 120 }
+        watch_type: { type: string, description: One of the watcher types configured by the source engine. }
+        config: { type: object, additionalProperties: true, default: {} }
+        severity: { type: string, enum: [info, warning, critical], default: warning }
+        enabled: { type: boolean, default: true }
+    BreakAction:
+      oneOf:
+        - type: object
+          required: [action, assignee]
+          properties: { action: { const: assign }, assignee: { type: [string, "null"], format: uuid } }
+        - type: object
+          required: [action, root_cause]
+          properties: { action: { const: classify }, root_cause: { type: string, minLength: 1, maxLength: 500 }, priority: { type: string, enum: [P1, P2, P3, P4] }, tags: { type: array, maxItems: 20, items: { type: string, minLength: 1, maxLength: 40 } } }
+        - type: object
+          required: [action, body]
+          properties: { action: { const: comment }, body: { type: string, minLength: 1, maxLength: 4000 }, internal: { type: boolean, default: true } }
+        - type: object
+          required: [action, filename]
+          properties: { action: { const: attach }, filename: { type: string, minLength: 1, maxLength: 255 }, mime_type: { type: string, maxLength: 100 }, size_bytes: { type: integer, minimum: 0, maximum: 25000000 } }
+        - type: object
+          required: [action, resolution_note]
+          properties: { action: { const: resolve }, resolution_note: { type: string, minLength: 1, maxLength: 4000 }, root_cause: { type: string, minLength: 1, maxLength: 500 } }
+        - type: object
+          required: [action, reason, amount, currency, gl_account]
+          properties: { action: { const: write_off }, reason: { type: string, minLength: 1, maxLength: 4000 }, amount: { type: number }, currency: { type: string, pattern: "^[A-Z]{3}$" }, gl_account: { type: string, minLength: 1, maxLength: 100 } }
+        - type: object
+          required: [action, request_id, decision]
+          properties: { action: { const: approve_write_off }, request_id: { type: string, format: uuid }, decision: { type: string, enum: [approved, rejected] }, decision_note: { type: string, maxLength: 2000 } }
+        - type: object
+          required: [action, reason]
+          properties: { action: { const: reopen }, reason: { type: string, minLength: 1, maxLength: 4000 } }
+        - type: object
+          required: [action]
+          properties: { action: { const: reprocess } }
+      discriminator: { propertyName: action }
+    ConnectorAgentLease:
+      type: object
+      required: [agent_id]
+      properties:
+        agent_id: { type: string, pattern: "^[A-Za-z0-9][A-Za-z0-9._-]{2,63}$" }
+        lease_seconds: { type: integer, minimum: 30, maximum: 300, default: 120 }
+    ConnectorAgentResult:
+      type: object
+      required: [agent_id, rows, columns, filename]
+      properties:
+        agent_id: { type: string, pattern: "^[A-Za-z0-9][A-Za-z0-9._-]{2,63}$" }
+        rows: { type: array, maxItems: 50000, items: { $ref: "#/components/schemas/JsonObject" } }
+        columns: { type: array, maxItems: 500, items: { type: string, minLength: 1, maxLength: 200 } }
+        filename: { type: string, minLength: 1, maxLength: 255 }
+      x-max-request-bytes: 10485760
+    ConnectorAgentFailure:
+      type: object
+      required: [agent_id, error_code]
+      properties:
+        agent_id: { type: string, pattern: "^[A-Za-z0-9][A-Za-z0-9._-]{2,63}$" }
+        error_code: { type: string, pattern: "^connector_agent_[a-z0-9_]{1,80}$" }
+    EnvironmentChangeCreate:
+      type: object
+      additionalProperties: false
+      required: [direction, source_tenant_id, target_tenant_id, title, reason]
+      properties:
+        direction: { type: string, enum: [dev_to_prod, prod_to_dev] }
+        source_tenant_id: { type: string, format: uuid }
+        target_tenant_id: { type: string, format: uuid }
+        title: { type: string, minLength: 3, maxLength: 120 }
+        reason: { type: string, minLength: 10, maxLength: 1000 }
+    EnvironmentChangeDecision:
+      type: object
+      required: [approve]
+      properties:
+        approve: { type: boolean }
+        comment: { type: [string, "null"], maxLength: 500 }
+        confirm_access_mapping: { type: boolean }
+    ReferenceDataStage:
+      type: object
+      required: [rows, effective_from, change_note]
+      properties:
+        rows:
+          type: array
+          minItems: 1
+          maxItems: 10000
+          items: { $ref: "#/components/schemas/JsonObject" }
+        effective_from: { type: string, format: date }
+        effective_to: { type: [string, "null"], format: date }
+        change_note: { type: string, minLength: 3, maxLength: 1000 }
+    ReferenceDataDecision:
+      type: object
+      required: [approve]
+      properties:
+        approve: { type: boolean }
+        reason: { type: [string, "null"], maxLength: 1000 }
+      description: Server trims reason before validation; rejecting a version requires at least three trimmed characters.
+      if:
+        properties: { approve: { const: false } }
+        required: [approve]
+      then:
+        required: [reason]
+        properties:
+          reason: { type: string, minLength: 3, pattern: '\S[\s\S]+\S' }
+    ReportRunInput:
+      type: object
+      properties:
+        days: { type: integer, minimum: 7, maximum: 180, default: 30 }
+        lifecycle:
+          type: array
+          maxItems: 6
+          items: { type: string, enum: [new, assigned, investigating, pending_counterparty, resolved, written_off] }
+        priority:
+          type: array
+          maxItems: 4
+          items: { type: string, enum: [P1, P2, P3, P4] }
+    AidpExtractRequest:
+      type: object
+      required: [document_type_code, file_url]
+      properties:
+        document_type_code: { type: string, minLength: 1 }
+        file_url: { type: string, format: uri, description: HTTPS URL on a configured AIDP host allow-list. }
+        callback_url: { type: [string, "null"], format: uri, description: Optional HTTPS callback; outbound URL safety checks apply. }
+      x-max-downloaded-file-bytes: 52428800
+    AiInferenceRequest:
+      type: object
+      properties:
+        tenant_id: { type: string, format: uuid, description: Required when using a user JWT; token auth derives tenant from the API token. }
+        request_class: { type: string, default: chat }
+        model: { type: string }
+        messages: { type: array, items: { $ref: "#/components/schemas/JsonObject" } }
+        max_tokens: { type: integer, minimum: 1 }
+        temperature: { type: number, minimum: 0, maximum: 2 }
+    ScimError:
+      type: object
+      required: [schemas, status, detail]
+      properties:
+        schemas: { type: array, items: { type: string } }
+        status: { type: string }
+        scimType: { type: string }
+        detail: { type: string }
+    GenericSuccess:
+      type: object
+      additionalProperties: true
+      description: Endpoint-specific JSON response. Consult the ReconIQ API Reference page for this operation.
+    ReconReadError:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+    ReconReadRun:
+      type: object
+      required:
+        - id
+        - run_uid
+        - definition_id
+        - status
+        - matched_count
+        - exception_count
+        - total_rows
+        - started_at
+        - completed_at
+        - matched_input_memberships
+      properties:
+        id:
+          type: string
+          format: uuid
+        run_uid:
+          type:
+            - string
+            - 'null'
+        definition_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+        matched_count:
+          type:
+            - number
+            - 'null'
+        exception_count:
+          type:
+            - number
+            - 'null'
+        total_rows:
+          type:
+            - number
+            - 'null'
+        started_at:
+          type: string
+        completed_at:
+          type:
+            - string
+            - 'null'
+        matched_input_memberships:
+          type:
+            - number
+            - 'null'
+    ReconReadHistory:
+      type: object
+      required:
+        - api_version
+        - rows
+        - total
+        - page
+        - page_size
+        - has_next
+        - audit_id
+      properties:
+        api_version:
+          const: v1
+        rows:
+          type: array
+          maxItems: 50
+          items:
+            $ref: '#/components/schemas/ReconReadRun'
+        total:
+          type: integer
+          minimum: 0
+        page:
+          type: integer
+          minimum: 1
+        page_size:
+          const: 50
+        has_next:
+          type: boolean
+        audit_id:
+          type: string
+          pattern: ^[1-9][0-9]{0,18}$
+    ReconReadResults:
+      type: object
+      required:
+        - api_version
+        - run
+        - results
+        - field_names
+        - parent_count
+        - page
+        - page_size
+        - has_next
+        - status_counts
+        - audit_id
+      properties:
+        api_version:
+          const: v1
+        run:
+          $ref: '#/components/schemas/ReconReadRun'
+        results:
+          type: array
+          maxItems: 50
+          items: {}
+        field_names:
+          type:
+            - array
+            - 'null'
+          items: {}
+        parent_count:
+          type:
+            - integer
+            - 'null'
+          minimum: 0
+        page:
+          type: integer
+          minimum: 1
+        page_size:
+          const: 50
+        has_next:
+          type: boolean
+        status_counts:
+          type:
+            - object
+            - 'null'
+          required:
+            - match_groups
+            - exception_items
+            - exception_buckets
+          properties:
+            match_groups:
+              type:
+                - number
+                - 'null'
+              minimum: 0
+            exception_items:
+              type:
+                - number
+                - 'null'
+              minimum: 0
+            exception_buckets:
+              type:
+                - object
+                - 'null'
+              additionalProperties:
+                type: number
+                minimum: 0
+        audit_id:
+          type: string
+          pattern: ^[1-9][0-9]{0,18}$
+paths:
+  /api/public/openapi.yaml:
+    get:
+      tags: [Platform]
+      operationId: getSourceOpenApiYaml
+      x-source-handler: "GET inline handler"
+      x-source-file: "src/routes/api/public/openapi[.]yaml.ts"
+      x-source-line: 8
+      x-source-error-literals: []
+      summary: Read the OpenAPI YAML from this application build
+      description: The handler returns the repository OpenAPI file. A successful source build does not prove hosted endpoint availability or deployment parity.
+      responses:
+        "200":
+          description: YAML OpenAPI document
+          content:
+            application/yaml:
+              schema: { type: string }
+  /api/public/status.json:
+    get:
+      tags: [Platform]
+      operationId: getPublicStatus
+      x-source-handler: "GET inline handler"
+      x-source-file: "src/routes/api/public/status[.]json.ts"
+      x-source-line: 19
+      x-source-error-literals: []
+      summary: Read the public system status snapshot
+      responses:
+        "200": { description: Snapshot available, content: { application/json: { schema: { $ref: "#/components/schemas/JsonObject" } } } }
+        "503": { description: Status snapshot reports an unavailable data dependency, content: { application/json: { schema: { $ref: "#/components/schemas/JsonObject" } } } }
+  /api/public/tokens/introspect:
+    post:
+      tags: [Platform, Tenant]
+      operationId: introspectTenantApiToken
+      x-source-handler: "introspectWorkflowToken"
+      x-source-file: "src/lib/public-workflow-api.server.ts"
+      x-source-line: 105
+      x-source-error-literals: ["authentication_unavailable","invalid_token","missing_bearer","missing_scope","rate_limit_exceeded","rate_limit_unavailable","tenant_lookup_unavailable","token_expired","unaccountable_token"]
+      summary: Validate the bearer token on the request
+      description: Returns active status, tenant slug, actor subject, scope list, and expiry for the same bearer token. Limited to 120 requests per token per 60-second window.
+      security: [{ tenantApiToken: [] }]
+      responses:
+        "200": { description: Token is active, content: { application/json: { schema: { type: object, required: [active, tenant_slug, subject, scopes], properties: { active: { type: boolean }, tenant_slug: { type: string }, subject: { type: string }, scopes: { type: array, items: { type: string } }, expires_at: { type: [string, "null"], format: date-time } } } } } }
+        "401": { description: Missing, invalid, revoked, or expired token, content: { application/json: { schema: { $ref: "#/components/schemas/ApiError" } } } }
+        "429": { description: Rate limit exceeded; response includes `Retry-After` and `retry_after_seconds`. }
+        "503": { description: Authentication, rate limit, or tenant lookup unavailable. }
+  /api/public/regulatory/packs:
+    get:
+      tags: [Platform]
+      operationId: listPublishedRegulatoryPacks
+      x-source-handler: "GET inline handler"
+      x-source-file: "src/routes/api/public/regulatory/packs.ts"
+      x-source-line: 21
+      x-source-error-literals: []
+      summary: List public metadata for published regulatory packs
+      description: Anonymous read of published catalogue metadata only; install counts and field-dictionary internals are not returned.
+      responses: { "200": { description: Published regulatory pack metadata; body contains a packs array. }, "503": { description: Catalogue lookup unavailable. } }
+  /api/public/ai/inference:
+    post:
+      tags: [Workspace]
+      operationId: proxyAiInference
+      x-source-handler: "POST inline handler"
+      x-source-file: "src/routes/api/public/ai/inference.ts"
+      x-source-line: 42
+      x-source-error-literals: ["api-token auth disabled","invalid json","invalid jwt","missing bearer","provider endpoint not configured","server misconfigured","token expired","token lacks ai.inference scope","token revoked","unknown token"]
+      summary: Proxy an AI inference request through configured routes
+      description: Source accepts either a Supabase user JWT (user/tenant access remains RLS-scoped) or an API token with the `ai.inference` scope. The API-token tenant is derived from the token. Provider/model availability and upstream response bodies vary by runtime configuration.
+      security:
+        - tenantApiToken: []
+        - userSession: []
+      x-required-scope: ai.inference
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/AiInferenceRequest" } } } }
+      responses: { "200": { description: Upstream model response. }, "401": { description: Missing or invalid bearer. }, "403": { description: API token lacks ai.inference or user access is denied. }, "424": { description: Provider endpoint is not configured. }, default: { description: Route, provider, or upstream failure; see current source for response behavior. } }
+  /api/public/aidp/extract:
+    post:
+      tags: [Workspace]
+      operationId: queueAidpExtraction
+      x-source-handler: "POST inline handler"
+      x-source-file: "src/routes/api/public/aidp/extract.ts"
+      x-source-line: 71
+      x-source-error-literals: ["callback_url_must_be_https","dead","failed","file_fetch_failed","file_host_not_allowed","file_too_large","file_url_must_be_https","idempotency_key_too_long","internal_processing_error","invalid_callback_url","invalid_file_url","invalid_json","invalid_token","missing_bearer","missing_document_type_code","missing_file_url","missing_scope","path_traversal","quota_exceeded","token_expired","token_revoked","unknown_document_type_code","unsupported_content_type"]
+      summary: Fetch an approved document URL and queue AIDP extraction
+      description: Accepts the token in `x-aidp-token` or Authorization bearer, requires `aidp:extract`, downloads only allow-listed HTTPS PDF/PNG/JPEG sources up to 50 MiB, and returns a queued job. Optional idempotency key (maximum 200 characters) is source-supported; it is not required.
+      security:
+        - aidpToken: []
+        - tenantApiToken: []
+      x-required-scope: aidp:extract
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/AidpExtractRequest" } } } }
+      responses: { "202": { description: Job queued; includes job_id, document_id, status and Location. }, "200": { description: Idempotent replay returned a completed extraction response. }, "400": { description: Invalid body, URL, host, MIME type, or document type. }, "401": { description: Token is missing, invalid, revoked, or expired. }, "413": { description: File is larger than 50 MiB. }, "429": { description: Tenant AIDP quota exceeded. }, "501": { description: API-token auth is disabled in this runtime. }, "503": { description: Required queue/storage/service unavailable. } }
+  /api/public/aidp/jobs/{jobId}:
+    get:
+      tags: [Workspace]
+      operationId: getAidpExtractionJob
+      x-source-handler: "GET inline handler"
+      x-source-file: "src/routes/api/public/aidp/jobs.$jobId.ts"
+      x-source-line: 12
+      x-source-error-literals: ["invalid_token","job_lookup_failed","job_not_found","missing_bearer","missing_scope","processing_failed","token_expired"]
+      summary: Poll an AIDP extraction job
+      description: >-
+        Requires the same token tenant and `aidp:extract`. While queued/running,
+        the source returns HTTP 200 plus `Retry-After: 2`; a successful job
+        returns its stored extraction response.
+      security:
+        - aidpToken: []
+        - tenantApiToken: []
+      x-required-scope: aidp:extract
+      parameters: [{ name: jobId, in: path, required: true, schema: { type: string, format: uuid } }]
+      responses: { "200": { description: Job status or completed extraction result. }, "401": { description: Token invalid or expired. }, "403": { description: Token lacks aidp:extract. }, "404": { description: Job not found in token tenant. }, "500": { description: Job lookup failed. } }
+  /api/public/oauth/register:
+    get:
+      tags: [Platform, Identity]
+      operationId: readOAuthClientMetadata
+      x-source-handler: "GET inline handler"
+      x-source-file: "src/routes/api/public/oauth/register.ts"
+      x-source-line: 16
+      x-source-error-literals: []
+      summary: Read registered OAuth client metadata for a redirect URI
+      parameters:
+        - { name: client_id, in: query, required: true, schema: { type: string } }
+        - { name: redirect_uri, in: query, required: true, schema: { type: string, format: uri } }
+      responses:
+        "200": { description: Registered client name and allowed scopes. }
+        "400": { description: Client or redirect URI is invalid. }
+    post:
+      tags: [Platform, Identity]
+      operationId: registerMcpOAuthClient
+      x-source-handler: "POST inline handler"
+      x-source-file: "src/routes/api/public/oauth/register.ts"
+      x-source-line: 32
+      x-source-error-literals: ["rate_limit_exceeded"]
+      summary: Register an OAuth authorization-code client
+      description: This MCP OAuth registration route is separate from tenant API token issuance. HTTPS or loopback redirect URIs only; only authorization_code and refresh_token grant types are accepted.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [client_name, redirect_uris], properties: { client_name: { type: string, minLength: 1, maxLength: 120 }, redirect_uris: { type: array, minItems: 1, maxItems: 10, items: { type: string, format: uri } }, scope: { type: string }, grant_types: { type: array, items: { type: string } }, response_types: { type: array, items: { type: string } }, token_endpoint_auth_method: { type: string, enum: [none] } } }
+      responses:
+        "201": { description: Client registered with an issued `client_id`. }
+        "400": { description: Client metadata, redirect URI, grant type, or scope rejected. }
+        "429": { description: Registration rate limit exceeded; response includes `Retry-After`. }
+        "503": { description: Client registration unavailable. }
+  /api/public/oauth/mcp-authorize:
+    get:
+      tags: [Identity]
+      operationId: listMcpAuthorizationMemberships
+      x-source-handler: "GET inline handler"
+      x-source-file: "src/routes/api/public/oauth/mcp-authorize.ts"
+      x-source-line: 19
+      x-source-error-literals: []
+      summary: List active tenant memberships for the signed-in user
+      security: [{ userSession: [] }]
+      responses:
+        "200": { description: Active memberships visible to this signed-in user. }
+        "401": { description: ReconIQ user session required or invalid. }
+        "503": { description: Membership lookup unavailable. }
+    post:
+      tags: [Identity]
+      operationId: authorizeMcpOAuthClient
+      x-source-handler: "POST inline handler"
+      x-source-file: "src/routes/api/public/oauth/mcp-authorize.ts"
+      x-source-line: 31
+      x-source-error-literals: []
+      summary: Authorize an OAuth client for one tenant and selected scopes
+      security: [{ userSession: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [client_id, redirect_uri, scope, code_challenge, code_challenge_method, tenant_id], properties: { client_id: { type: string }, redirect_uri: { type: string, format: uri }, scope: { type: string }, state: { type: string, maxLength: 1000 }, code_challenge: { type: string, minLength: 43, maxLength: 128 }, code_challenge_method: { type: string, const: S256 }, tenant_id: { type: string, format: uuid }, resource: { type: string, format: uri } } }
+      responses:
+        "200": { description: Authorization result with redirect_to URL containing a short-lived one-time code. }
+        "400": { description: Invalid client, redirect URI, code challenge, tenant or scope. }
+        "401": { description: ReconIQ user session required or invalid. }
+        "403": { description: User is not an active member of the selected tenant. }
+  /api/public/oauth/mcp-token:
+    post:
+      tags: [Identity]
+      operationId: exchangeMcpOAuthGrant
+      x-source-handler: "POST inline handler"
+      x-source-file: "src/routes/api/public/oauth/mcp-token.ts"
+      x-source-line: 27
+      x-source-error-literals: ["rate_limit_exceeded"]
+      summary: Exchange an authorization code or refresh token
+      description: Accepts JSON or form-encoded input. Grants supported by source are authorization_code and refresh_token; access tokens expire after 3600 seconds and refresh tokens after 30 days.
+      requestBody:
+        required: true
+        content:
+          application/json: { schema: { type: object, required: [client_id, grant_type], properties: { client_id: { type: string }, grant_type: { type: string, enum: [authorization_code, refresh_token] }, code: { type: string }, redirect_uri: { type: string, format: uri }, code_verifier: { type: string }, refresh_token: { type: string } } } }
+          application/x-www-form-urlencoded: { schema: { type: object, properties: { client_id: { type: string }, grant_type: { type: string, enum: [authorization_code, refresh_token] }, code: { type: string }, redirect_uri: { type: string }, code_verifier: { type: string }, refresh_token: { type: string } } } }
+      responses:
+        "200": { description: Access and rotated refresh token. }
+        "400": { description: Invalid/expired grant or unsupported grant type. }
+        "401": { description: OAuth client is inactive or invalid. }
+        "429": { description: Rate limit exceeded; response includes `Retry-After`. }
+        "503": { description: Token issuance unavailable. }
+  /api/public/oauth/token:
+    post:
+      tags: [Platform]
+      operationId: issueSandboxClientCredentialsToken
+      x-source-handler: "POST inline handler"
+      x-source-file: "src/routes/api/public/oauth/token.ts"
+      x-source-line: 72
+      x-source-error-literals: []
+      summary: Issue an isolated developer-sandbox OAuth token
+      description: This source route issues a sandbox JWT (`aud=fvi-sandbox`) with only `read`/`write` sandbox scopes. It is not a tenant REST API token and must not be used with `/api/v1/{tenantSlug}` routes. Runtime secret/client setup and hosted availability are environment-dependent.
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded: { schema: { type: object, required: [grant_type, client_id, client_secret], properties: { grant_type: { type: string, const: client_credentials }, client_id: { type: string }, client_secret: { type: string }, scope: { type: string } } } }
+          application/json: { schema: { type: object, required: [grant_type, client_id, client_secret], properties: { grant_type: { type: string, const: client_credentials }, client_id: { type: string }, client_secret: { type: string }, scope: { type: string } } } }
+      responses:
+        "200": { description: One-hour sandbox token; no refresh token is returned. }
+        "400": { description: Unsupported grant, invalid request, or invalid scope. }
+        "401": { description: Client authentication failed. }
+        "503": { description: Sandbox token issuance unavailable. }
+  /api/public/scim/v2/{resource}:
+    parameters:
+      - { name: resource, in: path, required: true, schema: { type: string, enum: [Users, Groups] } }
+    get:
+      tags: [Identity, Tenant]
+      operationId: listScimResources
+      x-source-handler: "GET inline handler"
+      x-source-file: "src/routes/api/public/scim/v2/$.ts"
+      x-source-line: 603
+      x-source-error-literals: []
+      summary: List tenant SCIM Users or Groups
+      security: [{ scimToken: [] }]
+      parameters:
+        - { name: filter, in: query, required: false, schema: { type: string } }
+        - { name: startIndex, in: query, required: false, schema: { type: integer, minimum: 1, default: 1 } }
+        - { name: count, in: query, required: false, schema: { type: integer, minimum: 0, default: 100 } }
+      responses:
+        "200": { description: SCIM ListResponse; source supports Users and Groups. }
+        "401": { description: Dedicated SCIM bearer token required, content: { application/scim+json: { schema: { $ref: "#/components/schemas/ScimError" } } } }
+    post:
+      tags: [Identity, Tenant]
+      operationId: createScimResource
+      x-source-handler: "POST inline handler"
+      x-source-file: "src/routes/api/public/scim/v2/$.ts"
+      x-source-line: 608
+      x-source-error-literals: []
+      summary: Create a SCIM User or Group in the token-bound tenant
+      security: [{ scimToken: [] }]
+      requestBody: { required: true, content: { application/scim+json: { schema: { $ref: "#/components/schemas/JsonObject" } } } }
+      responses:
+        "201": { description: SCIM resource created. }
+        "401": { description: SCIM authentication failed. }
+  /api/public/scim/v2/{resource}/{id}:
+    parameters:
+      - { name: resource, in: path, required: true, schema: { type: string, enum: [Users, Groups] } }
+      - { name: id, in: path, required: true, schema: { type: string } }
+    get:
+      tags: [Identity, Tenant]
+      operationId: getScimResource
+      x-source-handler: "GET inline handler"
+      x-source-file: "src/routes/api/public/scim/v2/$.ts"
+      x-source-line: 603
+      x-source-error-literals: []
+      summary: Read one SCIM User or Group
+      security: [{ scimToken: [] }]
+      responses:
+        "200": { description: SCIM resource. }
+        "401": { description: SCIM authentication failed. }
+        "404": { description: Resource not found in the token-bound tenant. }
+    put:
+      tags: [Identity, Tenant]
+      operationId: replaceScimResource
+      x-source-handler: "PUT inline handler"
+      x-source-file: "src/routes/api/public/scim/v2/$.ts"
+      x-source-line: 618
+      x-source-error-literals: []
+      summary: Apply a SCIM replace operation
+      security: [{ scimToken: [] }]
+      requestBody: { required: true, content: { application/scim+json: { schema: { $ref: "#/components/schemas/JsonObject" } } } }
+      responses:
+        "200": { description: Updated SCIM resource. }
+        "401": { description: SCIM authentication failed. }
+    patch:
+      tags: [Identity, Tenant]
+      operationId: patchScimResource
+      x-source-handler: "PATCH inline handler"
+      x-source-file: "src/routes/api/public/scim/v2/$.ts"
+      x-source-line: 613
+      x-source-error-literals: []
+      summary: Apply SCIM PATCH operations
+      security: [{ scimToken: [] }]
+      requestBody: { required: true, content: { application/scim+json: { schema: { $ref: "#/components/schemas/JsonObject" } } } }
+      responses:
+        "200": { description: Updated SCIM resource. }
+        "400": { description: Invalid patch document. }
+        "401": { description: SCIM authentication failed. }
+    delete:
+      tags: [Identity, Tenant]
+      operationId: deleteScimResource
+      x-source-handler: "DELETE inline handler"
+      x-source-file: "src/routes/api/public/scim/v2/$.ts"
+      x-source-line: 627
+      x-source-error-literals: []
+      summary: Soft-deactivate a SCIM User or delete a Group
+      security: [{ scimToken: [] }]
+      responses:
+        "204": { description: Resource changed. User deletion is a soft deactivation. }
+        "401": { description: SCIM authentication failed. }
+        "404": { description: Resource not found. }
+
+  /api/v1/{tenantSlug}/recons/:
+    parameters: [{ $ref: "#/components/parameters/TenantSlug" }]
+    get:
+      tags: [Workspace, Tenant]
+      operationId: listTenantReconciliations
+      x-source-handler: "listPublicReconciliations"
+      x-source-file: "src/lib/public-operations-api.server.ts"
+      x-source-line: 22
+      x-source-error-literals: ["audit_unavailable","authentication_unavailable","invalid_token","missing_bearer","missing_scope","rate_limit_exceeded","rate_limit_unavailable","reconciliation_lookup_unavailable","tenant_lookup_unavailable","tenant_scope_mismatch","token_expired","unaccountable_token"]
+      summary: List bounded reconciliation definitions and latest-run summaries
+      security: [{ tenantApiToken: [] }]
+      x-required-scope: recons.read
+      parameters: [{ $ref: "#/components/parameters/Limit" }]
+      responses:
+        "200": { description: Bounded reconciliation summary list with count; maximum 200 definitions. }
+        "401": { description: Bearer token is missing, invalid, revoked, or expired. }
+        "403": { description: Missing `recons.read` or tenantSlug/token tenant mismatch. }
+        "429": { description: 120 requests per 60-second token/scope window exceeded. }
+  /api/v1/{tenantSlug}/recons/{reconId}/:
+    parameters:
+      - { $ref: "#/components/parameters/TenantSlug" }
+      - { name: reconId, in: path, required: true, schema: { type: string, format: uuid } }
+    get:
+      tags: [Workspace, Tenant]
+      operationId: getTenantReconciliation
+      x-source-handler: "getPublicReconciliation"
+      x-source-file: "src/lib/public-operations-api.server.ts"
+      x-source-line: 65
+      x-source-error-literals: ["audit_unavailable","authentication_unavailable","invalid_recon_id","invalid_token","missing_bearer","missing_scope","rate_limit_exceeded","rate_limit_unavailable","reconciliation_lookup_unavailable","reconciliation_not_found","tenant_lookup_unavailable","tenant_scope_mismatch","token_expired","unaccountable_token"]
+      summary: Read a reconciliation and up to 20 recent runs
+      security: [{ tenantApiToken: [] }]
+      x-required-scope: recons.read
+      responses:
+        "200": { description: Reconciliation definition detail and recent run list. }
+        "404": { description: Reconciliation is not visible in this tenant. }
+  /api/v1/{tenantSlug}/recons/{reconId}/runs:
+    parameters:
+      - { $ref: "#/components/parameters/TenantSlug" }
+      - { name: reconId, in: path, required: true, schema: { type: string, format: uuid } }
+    post:
+      tags: [Workspace]
+      operationId: queueTenantReconciliationRun
+      x-source-handler: "queueWorkflowApiJob"
+      x-source-file: "src/lib/public-workflow-api.server.ts"
+      x-source-line: 186
+      x-source-error-literals: ["authentication_unavailable","invalid_resource_id","invalid_token","missing_bearer","missing_scope","queue_unavailable","rate_limit_exceeded","rate_limit_unavailable","resource_not_found","tenant_lookup_unavailable","tenant_scope_mismatch","token_expired","unaccountable_token","valid_idempotency_key_required"]
+      summary: Queue a reconciliation run
+      description: Returns 202 while the workflow job is queued/running, or 200 if the idempotent job already succeeded. Poll the `Location` job resource.
+      security: [{ tenantApiToken: [] }]
+      x-required-scope: recons.run
+      parameters: [{ $ref: "#/components/parameters/IdempotencyKey" }]
+      responses:
+        "200": { description: Job already succeeded. }
+        "202": { description: Job accepted; `Location` points to the workflow job and `Retry-After` is 2 seconds. }
+        "400": { description: Invalid UUID or missing/invalid idempotency key. }
+        "403": { description: Missing `recons.run` or tenant mismatch. }
+        "404": { description: Reconciliation not found. }
+        "429": { description: 60 workflow jobs per 60-second token/job-kind window exceeded. }
+  /api/v1/{tenantSlug}/recons/{reconId}/breaks/:
+    parameters:
+      - { $ref: "#/components/parameters/TenantSlug" }
+      - { name: reconId, in: path, required: true, schema: { type: string, format: uuid } }
+    get:
+      tags: [Workspace]
+      operationId: listReconciliationBreaks
+      x-source-handler: "listPublicBreaks"
+      x-source-file: "src/lib/public-break-api.server.ts"
+      x-source-line: 130
+      x-source-error-literals: ["authentication_unavailable","break_audit_unavailable","break_lookup_unavailable","invalid_assignee","invalid_recon_id","invalid_state","invalid_token","missing_bearer","missing_scope","rate_limit_exceeded","rate_limit_unavailable","tenant_lookup_unavailable","tenant_scope_mismatch","token_expired","unaccountable_token"]
+      summary: List tenant breaks for a reconciliation
+      security: [{ tenantApiToken: [] }]
+      x-required-scope: recons.read
+      parameters:
+        - { $ref: "#/components/parameters/Limit" }
+        - { $ref: "#/components/parameters/BreakCursor" }
+        - { name: state, in: query, schema: { type: string, enum: [new, assigned, investigating, pending_counterparty, resolved, written_off] } }
+        - { name: assignee, in: query, schema: { type: string, format: uuid } }
+      responses:
+        "200": { description: Bounded break list and timestamp next cursor. }
+        "400": { description: Invalid recon ID, state, or assignee. }
+  /api/v1/{tenantSlug}/recons/{reconId}/breaks/{breakId}:
+    parameters:
+      - { $ref: "#/components/parameters/TenantSlug" }
+      - { name: reconId, in: path, required: true, schema: { type: string, format: uuid } }
+      - { name: breakId, in: path, required: true, schema: { type: string, format: uuid } }
+    get:
+      tags: [Workspace]
+      operationId: getReconciliationBreak
+      x-source-handler: "getPublicBreak"
+      x-source-file: "src/lib/public-break-api.server.ts"
+      x-source-line: 196
+      x-source-error-literals: ["authentication_unavailable","break_audit_unavailable","break_evidence_unavailable","break_lookup_unavailable","break_not_found","invalid_resource_id","invalid_token","missing_bearer","missing_scope","rate_limit_exceeded","rate_limit_unavailable","tenant_lookup_unavailable","tenant_scope_mismatch","token_expired","unaccountable_token"]
+      summary: Read one break and its available evidence collections
+      security: [{ tenantApiToken: [] }]
+      x-required-scope: recons.read
+      responses:
+        "200": { description: Break data, comments, attachments, notes, write-off requests, and audit events. }
+        "404": { description: Break not found in this reconciliation/tenant. }
+  /api/v1/{tenantSlug}/recons/{reconId}/breaks/{breakId}/actions:
+    parameters:
+      - { $ref: "#/components/parameters/TenantSlug" }
+      - { name: reconId, in: path, required: true, schema: { type: string, format: uuid } }
+      - { name: breakId, in: path, required: true, schema: { type: string, format: uuid } }
+    post:
+      tags: [Workspace, Governance]
+      operationId: applyBreakAction
+      x-source-handler: "actionPublicBreak"
+      x-source-file: "src/lib/public-break-api.server.ts"
+      x-source-line: 273
+      x-source-error-literals: ["authentication_unavailable","break_action_unavailable","break_lookup_unavailable","break_not_found","idempotency_conflict","idempotency_unavailable","independent_approval_required","invalid_json","invalid_resource_id","invalid_token","missing_bearer","missing_scope","rate_limit_exceeded","rate_limit_unavailable","request_in_progress","tenant_lookup_unavailable","tenant_scope_mismatch","token_expired","unaccountable_token","valid_idempotency_key_required","validation_error"]
+      summary: Apply one supported break action
+      description: Supported actions include assign, classify, comment, attach metadata, resolve, write off, approve/reject write-off, reopen, and reprocess. `reprocess` additionally requires `recons.run`; write-off approval requires maker/checker independence.
+      security: [{ tenantApiToken: [] }]
+      x-required-scope: breaks.write
+      parameters: [{ $ref: "#/components/parameters/IdempotencyKey" }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/BreakAction" } } } }
+      responses:
+        "200": { description: Action completed. }
+        "201": { description: Comment or attachment metadata created. }
+        "202": { description: Write-off request or reprocess workflow job queued. }
+        "403": { description: Missing scope or independent approval rule failed. }
+        "409": { description: Idempotency key reused with a different body or request in progress. }
+        "422": { description: Action body validation failed. }
+  /api/v1/{tenantSlug}/connectors/:
+    parameters: [{ $ref: "#/components/parameters/TenantSlug" }]
+    get:
+      tags: [Workspace]
+      operationId: listConnectorSchedules
+      x-source-handler: "listPublicConnectorSchedules"
+      x-source-file: "src/lib/public-operations-api.server.ts"
+      x-source-line: 105
+      x-source-error-literals: ["audit_unavailable","authentication_unavailable","connector_lookup_unavailable","invalid_token","missing_bearer","missing_scope","rate_limit_exceeded","rate_limit_unavailable","tenant_lookup_unavailable","tenant_scope_mismatch","token_expired","unaccountable_token"]
+      summary: List bounded connector schedule summaries
+      security: [{ tenantApiToken: [] }]
+      x-required-scope: connectors.read
+      parameters: [{ $ref: "#/components/parameters/Limit" }]
+      responses:
+        "200": { description: Bounded connector schedule summaries; configuration and credential material are excluded. }
+  /api/v1/{tenantSlug}/connectors/capabilities:
+    parameters: [{ $ref: "#/components/parameters/TenantSlug" }]
+    get:
+      tags: [Workspace]
+      operationId: listConnectorCapabilities
+      x-source-handler: "getPublicConnectorCapabilities"
+      x-source-file: "src/lib/public-operations-api.server.ts"
+      x-source-line: 133
+      x-source-error-literals: ["audit_unavailable","authentication_unavailable","invalid_token","missing_bearer","missing_scope","rate_limit_exceeded","rate_limit_unavailable","tenant_lookup_unavailable","tenant_scope_mismatch","token_expired","unaccountable_token"]
+      summary: List supported connector types and execution modes
+      security: [{ tenantApiToken: [] }]
+      x-required-scope: connectors.read
+      responses:
+        "200": { description: Connector capabilities. }
+  /api/v1/{tenantSlug}/connectors/{scheduleId}/runs:
+    parameters:
+      - { $ref: "#/components/parameters/TenantSlug" }
+      - { name: scheduleId, in: path, required: true, schema: { type: string, format: uuid } }
+    post:
+      tags: [Workspace]
+      operationId: queueConnectorRun
+      x-source-handler: "queueWorkflowApiJob"
+      x-source-file: "src/lib/public-workflow-api.server.ts"
+      x-source-line: 186
+      x-source-error-literals: ["authentication_unavailable","invalid_resource_id","invalid_token","missing_bearer","missing_scope","queue_unavailable","rate_limit_exceeded","rate_limit_unavailable","resource_not_found","tenant_lookup_unavailable","tenant_scope_mismatch","token_expired","unaccountable_token","valid_idempotency_key_required"]
+      summary: Queue a connector schedule run
+      security: [{ tenantApiToken: [] }]
+      x-required-scope: connectors.run
+      parameters: [{ $ref: "#/components/parameters/IdempotencyKey" }]
+      responses:
+        "200": { description: Job already succeeded. }
+        "202": { description: Job queued; poll `Location` with `Retry-After`. }
+        "403": { description: Missing `connectors.run` or tenant mismatch. }
+        "404": { description: Schedule not found. }
+  /api/v1/{tenantSlug}/connector-agent/lease:
+    parameters: [{ $ref: "#/components/parameters/TenantSlug" }]
+    post:
+      tags: [Workspace]
+      operationId: leaseConnectorAgentJob
+      x-source-handler: "leaseConnectorAgentJob"
+      x-source-file: "src/lib/connector-agent-api.server.ts"
+      x-source-line: 70
+      x-source-error-literals: ["agent_lease_unavailable","authentication_unavailable","invalid_agent_lease","invalid_token","missing_bearer","missing_scope","rate_limit_exceeded","rate_limit_unavailable","tenant_lookup_unavailable","tenant_scope_mismatch","token_expired","unaccountable_token"]
+      summary: Lease one pending connector-agent job
+      description: Machine-agent route. The server applies a 60/minute token/scope rate limit; no job returns HTTP 204. Do not use the human connector schedule run route for agent result upload.
+      security: [{ tenantApiToken: [] }]
+      x-required-scope: connectors.agent
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/ConnectorAgentLease" } } } }
+      responses:
+        "200": { description: One job was leased. Response includes job_id, schedule_id, connector_type, config, attempt, and lease expiry. }
+        "204": { description: No pending job is available. }
+        "400": { description: Invalid JSON or oversized body. }
+        "422": { description: Invalid agent ID or lease duration. }
+  /api/v1/{tenantSlug}/connector-agent/jobs/{jobId}/complete:
+    parameters:
+      - { $ref: "#/components/parameters/TenantSlug" }
+      - { name: jobId, in: path, required: true, schema: { type: string, format: uuid } }
+    post:
+      tags: [Workspace]
+      operationId: completeConnectorAgentJob
+      x-source-handler: "completeConnectorAgentJob"
+      x-source-file: "src/lib/connector-agent-api.server.ts"
+      x-source-line: 112
+      x-source-error-literals: ["agent_completion_rejected","authentication_unavailable","invalid_connector_result","invalid_job_id","invalid_token","missing_bearer","missing_scope","rate_limit_exceeded","rate_limit_unavailable","tenant_lookup_unavailable","tenant_scope_mismatch","token_expired","unaccountable_token"]
+      summary: Submit a validated connector-agent result
+      description: Maximum request size is 10 MiB; rows are capped at 50,000 and columns at 500. Rows/columns/filename must agree. The server computes a content hash and records an upload result.
+      security: [{ tenantApiToken: [] }]
+      x-required-scope: connectors.agent
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/ConnectorAgentResult" } } } }
+      responses: { "200": { description: Completed job with upload_id and row_count. }, "400": { description: Invalid JSON or oversized body. }, "409": { description: Job/lease is no longer valid. }, "422": { description: Connector result is invalid. } }
+  /api/v1/{tenantSlug}/connector-agent/jobs/{jobId}/fail:
+    parameters:
+      - { $ref: "#/components/parameters/TenantSlug" }
+      - { name: jobId, in: path, required: true, schema: { type: string, format: uuid } }
+    post:
+      tags: [Workspace]
+      operationId: failConnectorAgentJob
+      x-source-handler: "failConnectorAgentJob"
+      x-source-file: "src/lib/connector-agent-api.server.ts"
+      x-source-line: 156
+      x-source-error-literals: ["agent_failure_rejected","authentication_unavailable","invalid_agent_failure","invalid_job_id","invalid_token","missing_bearer","missing_scope","rate_limit_exceeded","rate_limit_unavailable","tenant_lookup_unavailable","tenant_scope_mismatch","token_expired","unaccountable_token"]
+      summary: Report a sanitized connector-agent failure code
+      security: [{ tenantApiToken: [] }]
+      x-required-scope: connectors.agent
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/ConnectorAgentFailure" } } } }
+      responses: { "200": { description: Job failure recorded with retry metadata. }, "400": { description: Invalid JSON or oversized body. }, "409": { description: Job/lease is no longer valid. }, "422": { description: Agent ID or error code is invalid. } }
+  /api/v1/{tenantSlug}/watchers/:
+    parameters: [{ $ref: "#/components/parameters/TenantSlug" }]
+    get:
+      tags: [Workspace]
+      operationId: listWatchers
+      x-source-handler: "listPublicWatchers"
+      x-source-file: "src/lib/public-watcher-api.server.ts"
+      x-source-line: 48
+      x-source-error-literals: ["authentication_unavailable","invalid_token","missing_bearer","missing_scope","rate_limit_exceeded","rate_limit_unavailable","tenant_lookup_unavailable","tenant_scope_mismatch","token_expired","unaccountable_token","watcher_audit_unavailable","watcher_lookup_unavailable"]
+      summary: List bounded tenant watcher summaries
+      security: [{ tenantApiToken: [] }]
+      x-required-scope: watchers.read
+      parameters: [{ $ref: "#/components/parameters/Limit" }]
+      responses:
+        "200": { description: Bounded watcher list with count. }
+    post:
+      tags: [Workspace]
+      operationId: createWatcher
+      x-source-handler: "createPublicWatcher"
+      x-source-file: "src/lib/public-watcher-api.server.ts"
+      x-source-line: 85
+      x-source-error-literals: ["authentication_unavailable","data_source_not_found","idempotency_conflict","idempotency_unavailable","invalid_token","missing_bearer","missing_scope","rate_limit_exceeded","rate_limit_unavailable","request_in_progress","tenant_lookup_unavailable","tenant_scope_mismatch","token_expired","unaccountable_token","valid_idempotency_key_required","validation_error","watcher_create_unavailable"]
+      summary: Create a source-bound data watcher
+      security: [{ tenantApiToken: [] }]
+      x-required-scope: watchers.write
+      parameters: [{ $ref: "#/components/parameters/IdempotencyKey" }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/WatcherInput" } } } }
+      responses:
+        "201": { description: Watcher created. }
+        "404": { description: Source data source not found in this tenant. }
+        "422": { description: Watcher configuration invalid. }
+  /api/v1/{tenantSlug}/watchers/{watcherId}/:
+    parameters:
+      - { $ref: "#/components/parameters/TenantSlug" }
+      - { name: watcherId, in: path, required: true, schema: { type: string, format: uuid } }
+    patch:
+      tags: [Workspace]
+      operationId: updateWatcher
+      x-source-handler: "updatePublicWatcher"
+      x-source-file: "src/lib/public-watcher-api.server.ts"
+      x-source-line: 221
+      x-source-error-literals: ["authentication_unavailable","data_source_lookup_unavailable","data_source_not_found","idempotency_conflict","idempotency_unavailable","invalid_token","missing_bearer","missing_scope","rate_limit_exceeded","rate_limit_unavailable","request_in_progress","tenant_lookup_unavailable","tenant_scope_mismatch","token_expired","unaccountable_token","valid_idempotency_key_required","validation_error","watcher_audit_unavailable","watcher_lookup_unavailable","watcher_not_found","watcher_update_unavailable"]
+      summary: Update a tenant watcher
+      security: [{ tenantApiToken: [] }]
+      x-required-scope: watchers.write
+      parameters: [{ $ref: "#/components/parameters/IdempotencyKey" }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/WatcherInput" } } } }
+      responses:
+        "200": { description: Watcher updated. }
+        "404": { description: Watcher or bound source is not visible. }
+  /api/v1/{tenantSlug}/watchers/{watcherId}/disable:
+    parameters:
+      - { $ref: "#/components/parameters/TenantSlug" }
+      - { name: watcherId, in: path, required: true, schema: { type: string, format: uuid } }
+    post:
+      tags: [Workspace]
+      operationId: disableWatcher
+      x-source-handler: "disablePublicWatcher"
+      x-source-file: "src/lib/public-watcher-api.server.ts"
+      x-source-line: 311
+      x-source-error-literals: ["authentication_unavailable","idempotency_conflict","idempotency_unavailable","invalid_token","missing_bearer","missing_scope","rate_limit_exceeded","rate_limit_unavailable","request_in_progress","tenant_lookup_unavailable","tenant_scope_mismatch","token_expired","unaccountable_token","valid_idempotency_key_required","watcher_audit_unavailable","watcher_disable_unavailable","watcher_lookup_unavailable","watcher_not_found"]
+      summary: Disable a watcher while retaining its history
+      security: [{ tenantApiToken: [] }]
+      x-required-scope: watchers.write
+      parameters: [{ $ref: "#/components/parameters/IdempotencyKey" }]
+      responses: { "200": { description: Watcher disabled; history retained. }, "404": { description: Watcher not found. } }
+  /api/v1/{tenantSlug}/watchers/{watcherId}/evaluate:
+    parameters:
+      - { $ref: "#/components/parameters/TenantSlug" }
+      - { name: watcherId, in: path, required: true, schema: { type: string, format: uuid } }
+    post:
+      tags: [Workspace]
+      operationId: evaluateWatcher
+      x-source-handler: "evaluatePublicWatcher"
+      x-source-file: "src/lib/public-watcher-api.server.ts"
+      x-source-line: 389
+      x-source-error-literals: ["authentication_unavailable","idempotency_conflict","idempotency_unavailable","invalid_token","missing_bearer","missing_scope","rate_limit_exceeded","rate_limit_unavailable","request_in_progress","tenant_lookup_unavailable","tenant_scope_mismatch","token_expired","unaccountable_token","valid_idempotency_key_required","watcher_evaluation_unavailable","watcher_lookup_unavailable","watcher_not_found"]
+      summary: Evaluate a watcher through the shared engine
+      security: [{ tenantApiToken: [] }]
+      x-required-scope: watchers.write
+      parameters: [{ $ref: "#/components/parameters/IdempotencyKey" }]
+      responses: { "200": { description: Evaluation result. }, "404": { description: Watcher not found. } }
+  /api/v1/{tenantSlug}/watchers/{watcherId}/events:
+    parameters:
+      - { $ref: "#/components/parameters/TenantSlug" }
+      - { name: watcherId, in: path, required: true, schema: { type: string, format: uuid } }
+    get:
+      tags: [Workspace]
+      operationId: listWatcherEvents
+      x-source-handler: "listPublicWatcherEvents"
+      x-source-file: "src/lib/public-watcher-api.server.ts"
+      x-source-line: 451
+      x-source-error-literals: ["authentication_unavailable","invalid_token","missing_bearer","missing_scope","rate_limit_exceeded","rate_limit_unavailable","tenant_lookup_unavailable","tenant_scope_mismatch","token_expired","unaccountable_token","watcher_audit_unavailable","watcher_event_lookup_unavailable","watcher_lookup_unavailable","watcher_not_found"]
+      summary: List bounded watcher evaluation history
+      security: [{ tenantApiToken: [] }]
+      x-required-scope: watchers.read
+      parameters: [{ $ref: "#/components/parameters/Limit" }]
+      responses: { "200": { description: Bounded watcher list with count. }, "404": { description: Watcher not found. } }
+
+  /api/v1/{tenantSlug}/data-prep/pipelines/:
+    parameters: [{ $ref: "#/components/parameters/TenantSlug" }]
+    get:
+      tags: [Workspace, Governance]
+      operationId: listDataPrepPipelines
+      x-source-handler: "listPublicDataPrepPipelines"
+      x-source-file: "src/lib/public-data-prep-api.server.ts"
+      x-source-line: 106
+      x-source-error-literals: ["authentication_unavailable","data_prep_audit_unavailable","data_prep_lookup_unavailable","invalid_token","missing_bearer","missing_scope","rate_limit_exceeded","rate_limit_unavailable","tenant_lookup_unavailable","tenant_scope_mismatch","token_expired","unaccountable_token"]
+      summary: List bounded Data Prep pipelines
+      security: [{ tenantApiToken: [] }]
+      x-required-scope: data-prep.read
+      parameters:
+        - { $ref: "#/components/parameters/Limit" }
+        - { name: lifecycle, in: query, schema: { type: string } }
+      responses: { "200": { description: Bounded Data Prep pipeline list with count. } }
+    post:
+      tags: [Workspace, Governance]
+      operationId: createDataPrepPipeline
+      x-source-handler: "createPublicDataPrepPipeline"
+      x-source-file: "src/lib/public-data-prep-api.server.ts"
+      x-source-line: 150
+      x-source-error-literals: ["authentication_unavailable","data_prep_conflict","data_prep_forbidden","data_prep_not_found","data_prep_unavailable","data_prep_validation_error","idempotency_conflict","idempotency_unavailable","invalid_token","missing_bearer","missing_scope","rate_limit_exceeded","rate_limit_unavailable","request_in_progress","tenant_lookup_unavailable","tenant_scope_mismatch","token_expired","unaccountable_token","valid_idempotency_key_required","validation_error"]
+      summary: Create a draft pipeline
+      security: [{ tenantApiToken: [] }]
+      x-required-scope: data-prep.write
+      parameters: [{ $ref: "#/components/parameters/IdempotencyKey" }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/DataPrepPipelineInput" } } } }
+      responses: { "201": { description: Draft pipeline created. }, "422": { description: Pipeline validation failed. } }
+  /api/v1/{tenantSlug}/data-prep/pipelines/{pipelineId}/:
+    parameters:
+      - { $ref: "#/components/parameters/TenantSlug" }
+      - { name: pipelineId, in: path, required: true, schema: { type: string, format: uuid } }
+    get:
+      tags: [Workspace, Governance]
+      operationId: getDataPrepPipeline
+      x-source-handler: "getPublicDataPrepPipeline"
+      x-source-file: "src/lib/public-data-prep-api.server.ts"
+      x-source-line: 126
+      x-source-error-literals: ["authentication_unavailable","data_prep_audit_unavailable","data_prep_lookup_unavailable","data_prep_not_found","invalid_token","missing_bearer","missing_scope","rate_limit_exceeded","rate_limit_unavailable","tenant_lookup_unavailable","tenant_scope_mismatch","token_expired","unaccountable_token"]
+      summary: Read one tenant pipeline
+      security: [{ tenantApiToken: [] }]
+      x-required-scope: data-prep.read
+      responses: { "200": { description: Pipeline detail. }, "404": { description: Pipeline not found. } }
+    patch:
+      tags: [Workspace, Governance]
+      operationId: updateDataPrepPipeline
+      x-source-handler: "updatePublicDataPrepPipeline"
+      x-source-file: "src/lib/public-data-prep-api.server.ts"
+      x-source-line: 171
+      x-source-error-literals: ["authentication_unavailable","data_prep_conflict","data_prep_forbidden","data_prep_not_found","data_prep_unavailable","data_prep_validation_error","idempotency_conflict","idempotency_unavailable","invalid_pipeline_id","invalid_token","missing_bearer","missing_scope","rate_limit_exceeded","rate_limit_unavailable","request_in_progress","tenant_lookup_unavailable","tenant_scope_mismatch","token_expired","unaccountable_token","valid_idempotency_key_required","validation_error"]
+      summary: Update a pipeline draft
+      security: [{ tenantApiToken: [] }]
+      x-required-scope: data-prep.write
+      parameters: [{ $ref: "#/components/parameters/IdempotencyKey" }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/DataPrepPipelinePatch" } } } }
+      responses: { "200": { description: Pipeline updated. }, "409": { description: Lifecycle conflict. }, "422": { description: Validation failed. } }
+    delete:
+      tags: [Workspace, Governance]
+      operationId: archiveDataPrepPipeline
+      x-source-handler: "archivePublicDataPrepPipeline"
+      x-source-file: "src/lib/public-data-prep-api.server.ts"
+      x-source-line: 259
+      x-source-error-literals: ["authentication_unavailable","data_prep_conflict","data_prep_forbidden","data_prep_not_found","data_prep_unavailable","data_prep_validation_error","idempotency_conflict","idempotency_unavailable","invalid_pipeline_id","invalid_token","missing_bearer","missing_scope","rate_limit_exceeded","rate_limit_unavailable","request_in_progress","tenant_lookup_unavailable","tenant_scope_mismatch","token_expired","unaccountable_token","valid_idempotency_key_required","validation_error"]
+      summary: Archive a pipeline while retaining run history
+      security: [{ tenantApiToken: [] }]
+      x-required-scope: data-prep.write
+      parameters: [{ $ref: "#/components/parameters/IdempotencyKey" }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [reason], properties: { reason: { type: string, minLength: 3, maxLength: 500 } } } } } }
+      responses: { "200": { description: Pipeline archived. }, "409": { description: Lifecycle conflict. } }
+  /api/v1/{tenantSlug}/data-prep/pipelines/{pipelineId}/runs:
+    parameters:
+      - { $ref: "#/components/parameters/TenantSlug" }
+      - { name: pipelineId, in: path, required: true, schema: { type: string, format: uuid } }
+    post:
+      tags: [Workspace]
+      operationId: queueDataPrepRun
+      x-source-handler: "queueWorkflowApiJob"
+      x-source-file: "src/lib/public-workflow-api.server.ts"
+      x-source-line: 186
+      x-source-error-literals: ["authentication_unavailable","invalid_resource_id","invalid_token","missing_bearer","missing_scope","queue_unavailable","rate_limit_exceeded","rate_limit_unavailable","resource_not_found","tenant_lookup_unavailable","tenant_scope_mismatch","token_expired","unaccountable_token","valid_idempotency_key_required"]
+      summary: Queue a Data Prep run
+      security: [{ tenantApiToken: [] }]
+      x-required-scope: data-prep.run
+      parameters: [{ $ref: "#/components/parameters/IdempotencyKey" }]
+      responses: { "200": { description: Job already succeeded. }, "202": { description: Job queued. }, "404": { description: Pipeline not found. } }
+  /api/v1/{tenantSlug}/data-prep/pipelines/{pipelineId}/approval:
+    parameters:
+      - { $ref: "#/components/parameters/TenantSlug" }
+      - { name: pipelineId, in: path, required: true, schema: { type: string, format: uuid } }
+    post:
+      tags: [Governance, Workspace]
+      operationId: approveDataPrepPipeline
+      x-source-handler: "approvePublicDataPrepPipeline"
+      x-source-file: "src/lib/public-data-prep-api.server.ts"
+      x-source-line: 213
+      x-source-error-literals: ["authentication_unavailable","data_prep_conflict","data_prep_forbidden","data_prep_not_found","data_prep_unavailable","data_prep_validation_error","idempotency_conflict","idempotency_unavailable","invalid_pipeline_id","invalid_token","missing_bearer","missing_scope","rate_limit_exceeded","rate_limit_unavailable","request_in_progress","tenant_lookup_unavailable","tenant_scope_mismatch","token_expired","unaccountable_token","valid_idempotency_key_required","validation_error"]
+      summary: Independently approve a draft pipeline
+      security: [{ tenantApiToken: [] }]
+      x-required-scope: data-prep.approve
+      parameters: [{ $ref: "#/components/parameters/IdempotencyKey" }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses: { "200": { description: Approval persisted. }, "403": { description: Maker/checker or scope rule denied. }, "409": { description: Lifecycle conflict. } }
+  /api/v1/{tenantSlug}/data-prep/pipelines/{pipelineId}/staging:
+    parameters:
+      - { $ref: "#/components/parameters/TenantSlug" }
+      - { name: pipelineId, in: path, required: true, schema: { type: string, format: uuid } }
+    post:
+      tags: [Governance, Workspace]
+      operationId: cloneDataPrepStaging
+      x-source-handler: "clonePublicDataPrepStaging"
+      x-source-file: "src/lib/public-data-prep-api.server.ts"
+      x-source-line: 224
+      x-source-error-literals: ["authentication_unavailable","data_prep_conflict","data_prep_forbidden","data_prep_not_found","data_prep_unavailable","data_prep_validation_error","idempotency_conflict","idempotency_unavailable","invalid_pipeline_id","invalid_token","missing_bearer","missing_scope","rate_limit_exceeded","rate_limit_unavailable","request_in_progress","tenant_lookup_unavailable","tenant_scope_mismatch","token_expired","unaccountable_token","valid_idempotency_key_required","validation_error"]
+      summary: Clone an approved production pipeline into staging
+      security: [{ tenantApiToken: [] }]
+      x-required-scope: data-prep.write
+      parameters: [{ $ref: "#/components/parameters/IdempotencyKey" }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses: { "201": { description: Staging pipeline created. }, "409": { description: Lifecycle conflict. } }
+  /api/v1/{tenantSlug}/data-prep/pipelines/{pipelineId}/promotion:
+    parameters:
+      - { $ref: "#/components/parameters/TenantSlug" }
+      - { name: pipelineId, in: path, required: true, schema: { type: string, format: uuid } }
+    post:
+      tags: [Governance, Workspace]
+      operationId: requestDataPrepPromotion
+      x-source-handler: "requestPublicDataPrepPromotion"
+      x-source-file: "src/lib/public-data-prep-api.server.ts"
+      x-source-line: 235
+      x-source-error-literals: ["authentication_unavailable","data_prep_conflict","data_prep_forbidden","data_prep_not_found","data_prep_unavailable","data_prep_validation_error","idempotency_conflict","idempotency_unavailable","invalid_pipeline_id","invalid_token","missing_bearer","missing_scope","rate_limit_exceeded","rate_limit_unavailable","request_in_progress","tenant_lookup_unavailable","tenant_scope_mismatch","token_expired","unaccountable_token","valid_idempotency_key_required","validation_error"]
+      summary: Request four-eyes promotion for staging
+      security: [{ tenantApiToken: [] }]
+      x-required-scope: data-prep.promote
+      parameters: [{ $ref: "#/components/parameters/IdempotencyKey" }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object, properties: { note: { type: string, maxLength: 500 } } } } } }
+      responses: { "200": { description: Promotion request is pending an independent decision. }, "409": { description: Lifecycle conflict. } }
+  /api/v1/{tenantSlug}/data-prep/pipelines/{pipelineId}/promotion/decision:
+    parameters:
+      - { $ref: "#/components/parameters/TenantSlug" }
+      - { name: pipelineId, in: path, required: true, schema: { type: string, format: uuid } }
+    post:
+      tags: [Governance, Workspace]
+      operationId: decideDataPrepPromotion
+      x-source-handler: "decidePublicDataPrepPromotion"
+      x-source-file: "src/lib/public-data-prep-api.server.ts"
+      x-source-line: 247
+      x-source-error-literals: ["authentication_unavailable","data_prep_conflict","data_prep_forbidden","data_prep_not_found","data_prep_unavailable","data_prep_validation_error","idempotency_conflict","idempotency_unavailable","invalid_pipeline_id","invalid_token","missing_bearer","missing_scope","rate_limit_exceeded","rate_limit_unavailable","request_in_progress","tenant_lookup_unavailable","tenant_scope_mismatch","token_expired","unaccountable_token","valid_idempotency_key_required","validation_error"]
+      summary: Independently approve or reject a promotion request
+      security: [{ tenantApiToken: [] }]
+      x-required-scope: data-prep.approve
+      parameters: [{ $ref: "#/components/parameters/IdempotencyKey" }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [approve], properties: { approve: { type: boolean }, comment: { type: string, maxLength: 500 } } } } } }
+      responses: { "200": { description: Decision persisted. }, "403": { description: Maker/checker or scope rule denied. }, "409": { description: Lifecycle conflict. } }
+
+  /api/v1/{tenantSlug}/reference-data/:
+    parameters: [{ $ref: "#/components/parameters/TenantSlug" }]
+    get:
+      tags: [Workspace]
+      operationId: listReferenceTables
+      x-source-handler: "listPublicReferenceTables"
+      x-source-file: "src/lib/public-reference-data-api.server.ts"
+      x-source-line: 165
+      x-source-error-literals: ["authentication_unavailable","invalid_token","missing_bearer","missing_scope","rate_limit_exceeded","rate_limit_unavailable","reference_data_audit_unavailable","reference_data_lookup_unavailable","tenant_lookup_unavailable","tenant_scope_mismatch","token_expired","unaccountable_token"]
+      summary: List reference-data tables
+      security: [{ tenantApiToken: [] }]
+      x-required-scope: reference-data.read
+      parameters: [{ $ref: "#/components/parameters/Limit" }]
+      responses: { "200": { description: Bounded reference-data table list with count; maximum 200. } }
+  /api/v1/{tenantSlug}/reference-data/{tableId}/versions/:
+    parameters:
+      - { $ref: "#/components/parameters/TenantSlug" }
+      - { name: tableId, in: path, required: true, schema: { type: string, format: uuid } }
+    get:
+      tags: [Workspace, Governance]
+      operationId: listReferenceDataVersions
+      x-source-handler: "listPublicReferenceVersions"
+      x-source-file: "src/lib/public-reference-data-api.server.ts"
+      x-source-line: 194
+      x-source-error-literals: ["authentication_unavailable","invalid_token","missing_bearer","missing_scope","rate_limit_exceeded","rate_limit_unavailable","reference_data_audit_unavailable","reference_data_lookup_unavailable","reference_data_not_found","tenant_lookup_unavailable","tenant_scope_mismatch","token_expired","unaccountable_token"]
+      summary: List bounded versions for one reference table
+      security: [{ tenantApiToken: [] }]
+      x-required-scope: reference-data.read
+      parameters: [{ name: limit, in: query, schema: { type: integer, minimum: 1, maximum: 100, default: 25 } }]
+      responses: { "200": { description: Reference table and bounded version list with count. }, "404": { description: Reference table not found. } }
+    post:
+      tags: [Workspace, Governance]
+      operationId: stageReferenceDataVersion
+      x-source-handler: "stagePublicReferenceVersion"
+      x-source-file: "src/lib/public-reference-data-api.server.ts"
+      x-source-line: 232
+      x-source-error-literals: ["authentication_unavailable","idempotency_conflict","idempotency_unavailable","invalid_table_id","invalid_token","missing_bearer","missing_scope","rate_limit_exceeded","rate_limit_unavailable","reference_data_conflict","reference_data_forbidden","reference_data_not_found","reference_data_unavailable","reference_data_validation_error","request_in_progress","tenant_lookup_unavailable","tenant_scope_mismatch","token_expired","unaccountable_token","valid_idempotency_key_required","validation_error"]
+      summary: Stage a new reference-data version draft
+      security: [{ tenantApiToken: [] }]
+      x-required-scope: reference-data.write
+      parameters: [{ $ref: "#/components/parameters/IdempotencyKey" }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/ReferenceDataStage" } } } }
+      responses: { "201": { description: Draft version created. }, "404": { description: Reference table not found. }, "422": { description: Validation failed. } }
+  /api/v1/{tenantSlug}/reference-data/{tableId}/versions/{versionId}/submit:
+    parameters:
+      - { $ref: "#/components/parameters/TenantSlug" }
+      - { name: tableId, in: path, required: true, schema: { type: string, format: uuid } }
+      - { name: versionId, in: path, required: true, schema: { type: string, format: uuid } }
+    post:
+      tags: [Workspace, Governance]
+      operationId: submitReferenceDataVersion
+      x-source-handler: "submitPublicReferenceVersion"
+      x-source-file: "src/lib/public-reference-data-api.server.ts"
+      x-source-line: 279
+      x-source-error-literals: ["authentication_unavailable","idempotency_conflict","idempotency_unavailable","invalid_token","missing_bearer","missing_scope","rate_limit_exceeded","rate_limit_unavailable","reference_data_conflict","reference_data_forbidden","reference_data_lookup_unavailable","reference_data_not_found","reference_data_unavailable","reference_data_validation_error","request_in_progress","tenant_lookup_unavailable","tenant_scope_mismatch","token_expired","unaccountable_token","valid_idempotency_key_required"]
+      summary: Submit a draft version for independent review
+      security: [{ tenantApiToken: [] }]
+      x-required-scope: reference-data.write
+      parameters: [{ $ref: "#/components/parameters/IdempotencyKey" }]
+      responses: { "200": { description: Submission status. }, "404": { description: Version not found. }, "409": { description: Lifecycle conflict. } }
+  /api/v1/{tenantSlug}/reference-data/{tableId}/versions/{versionId}/decision:
+    parameters:
+      - { $ref: "#/components/parameters/TenantSlug" }
+      - { name: tableId, in: path, required: true, schema: { type: string, format: uuid } }
+      - { name: versionId, in: path, required: true, schema: { type: string, format: uuid } }
+    post:
+      tags: [Workspace, Governance]
+      operationId: decideReferenceDataVersion
+      x-source-handler: "decidePublicReferenceVersion"
+      x-source-file: "src/lib/public-reference-data-api.server.ts"
+      x-source-line: 321
+      x-source-error-literals: ["authentication_unavailable","idempotency_conflict","idempotency_unavailable","invalid_token","missing_bearer","missing_scope","rate_limit_exceeded","rate_limit_unavailable","reference_data_conflict","reference_data_forbidden","reference_data_lookup_unavailable","reference_data_not_found","reference_data_unavailable","reference_data_validation_error","request_in_progress","tenant_lookup_unavailable","tenant_scope_mismatch","token_expired","unaccountable_token","valid_idempotency_key_required","validation_error"]
+      summary: Approve or reject a submitted reference-data version
+      security: [{ tenantApiToken: [] }]
+      x-required-scope: reference-data.approve
+      parameters: [{ $ref: "#/components/parameters/IdempotencyKey" }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/ReferenceDataDecision" } } } }
+      responses: { "200": { description: Decision status. }, "403": { description: Maker/checker or scope rule denied. }, "409": { description: Lifecycle conflict. } }
+  /api/v1/{tenantSlug}/reference-data/{tableId}/versions/{versionId}/rollback:
+    parameters:
+      - { $ref: "#/components/parameters/TenantSlug" }
+      - { name: tableId, in: path, required: true, schema: { type: string, format: uuid } }
+      - { name: versionId, in: path, required: true, schema: { type: string, format: uuid } }
+    post:
+      tags: [Workspace, Governance]
+      operationId: requestReferenceDataRollback
+      x-source-handler: "rollbackPublicReferenceVersion"
+      x-source-file: "src/lib/public-reference-data-api.server.ts"
+      x-source-line: 369
+      x-source-error-literals: ["authentication_unavailable","idempotency_conflict","idempotency_unavailable","invalid_token","missing_bearer","missing_scope","rate_limit_exceeded","rate_limit_unavailable","reference_data_conflict","reference_data_forbidden","reference_data_lookup_unavailable","reference_data_not_found","reference_data_unavailable","reference_data_validation_error","request_in_progress","tenant_lookup_unavailable","tenant_scope_mismatch","token_expired","unaccountable_token","valid_idempotency_key_required","validation_error"]
+      summary: Create a rollback draft from a prior version
+      security: [{ tenantApiToken: [] }]
+      x-required-scope: reference-data.write
+      parameters: [{ $ref: "#/components/parameters/IdempotencyKey" }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [effective_from, reason], properties: { effective_from: { type: string, format: date }, reason: { type: string, minLength: 3, maxLength: 1000 } } } } } }
+      responses: { "201": { description: Rollback draft created; it remains subject to submit/approve lifecycle. }, "404": { description: Source version not found. } }
+  /api/v1/{tenantSlug}/reference-data/{tableId}/versions/{versionId}/export:
+    parameters:
+      - { $ref: "#/components/parameters/TenantSlug" }
+      - { name: tableId, in: path, required: true, schema: { type: string, format: uuid } }
+      - { name: versionId, in: path, required: true, schema: { type: string, format: uuid } }
+    get:
+      tags: [Workspace]
+      operationId: exportReferenceDataVersion
+      x-source-handler: "exportPublicReferenceVersion"
+      x-source-file: "src/lib/public-reference-data-api.server.ts"
+      x-source-line: 425
+      x-source-error-literals: ["authentication_unavailable","invalid_token","missing_bearer","missing_scope","rate_limit_exceeded","rate_limit_unavailable","reference_data_audit_unavailable","reference_data_export_unavailable","reference_data_lookup_unavailable","reference_data_not_found","tenant_lookup_unavailable","tenant_scope_mismatch","token_expired","unaccountable_token","unsupported_export_format"]
+      summary: Export up to 10,000 rows from one version
+      security: [{ tenantApiToken: [] }]
+      x-required-scope: reference-data.read
+      parameters: [{ name: format, in: query, schema: { type: string, enum: [json, csv], default: json } }]
+      responses:
+        "200": { description: JSON metadata/rows or a CSV attachment; hash headers identify the version. }
+        "404": { description: Table or version not found. }
+        "422": { description: Unsupported export format. }
+
+  /api/v1/{tenantSlug}/reports/:
+    parameters: [{ $ref: "#/components/parameters/TenantSlug" }]
+    get:
+      tags: [Workspace]
+      operationId: listReports
+      x-source-handler: "listPublicReports"
+      x-source-file: "src/lib/public-report-api.server.ts"
+      x-source-line: 103
+      x-source-error-literals: ["authentication_unavailable","invalid_token","missing_bearer","missing_scope","rate_limit_exceeded","rate_limit_unavailable","report_audit_unavailable","report_catalog_unavailable","tenant_lookup_unavailable","tenant_scope_mismatch","token_expired","unaccountable_token"]
+      summary: List saved report metadata and the standard report catalog
+      security: [{ tenantApiToken: [] }]
+      x-required-scope: reports.read
+      responses: { "200": { description: Standard report catalog and saved report metadata. } }
+  /api/v1/{tenantSlug}/reports/{reportId}/run:
+    parameters:
+      - { $ref: "#/components/parameters/TenantSlug" }
+      - { name: reportId, in: path, required: true, schema: { type: string, enum: [standard-operations, standard-break-risk, standard-full] } }
+      - { name: format, in: query, schema: { type: string, enum: [json, csv], default: json } }
+    post:
+      tags: [Workspace]
+      operationId: runStandardReport
+      x-source-handler: "runPublicReport"
+      x-source-file: "src/lib/public-report-api.server.ts"
+      x-source-line: 116
+      x-source-error-literals: ["authentication_unavailable","executable_report_not_found","invalid_json","invalid_token","missing_bearer","missing_scope","rate_limit_exceeded","rate_limit_unavailable","report_audit_unavailable","report_generation_unavailable","tenant_lookup_unavailable","tenant_scope_mismatch","token_expired","unaccountable_token","unsupported_format","validation_error"]
+      summary: Generate a standard report synchronously
+      security: [{ tenantApiToken: [] }]
+      x-required-scope: reports.read
+      requestBody: { required: false, content: { application/json: { schema: { $ref: "#/components/schemas/ReportRunInput" } } } }
+      responses: { "200": { description: JSON report body or CSV attachment. }, "404": { description: Unknown standard report. }, "422": { description: Invalid report request or format. }, "503": { description: Report generation unavailable. } }
+  /api/v1/{tenantSlug}/workflow-jobs/{jobId}:
+    parameters:
+      - { $ref: "#/components/parameters/TenantSlug" }
+      - { name: jobId, in: path, required: true, schema: { type: string, format: uuid } }
+    get:
+      tags: [Workspace]
+      operationId: getWorkflowJob
+      x-source-handler: "getWorkflowApiJob"
+      x-source-file: "src/lib/public-workflow-api.server.ts"
+      x-source-line: 256
+      x-source-error-literals: ["authentication_unavailable","dead","failed","invalid_job_id","invalid_token","job_lookup_unavailable","job_not_found","missing_bearer","missing_scope","tenant_scope_mismatch","token_expired","unaccountable_token"]
+      summary: Read one queued workflow job
+      security: [{ tenantApiToken: [] }]
+      description: The token must also carry the job-kind scope derived by the workflow server (`recons.run`, `data-prep.run`, or `connectors.run`).
+      x-required-scope: [recons.run, data-prep.run, connectors.run]
+      responses: { "200": { description: Job status, attempts, timestamps and terminal result/error code when available. }, "404": { description: Job not found in this tenant. } }
+
+  /api/v1/{tenantSlug}/environment-changes/:
+    parameters: [{ $ref: "#/components/parameters/TenantSlug" }]
+    get:
+      tags: [Tenant, Governance]
+      operationId: listEnvironmentChanges
+      x-source-handler: "listPublicEnvironmentChanges"
+      x-source-file: "src/lib/public-environment-change-api.server.ts"
+      x-source-line: 146
+      x-source-error-literals: ["authentication_unavailable","environment_change_lookup_unavailable","invalid_token","missing_bearer","missing_scope","rate_limit_exceeded","rate_limit_unavailable","tenant_lookup_unavailable","tenant_scope_mismatch","token_expired","unaccountable_token"]
+      summary: List up to 100 environment change requests for the token tenant
+      security: [{ tenantApiToken: [] }]
+      x-required-scope: environment-changes.read
+      responses: { "200": { description: Bounded environment change request list with count. }, "429": { description: Rate limit exceeded; Retry-After is returned. } }
+    post:
+      tags: [Tenant, Governance]
+      operationId: createEnvironmentChange
+      x-source-handler: "createPublicEnvironmentChange"
+      x-source-file: "src/lib/public-environment-change-api.server.ts"
+      x-source-line: 219
+      x-source-error-literals: ["authentication_unavailable","environment_change_conflict","environment_change_forbidden","environment_change_not_found","environment_change_unavailable","environment_change_validation_error","environment_not_provisioned","environment_registry_unavailable","idempotency_conflict","idempotency_unavailable","invalid_token","missing_bearer","missing_scope","rate_limit_exceeded","rate_limit_unavailable","request_in_progress","source_environment_required","tenant_lookup_unavailable","tenant_scope_mismatch","token_expired","unaccountable_token","valid_idempotency_key_required","validation_error"]
+      summary: Create a DEV-to-PROD or PROD-to-DEV request
+      description: Source project must match the direction. The server derives the package and validations; the caller cannot supply a manifest or project refs. A source-stage approval does not itself imply that transport/deployment completed.
+      security: [{ tenantApiToken: [] }]
+      x-required-scope: environment-changes.write
+      parameters: [{ $ref: "#/components/parameters/IdempotencyKey" }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/EnvironmentChangeCreate" } } } }
+      responses: { "201": { description: Request created at source-review stage. }, "403": { description: Source tenant must match token tenant. }, "409": { description: Source/deployment environment mismatch or unprovisioned environment. }, "422": { description: Request validation failed. } }
+  /api/v1/{tenantSlug}/environment-changes/{requestId}/:
+    parameters:
+      - { $ref: "#/components/parameters/TenantSlug" }
+      - { name: requestId, in: path, required: true, schema: { type: string, format: uuid } }
+    get:
+      tags: [Tenant, Governance]
+      operationId: getEnvironmentChange
+      x-source-handler: "getPublicEnvironmentChange"
+      x-source-file: "src/lib/public-environment-change-api.server.ts"
+      x-source-line: 176
+      x-source-error-literals: ["authentication_unavailable","environment_change_lookup_unavailable","environment_change_not_found","invalid_environment_change_id","invalid_token","missing_bearer","missing_scope","rate_limit_exceeded","rate_limit_unavailable","tenant_lookup_unavailable","tenant_scope_mismatch","token_expired","unaccountable_token"]
+      summary: Read one request and its ordered audit events
+      security: [{ tenantApiToken: [] }]
+      x-required-scope: environment-changes.read
+      responses: { "200": { description: Request and ordered audit event list. }, "404": { description: Request not found. } }
+  /api/v1/{tenantSlug}/environment-changes/{requestId}/decision:
+    parameters:
+      - { $ref: "#/components/parameters/TenantSlug" }
+      - { name: requestId, in: path, required: true, schema: { type: string, format: uuid } }
+    post:
+      tags: [Tenant, Governance]
+      operationId: decideEnvironmentChange
+      x-source-handler: "decidePublicEnvironmentChange"
+      x-source-file: "src/lib/public-environment-change-api.server.ts"
+      x-source-line: 318
+      x-source-error-literals: ["access_mapping_confirmation_required","authentication_unavailable","environment_change_conflict","environment_change_forbidden","environment_change_imports_paused","environment_change_intake_unavailable","environment_change_lookup_unavailable","environment_change_not_found","environment_change_unavailable","environment_change_validation_error","idempotency_conflict","idempotency_unavailable","invalid_environment_change_id","invalid_token","missing_bearer","missing_scope","paused","rate_limit_exceeded","rate_limit_unavailable","request_in_progress","review_environment_mismatch","tenant_lookup_unavailable","tenant_scope_mismatch","token_expired","unaccountable_token","valid_idempotency_key_required","validation_error"]
+      summary: Submit an independent source-stage or target-stage decision
+      description: >-
+        Requires the environment-changes.approve scope and runtime environment
+        matching the current review stage. Target approval requires explicit
+        access-mapping confirmation; maker/checker and requester/checker rules
+        are checked by the governed lifecycle.
+      security: [{ tenantApiToken: [] }]
+      x-required-scope: environment-changes.approve
+      parameters: [{ $ref: "#/components/parameters/IdempotencyKey" }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/EnvironmentChangeDecision" } } } }
+      responses: { "200": { description: Decision recorded; a source-stage approval can leave transport pending. }, "403": { description: Wrong stage or maker/checker denial. }, "409": { description: Request is not in a review stage. }, "422": { description: Target approval omitted explicit mapping confirmation. } }
+
+  /api/public/scim/v2/ServiceProviderConfig:
+    get:
+      tags: [Identity]
+      operationId: getScimServiceProviderConfig
+      x-source-handler: "GET inline handler"
+      x-source-file: "src/routes/api/public/scim/v2/$.ts"
+      x-source-line: 603
+      x-source-error-literals: []
+      summary: Read the supported SCIM capability declaration
+      security: [{ scimToken: [] }]
+      responses: { "200": { description: PATCH is supported; SCIM Bulk and sorting are not supported by the source handler. } }
+  /api/public/scim/v2/ResourceTypes:
+    get:
+      tags: [Identity]
+      operationId: listScimResourceTypes
+      x-source-handler: "GET inline handler"
+      x-source-file: "src/routes/api/public/scim/v2/$.ts"
+      x-source-line: 603
+      x-source-error-literals: []
+      summary: List supported SCIM resource types
+      security: [{ scimToken: [] }]
+      responses: { "200": { description: The source advertises Users and Groups. } }
+  /api/public/scim/v2/Schemas:
+    get:
+      tags: [Identity]
+      operationId: listScimSchemas
+      x-source-handler: "GET inline handler"
+      x-source-file: "src/routes/api/public/scim/v2/$.ts"
+      x-source-line: 603
+      x-source-error-literals: []
+      summary: Read SCIM User and Group schemas
+      security: [{ scimToken: [] }]
+      responses: { "200": { description: SCIM schema resources supported by this source. } }
+
+  /api/v1/{tenantSlug}/recons/{reconId}/runs/history:
+    get:
+      operationId: listReconciliationRunHistory
+      x-required-scope: recons.read
+      security:
+        - tenantApiToken: []
+      description: >-
+        Exact filtered history with one-based fixed50-row paging and required committed audit. Current token actor
+        membership and view permission are checked by the SQL port; no actor override or run-gate substitution. SQL-port
+        draft remains held for actor-integrity review/catalog qualification. This source registration is not a deployed
+        capability claim. Query keys must be unique and known; numeric query values use canonical positive decimal
+        spelling. Optional x-fvi-request-id UUID correlates audit; invalid value is ignored. No actor/JWT override; no
+        Idempotency-Key contract.
+      parameters:
+        - name: tenantSlug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: reconId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 10000
+            default: 1
+        - name: days
+          in: query
+          schema:
+            type: integer
+            enum:
+              - 1
+              - 7
+              - 14
+              - 30
+              - 90
+            default: 30
+        - name: x-fvi-request-id
+          in: header
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: Optional audit correlation only; not an idempotency key. Invalid UUID ignored.
+      responses:
+        '200':
+          description: Authorized history and committed audit receipt
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReconReadHistory'
+        '400':
+          description: Invalid ID/query or duplicate/unknown parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReconReadError'
+        '401':
+          description: Missing/expired/revoked tenant bearer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReconReadError'
+        '403':
+          description: Wrong tenant or missing explicit recons.read scope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReconReadError'
+        '404':
+          description: Unknown or ungranted reconciliation; current actor denied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReconReadError'
+        '429':
+          description: Token rate limit; honor Retry-After
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReconReadError'
+        '503':
+          description: Missing SQL port
+          dependency/audit failure or malformed response; no fallback: null
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReconReadError'
+      tags:
+        - Workspace
+      summary: Read authorized reconciliation run history
+      x-source-file: src/lib/public-recon-read-authorization.server.ts
+      x-source-handler: listPublicReconRunHistory
+      x-source-line: 73
+      x-availability: source-only; read_reconciliation_runs_for_api SQL port held; hosted business behavior unverified
+      x-source-error-literals:
+        - invalid_recon_id
+        - invalid_run_id
+        - invalid_query
+        - reconciliation_read_not_found
+        - reconciliation_read_unavailable
+  /api/v1/{tenantSlug}/recons/{reconId}/runs/{runId}/results:
+    get:
+      operationId: getReconciliationRunResults
+      x-required-scope: recons.read
+      security:
+        - tenantApiToken: []
+      description: >-
+        Exact-run persisted parent-result page and status counts, scoped to token tenant and selected definition; requires
+        committed audit. GET has no mutation idempotency key. SQL-port draft remains held for actor-integrity
+        review/catalog qualification. This source registration is not a deployed capability claim. Query keys must be
+        unique and known; numeric query values use canonical positive decimal spelling. Optional x-fvi-request-id UUID
+        correlates audit; invalid value is ignored. No actor/JWT override; no Idempotency-Key contract.
+      parameters:
+        - name: tenantSlug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: reconId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 10000
+            default: 1
+        - name: runId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum:
+              - all
+              - match
+              - partial
+              - missing
+              - duplicate
+              - invalid_key
+              - other
+              - unavailable
+            default: all
+        - name: x-fvi-request-id
+          in: header
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: Optional audit correlation only; not an idempotency key. Invalid UUID ignored.
+      responses:
+        '200':
+          description: Authorized persisted page and committed audit receipt
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReconReadResults'
+        '400':
+          description: Invalid ID/query or duplicate/unknown parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReconReadError'
+        '401':
+          description: Missing/expired/revoked tenant bearer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReconReadError'
+        '403':
+          description: Wrong tenant or missing explicit recons.read scope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReconReadError'
+        '404':
+          description: Unknown/ungranted definition or run does not belong to definition/tenant
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReconReadError'
+        '429':
+          description: Token rate limit; honor Retry-After
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReconReadError'
+        '503':
+          description: Missing SQL port
+          dependency/audit failure or malformed response: null
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReconReadError'
+      tags:
+        - Workspace
+      summary: Read authorized persisted reconciliation results
+      x-source-file: src/lib/public-recon-read-authorization.server.ts
+      x-source-handler: getPublicReconRunResults
+      x-source-line: 74
+      x-availability: source-only; read_reconciliation_runs_for_api SQL port held; hosted business behavior unverified
+      x-source-error-literals:
+        - invalid_recon_id
+        - invalid_run_id
+        - invalid_query
+        - reconciliation_read_not_found
+        - reconciliation_read_unavailable

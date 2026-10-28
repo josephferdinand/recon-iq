@@ -1,0 +1,6 @@
+settlement_id,trade_id,settlement_date,market,currency,net_amount,settlement_status
+SET-1001,TRD-8001,2026-09-05,XLON,GBP,245000.00,settled
+SET-1002,TRD-8002,2026-09-05,XNYS,USD,315500.25,pending
+SET-1003,TRD-8003,2026-09-05,XEUR,EUR,198750.00,settled
+SET-1004,TRD-8004,2026-09-05,XTKS,JPY,42500000.00,failed
+SET-1005,TRD-8005,2026-09-05,XNAS,USD,76500.50,settled

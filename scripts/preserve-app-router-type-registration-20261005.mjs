@@ -1,0 +1,10 @@
+import{readFile,writeFile}from'node:fs/promises';
+import{createHash}from'node:crypto';
+const root='output/parent-integrated-next-20261005/core-successors/generated-types',file='./LOCAL_USER/AppData/Local/Temp/fvi-batch4-candidate-20260928/src/routeTree.gen.ts';
+const old=await readFile(root+'/routeTree.gen.ts.before','utf8'),current=await readFile(file,'utf8'),sha=x=>createHash('sha256').update(x).digest('hex');
+const marker="import type { getRouter } from './router.tsx'",at=old.indexOf(marker);
+if(at<0||old.split(marker).length!==2||current.includes(marker)||sha(current)!=='d8a4e10bddf38c634d7ab761385cbe9bafb4493cca1ceacee11a2a205a97eb5a')throw Error('Exact missing app registration preimage required');
+const footer=old.slice(at);if(!footer.includes("declare module '@tanstack/react-start'"))throw Error('Original Start type registration absent');
+await writeFile(root+'/routeTree.gen.ts.generated-no-footer',current,{flag:'wx'});await writeFile(file,current+'\n'+footer);
+await writeFile(root+'/FOOTER-REPAIR.json',JSON.stringify({at:new Date().toISOString(),rootCause:'Raw router generator omitted existing React Start plugin app type-registration footer, leaving marketing registration as sole global type',pre:sha(current),post:sha(await readFile(file)),footerSHA256:sha(footer),runtimeFileChanges:false,marketingSourceChanged:false,compilerPass:false},null,2),{flag:'wx'});
+console.log(JSON.stringify({exactExistingAppTypeFooterRestored:true,post:sha(await readFile(file)),marketingUntouched:true}));

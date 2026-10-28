@@ -1,0 +1,5 @@
+reference,txn_date,amount,currency,counterparty
+INV-001,2026-08-31,100.00,GBP,Alpha Ltd
+INV-002,2026-08-31,200.00,GBP,Beta Ltd
+INV-003,2026-08-31,300.01,GBP,Gamma Ltd
+UNMATCHED-B,2026-08-31,500.00,GBP,Delta Ltd

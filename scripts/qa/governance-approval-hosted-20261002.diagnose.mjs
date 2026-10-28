@@ -1,0 +1,13 @@
+import { readFile, writeFile } from "node:fs/promises";
+import path from "node:path";
+import { actorSession, verifyReleaseAck } from "./governance-approval-hosted-20261002.mjs";
+const input=JSON.parse(await readFile(process.env.FVI_GOVERNANCE_QA_INPUT_FILE,"utf8"));
+await verifyReleaseAck(undefined,input.environment);
+const journal=JSON.parse((await readFile(`${process.env.FVI_GOVERNANCE_EVIDENCE_FILE}.journal.jsonl`,"utf8")).trim().split(/\r?\n/u).at(-1));
+if(journal.rpc!=="withdraw_governance_membership_request"||journal.actor_user_id!==input.actors.requester.user_id)throw new Error("Only the saved stale withdrawal denial may be diagnosed");
+const {token}=await actorSession(input.actors.requester,input.supabase_url);
+const headers={apikey:input.publishable_key,Authorization:`Bearer ${token}`,"Content-Type":"application/json"};
+const before=await fetch(`${input.supabase_url}/rest/v1/rpc/get_governance_membership_request`,{method:"POST",headers,body:JSON.stringify({_tenant_id:input.tenant_id,_request_id:journal.args._request_id})});const record=await before.json();
+const response=await fetch(`${input.supabase_url}/rest/v1/rpc/${journal.rpc}`,{method:"POST",headers,body:JSON.stringify(journal.args)});const error=await response.json();
+const output={at:new Date().toISOString(),request_id:journal.args._request_id,current_status:record.status,current_version:record.version,attempted_version:journal.args._expected_version,http:response.status,code:error.code,message:error.message,details:error.details,hint:error.hint};
+await writeFile(path.join(path.dirname(process.env.FVI_GOVERNANCE_EVIDENCE_FILE),"PROD-STALE-WITHDRAWAL-DIAGNOSIS.json"),JSON.stringify(output,null,2));console.log(JSON.stringify(output));

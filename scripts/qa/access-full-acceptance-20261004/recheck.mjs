@@ -1,0 +1,23 @@
+import {readFile} from 'node:fs/promises';
+import path from 'node:path';
+import {signIn,tenant,out,evidence,journal,rest,rpc} from './common.mjs';
+import {server} from './server.mjs';
+const ackPath=process.argv[2];if(!ackPath)throw Error('Exact parent deployed-release acknowledgement file required; no requests sent');
+const ack=JSON.parse(await readFile(ackPath,'utf8')),source=JSON.parse(await readFile(path.join(out,'packet','MANIFEST.json'),'utf8')),sql=JSON.parse(await readFile(path.join(out,'packet','SQL-MANIFEST.json'),'utf8'));
+if(ack.target!=='PROD YOUR_PROJECT_REF'||ack.sqlCommitVerified!==true||ack.sourceDeployed!==true||!ack.deploymentId||!ack.exactRollbackReceipt||ack.sourcePatchSha256!==source.candidatePatchSha256||ack.sqlForwardSha256!==sql.forwardSha256)throw Error('Parent release receipt does not acknowledge this exact coupled packet; no requests sent');
+const s=JSON.parse(await readFile(path.join(out,'OWNED.json'),'utf8')),o=s.owned;if(o.revocation?.outcome!=='revoked')throw Error('Exact retained newly owned revoked fixture required');
+const admin=await signIn('volta-recon-dataprep'),viewer=await signIn('kepler-scoped-observer');
+if(!admin.tenantAdmin||admin.platformAdmin||viewer.tenantAdmin||viewer.platformAdmin)throw Error('Authoritative roles changed');
+const checks=[];const check=(name,passed,details)=>checks.push({name,passed,details});
+const before=await rest(admin,'data_prep_pipelines',{select:'id,name,updated_at',tenant_id:'eq.'+tenant,id:'eq.'+o.pipeline});
+await journal({phase:'intent',operation:'post-parent-release revoked own pipeline edit',args:{pipeline_id:o.pipeline}});
+const edit=await rpc(viewer,'upsert_data_prep_pipeline',{_tenant_id:tenant,_pipeline_id:o.pipeline,_payload:{name:s.label+' post-release unauthorized attempt'}});
+check('actual public RPC revoked DataPrep save refused',edit.http===403&&edit.data.code==='42501',{http:edit.http,code:edit.data.code});
+const after=await rest(admin,'data_prep_pipelines',{select:'id,name,updated_at',tenant_id:'eq.'+tenant,id:'eq.'+o.pipeline});check('refused DataPrep call changed no owned pipeline fields',JSON.stringify(before.data)===JSON.stringify(after.data));
+const permissions=await rpc(viewer,'effective_user_permissions',{_user_id:admin.id,_tenant_id:tenant});check('ordinary public RPC no longer discloses other user permissions',permissions.http===200&&Array.isArray(permissions.data)&&permissions.data.length===0,{http:permissions.http,count:permissions.data?.length});
+const inspector=await server(viewer,'effectivePermissions',{tenant_id:tenant,user_id:admin.id});check('actual group inspector refuses another user',!!inspector.error||inspector.http>=400,{http:inspector.http,error:inspector.error});
+const group=await server(admin,'createGroup',{tenant_id:tenant,name:s.label+' post-release no-BU refusal'});check('actual app rejects group creation without BU',!!group.error||group.http>=400,{http:group.http,error:group.error,unexpectedOwnedGroup:group.data?.id});
+if(group.data?.id){await journal({phase:'unexpected-owned-effect',operation:'post-release no-BU group accepted',id:group.data.id});}
+const gate=await rpc(admin,'data_resource_shadow_allows',{_registry_id:o.data_prep_pipelineRegistry,_action:'edit'});check('pure tenant-admin existing mapped edit authority retained',gate.http===200&&gate.data===true);
+await evidence('POST-PARENT-RELEASE-'+Date.now()+'.json',{at:new Date().toISOString(),deployment:ack.deploymentId,exactSourcePatchSha256:ack.sourcePatchSha256,exactSQLSha256:ack.sqlForwardSha256,checks,passed:checks.every(x=>x.passed),completedApprovalRunRevocationReplayed:false});
+console.log(JSON.stringify({passed:checks.every(x=>x.passed),checks:checks.length}));if(checks.some(x=>!x.passed))process.exitCode=1;

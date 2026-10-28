@@ -1,0 +1,56 @@
+{
+  "$comment": "Cloudflare Custom WAF rules for ReconIQ. Apply via `wrangler` or the dashboard under Security > WAF > Custom rules. Rules are evaluated top-to-bottom.",
+  "rules": [
+    {
+      "description": "mkt-admin geo restriction — challenge non-approved regions",
+      "expression": "starts_with(http.request.uri.path, \"/mkt-admin\") and not ip.geoip.country in {\"IN\" \"AE\" \"SA\" \"GB\" \"US\"}",
+      "action": "managed_challenge"
+    },
+    {
+      "description": "Public API POST — challenge medium-threat traffic",
+      "expression": "starts_with(http.request.uri.path, \"/api/public\") and http.request.method eq \"POST\" and cf.threat_score gt 20",
+      "action": "block"
+    },
+    {
+      "description": "Block secret leakage in request bodies",
+      "expression": "starts_with(http.request.uri.path, \"/api/\") and (http.request.body.raw contains \"sb_secret_\" or http.request.body.raw contains \"SUPABASE_SERVICE_ROLE\")",
+      "action": "block",
+      "log": true
+    },
+    {
+      "description": "Rate-limit API surface (300 r/min per IP)",
+      "expression": "starts_with(http.request.uri.path, \"/api/\")",
+      "action": "rate_limit",
+      "ratelimit": { "requests_per_period": 300, "period": 60, "mitigation_timeout": 60 }
+    },
+    {
+      "description": "Copilot stream — 30 r/min per session cookie",
+      "expression": "http.request.uri.path eq \"/api/copilot/stream\"",
+      "action": "rate_limit",
+      "ratelimit": {
+        "requests_per_period": 30,
+        "period": 60,
+        "mitigation_timeout": 120,
+        "characteristics": ["cf.colo.id", "http.cookie"]
+      }
+    },
+    {
+      "description": "Auth endpoints — 20 r/min per IP",
+      "expression": "starts_with(http.request.uri.path, \"/auth/\")",
+      "action": "rate_limit",
+      "ratelimit": { "requests_per_period": 20, "period": 60, "mitigation_timeout": 300 }
+    },
+    {
+      "description": "Bypass cron allow-list for public hooks",
+      "expression": "starts_with(http.request.uri.path, \"/api/public/hooks/\") and ip.src in $supabase_cron_egress",
+      "action": "skip",
+      "skip": { "ruleset": "current" }
+    }
+  ],
+  "managed_rulesets": {
+    "cloudflare_managed": { "enabled": true, "sensitivity": "high" },
+    "owasp_core": { "enabled": true, "sensitivity": "high", "paranoia_level": 2 },
+    "exposed_credentials_check": { "enabled": true }
+  },
+  "bot_management": { "enabled": true, "exclude_paths": ["/api/public/hooks/*"] }
+}

@@ -1,0 +1,35 @@
+import { readFile, writeFile, appendFile } from "node:fs/promises";
+import { resolve } from "node:path";
+const out = resolve("output/data-prep-full-acceptance-20261004");
+const phase = process.argv[2] ?? "ui.owned-editor.readback";
+if (!/^[a-z0-9._-]{1,80}$/.test(phase)) throw new Error("Invalid owned readback phase");
+const context = JSON.parse(await readFile(resolve(out, "run-context.json"), "utf8"));
+const root = "./LOCAL_USER/AppData/Local/FVI-QA-Private-20260925";
+const receipt = JSON.parse(await readFile(context.qa_transport_receipt, "utf8"));
+const config = JSON.parse(await readFile(`${root}/FVI-QA-TRANSPORT-PROD-20261001.json`, "utf8"));
+if (config.apiUrl !== "https://YOUR_PROJECT_REF.supabase.co" || config.anonKey?.startsWith("sb_secret_")) throw new Error("Ordinary PROD transport mismatch");
+const name = `QA ${context.run_tag} Editor`;
+const reads = [];
+for (const label of ["platform-maker", "platform-checker"]) {
+  const actor = receipt.actors.find(row => row.label === label);
+  if (!actor?.session_file.startsWith(root + "/")) throw new Error("Protected owned actor path mismatch");
+  const session = JSON.parse(await readFile(actor.session_file, "utf8")).session;
+  const claims = JSON.parse(Buffer.from(session.access_token.split(".")[1], "base64url"));
+  if (claims.aal !== "aal2" || claims.role !== "authenticated" || claims.sub !== actor.user_id || claims.exp <= Date.now() / 1000 + 60) throw new Error("Fresh existing ordinary QA profile required");
+  const headers = { apikey: config.anonKey, Authorization: `Bearer ${session.access_token}` };
+  const params = new URLSearchParams({ select: "id,public_uid,name,status,version,steps,dq_rules,on_failure,source_data_source_id,output_data_source_id,created_by,updated_at", tenant_id: "eq." + context.tenant_id, name: "eq." + name, created_by: "eq.9d8ae600-cd90-46bc-bbb0-1da3aca3db57" });
+  const response = await fetch(config.apiUrl + "/rest/v1/data_prep_pipelines?" + params, { headers, signal: AbortSignal.timeout(20000) });
+  if (!response.ok) throw new Error(`Owned pipeline read unconfirmed HTTP${response.status}`);
+  const rows = await response.json();
+  if (!Array.isArray(rows) || rows.length > 1) throw new Error("Owned exact-name outcome is ambiguous");
+  const control = new URLSearchParams({ select: "id,status", tenant_id: "eq." + context.tenant_id, id: "eq.77e886d4-3ad2-461c-b6f0-2e929f742f83" });
+  const controlResponse = await fetch(config.apiUrl + "/rest/v1/data_prep_pipelines?" + control, { headers, signal: AbortSignal.timeout(20000) });
+  const controlRows = await controlResponse.json();
+  if (!controlResponse.ok || !Array.isArray(controlRows) || controlRows.length !== 1) throw new Error("Ordinary owned pipeline read control unconfirmed");
+  reads.push({ label, http: response.status, rows, positive_read_control_http: controlResponse.status, positive_read_control_count: controlRows.length });
+}
+const result = { at: new Date().toISOString(), run_tag: context.run_tag, phase, evidence_tier: "actual hosted ordinary owned actor reads", reads, business_writes: 0, old_godel_rows_mutated: false, parent_reconciliation_touched: false };
+const file = resolve(out, `proof/owned-editor-readback-${Date.now()}.json`);
+await writeFile(file, JSON.stringify(result, null, 2) + "\n", { flag: "wx" });
+await appendFile(resolve(out, "ui-journal.jsonl"), JSON.stringify({ at: result.at, key: phase, state: "verified-read", evidence: file, counts: reads.map(row => row.rows.length), mutation_replayed: false }) + "\n");
+console.log(JSON.stringify({ file, counts: reads.map(row => row.rows.length), business_writes: 0 }));

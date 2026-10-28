@@ -1,0 +1,2 @@
+REVOKE EXECUTE ON FUNCTION public.bg_is_active(uuid, public.break_glass_scope, uuid) FROM authenticated, anon, PUBLIC;
+GRANT EXECUTE ON FUNCTION public.bg_is_active(uuid, public.break_glass_scope, uuid) TO service_role;

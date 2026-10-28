@@ -1,0 +1,33 @@
+import { readFile, writeFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
+import { resolve } from "node:path";
+const out = resolve("output/data-prep-full-acceptance-20261004");
+const context = JSON.parse(await readFile(resolve(out, "run-context.json"), "utf8"));
+const root = "./LOCAL_USER/AppData/Local/FVI-QA-Private-20260925";
+const receiptBytes = await readFile(context.qa_transport_receipt);
+const receipt = JSON.parse(receiptBytes);
+const config = JSON.parse(await readFile(`${root}/FVI-QA-TRANSPORT-PROD-20261001.json`, "utf8"));
+if (receipt.deployment_id !== context.deployment || config.apiUrl !== "https://YOUR_PROJECT_REF.supabase.co" || !config.anonKey || config.anonKey.startsWith("sb_secret_")) throw new Error("Ordinary PROD transport binding failed");
+const expected = { "platform-maker": "9d8ae600-cd90-46bc-bbb0-1da3aca3db57", "platform-checker": "9ed412a1-a48b-4988-842e-c14651a09126" };
+const actors = [];
+for (const [label, id] of Object.entries(expected)) {
+  const actor = receipt.actors.find(item => item.label === label && item.user_id === id);
+  if (!actor || !actor.session_file.startsWith(root + "/")) throw new Error("Owned protected actor binding failed");
+  const saved = JSON.parse(await readFile(actor.session_file, "utf8"));
+  const token = saved.session.access_token;
+  const claims = JSON.parse(Buffer.from(token.split(".")[1], "base64url"));
+  if (claims.sub !== id || claims.aal !== "aal2" || claims.role !== "authenticated" || claims.iss !== config.apiUrl + "/auth/v1" || claims.exp < Date.now() / 1000 + 300) throw new Error("Fresh ordinary owned AAL2 required");
+  const headers = { apikey: config.anonKey, Authorization: `Bearer ${token}` };
+  const userResponse = await fetch(config.apiUrl + "/auth/v1/user", { headers, signal: AbortSignal.timeout(20000) });
+  const user = await userResponse.json();
+  if (!userResponse.ok || user.id !== id) throw new Error("Actual provider subject unconfirmed");
+  const params = new URLSearchParams({ select: "user_id,role,active", tenant_id: "eq." + context.tenant_id, user_id: "eq." + id, role: "eq.tenant_admin", active: "eq.true" });
+  const membershipResponse = await fetch(config.apiUrl + "/rest/v1/tenant_members?" + params, { headers, signal: AbortSignal.timeout(20000) });
+  const members = await membershipResponse.json();
+  if (!membershipResponse.ok || !Array.isArray(members) || members.length !== 1) throw new Error("Current owned tenant-admin membership unconfirmed");
+  actors.push({ label, user_id: id, provider_http: userResponse.status, membership_http: membershipResponse.status, provider_subject_verified: true, real_aal: "aal2", expires_at: claims.exp, active_tenant_admin: true, additional_platform_role_not_nonadmin_proof: true });
+}
+const proof = { at: new Date().toISOString(), run_tag: context.run_tag, deployment: context.deployment, metadata_ledger_reference: context.ledger, actors, private_receipt_path: context.qa_transport_receipt, private_receipt_sha256: createHash("sha256").update(receiptBytes).digest("hex"), credentials_or_tokens_in_output: false, business_writes: 0, shared_sessions_overwritten: false, owner_role_factor_changes: false, parent_unknown_reconciliation_touched: false };
+const file = resolve(out, `proof/normal-qa-preflight-${Date.now()}.json`);
+await writeFile(file, JSON.stringify(proof, null, 2) + "\n", { flag: "wx" });
+console.log(JSON.stringify({ file, actors: actors.length, real_aal2: true, business_writes: 0 }));

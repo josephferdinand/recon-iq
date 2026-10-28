@@ -1,0 +1,8 @@
+import {readFile,writeFile} from 'node:fs/promises';
+const vault=await readFile('./.private/CREDENTIALS.md','utf8'),a=vault.indexOf('<!-- FVI_CANONICAL_OPERATIONAL_CREDENTIALS_BEGIN -->'),b=vault.indexOf('<!-- FVI_CANONICAL_OPERATIONAL_CREDENTIALS_END -->');if(a<0||b<=a)throw Error('Markers absent');const token=vault.slice(a,b).split(/\r?\n/).find(x=>/^\|\s*`SUPABASE_ACCESS_TOKEN`\s*\|/.test(x))?.split('|')[2]?.trim().replace(/^`|`$/g,'');if(!/^sbp_[A-Za-z0-9_-]{20,}$/.test(token??''))throw Error('Management access absent');
+const result=[];
+for(const searchPath of ['public,extensions,pg_catalog','public,extensions','pg_catalog,public,extensions']){
+ const query=`SET LOCAL search_path=${searchPath}; SELECT current_setting('search_path') AS path,pg_get_expr(d.adbin,d.adrelid) AS default_expr,pg_get_expr(d.adbin,d.adrelid,true) AS pretty_default,format_type(a.atttypid,a.atttypmod) AS type,position(':funcid 3432 ' IN d.adbin::text)>0 AS builtin_uuid_oid_3432 FROM pg_attribute a JOIN pg_attrdef d ON d.adrelid=a.attrelid AND d.adnum=a.attnum WHERE a.attrelid='public.manual_match_approvals'::regclass AND a.attname='id'`;
+ const r=await fetch('https://api.supabase.com/v1/projects/YOUR_PROJECT_REF/database/query',{method:'POST',headers:{authorization:`Bearer ${token}`,'content-type':'application/json'},body:JSON.stringify({read_only:true,query}),signal:AbortSignal.timeout(15000)});if(!r.ok)throw Error('Read-only deparse probeHTTP'+r.status);result.push({searchPath,rows:await r.json()});
+}
+const receipt={at:new Date().toISOString(),read_only:true,environment:'DEV',result};await writeFile('./LOCAL_USER/AppData/Local/FVI-QA-Private-20260925/FVI-MANUAL-DEFAULT-DEPARSE-PROBE-20261002.json',JSON.stringify(receipt,null,2));console.log(JSON.stringify(receipt));

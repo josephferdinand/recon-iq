@@ -1,0 +1,2 @@
+ALTER TABLE public.mkt_content_audit_log ADD COLUMN IF NOT EXISTS actor_context jsonb;
+COMMENT ON COLUMN public.mkt_content_audit_log.actor_context IS 'Snapshot of actor identity + effective permissions at time of change: { user_id, email, roles[], is_platform_admin, source }';

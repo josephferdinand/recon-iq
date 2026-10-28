@@ -1,0 +1,24 @@
+{
+  "approved_logo": {
+    "source": "workers/status-monitor/assets/reconiq-logo.jpg",
+    "sha256": "071830c83fe63ca533ad9d1275a930dde2a8c3dbd4dd5e20d20e366d719768ea",
+    "preserve_original_white_field": true,
+    "crop": false
+  },
+  "typefaces": [
+    {
+      "family": "DM Sans",
+      "file": "dm-sans.woff2",
+      "source": "https://fonts.gstatic.com/s/dmsans/v17/rP2Yp2ywxg089UriI5-g4vlH9VoD8Cmcqbu0-K4.woff2",
+      "license": "SIL Open Font License 1.1",
+      "sha256": "9fea608a947e67020c33cad9a6fe3d60c54119dfb8cff87768a8117a15ed7543"
+    },
+    {
+      "family": "Space Grotesk",
+      "file": "space-grotesk.woff2",
+      "source": "https://fonts.gstatic.com/s/spacegrotesk/v22/V8mDoQDjQSkFtoMM3T6r8E7mPbF4Cw.woff2",
+      "license": "SIL Open Font License 1.1",
+      "sha256": "0640890476fc1198ab4de571fb658de443c4d85b66466ec09534a8737ab1ce9d"
+    }
+  ]
+}

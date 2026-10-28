@@ -1,0 +1,21 @@
+{
+  "utc": "2026-10-28T18:46:44.980Z",
+  "catalog_read_only": true,
+  "business_rows_exported": 0,
+  "provider_secrets_exported": 0,
+  "counts": {
+    "enums": 55,
+    "views": 11,
+    "tables": 677,
+    "indexes": 556,
+    "schemas": 3,
+    "policies": 1547,
+    "triggers": 523,
+    "functions": 1163,
+    "sequences": 13,
+    "extensions": 13,
+    "constraints": 2900
+  },
+  "restore_tested": false,
+  "inherited_audit_findings_not_remediated": true
+}

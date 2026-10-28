@@ -1,0 +1,1 @@
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.llm_providers TO authenticated; GRANT ALL ON public.llm_providers TO service_role;

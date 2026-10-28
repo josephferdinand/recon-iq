@@ -1,0 +1,70 @@
+# FVI — Cloudflare Workers manifest (PRODUCTION, self-hosted track)
+#
+# Copy to wrangler.toml in the repo root, or deploy with:
+#   wrangler deploy --config infra/cloudflare/wrangler.prod.toml
+#
+# Secrets are NOT declared here. Provision them with `wrangler secret put`
+# (see docs/migration/05-environment-variables.md and 12-cloudflare-migration.md).
+
+name = "fvi-prod"
+main = "src/server.ts"
+compatibility_date = "2025-09-01"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = false
+
+account_id = "REPLACE_WITH_CF_ACCOUNT_ID"
+
+[observability]
+enabled = true
+head_sampling_rate = 1
+
+[build]
+command = "npm run build"
+
+# ─── Non-secret runtime variables ───────────────────────────────────────────
+[vars]
+NODE_ENV = "production"
+PUBLIC_APP_URL = "https://app.reconiq.example"
+PUBLIC_BASE_URL = "https://app.reconiq.example"
+SUPABASE_URL = "https://api-fvi.reconiq.example"
+APM_SERVICE_NAME = "fvi-prod"
+
+# ─── Custom domains ─────────────────────────────────────────────────────────
+[[routes]]
+pattern = "app.reconiq.example"
+custom_domain = true
+
+[[routes]]
+pattern = "support.reconiq.example"
+custom_domain = true
+
+# ─── Cron triggers ──────────────────────────────────────────────────────────
+# Dispatched by scheduled() in src/server.ts via src/lib/cron-trigger.ts.
+[triggers]
+crons = [
+  "0 2 * * *",   # retention + watchers
+  "0 3 * * *",   # audit-anchor writer
+  "30 3 * * *",  # audit-anchor verifier
+  "0 4 * * *",   # backup verify
+]
+
+# ─── R2 buckets ─────────────────────────────────────────────────────────────
+# Object Lock (Compliance mode, 7y) is set on the bucket, not by wrangler.
+[[r2_buckets]]
+binding = "AUDIT_ANCHORS"
+bucket_name = "fvi-audit-anchors"
+
+[[r2_buckets]]
+binding = "BACKUPS"
+bucket_name = "fvi-backups"
+
+# ─── Analytics Engine ───────────────────────────────────────────────────────
+[[analytics_engine_datasets]]
+binding = "ANALYTICS"
+dataset = "fvi_prod"
+
+[limits]
+cpu_ms = 300
+
+[placement]
+mode = "smart"

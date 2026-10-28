@@ -1,0 +1,13 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "fvi-status-monitor",
+  "main": "src/index.mjs",
+  "account_id": "YOUR_CLOUDFLARE_ID",
+  "compatibility_date": "2026-10-25",
+  "workers_dev": true,
+  "preview_urls": false,
+  "routes": [{ "pattern": "status.reconiq.example/*", "zone_name": "reconiq.example" }],
+  "kv_namespaces": [{ "binding": "STATUS_STORE", "id": "b57cbbde2b6a49519af9ab387b3e073f" }],
+  "triggers": { "crons": ["*/15 * * * *", "*/30 * * * *"] },
+  "observability": { "enabled": true, "head_sampling_rate": 1 }
+}

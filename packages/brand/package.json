@@ -1,0 +1,16 @@
+{
+  "name": "@fvi/brand",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "description": "ReconIQ brand assets — FV monogram, color tokens, typography, theme provider",
+  "main": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "lint": "eslint src",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  }
+}

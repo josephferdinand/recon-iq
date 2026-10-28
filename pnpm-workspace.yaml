@@ -1,0 +1,13 @@
+# pnpm workspace for ReconIQ (FVI)
+# See FVI-Sprint-Plan.md §3.3 for the target monorepo layout.
+
+packages:
+  - "apps/*"
+  - "packages/*"
+
+blockExoticSubdeps: true
+minimumReleaseAge: 10080
+trustPolicy: no-downgrade
+
+overrides:
+  entities: 4.5.0

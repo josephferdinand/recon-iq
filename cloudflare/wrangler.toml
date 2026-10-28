@@ -1,0 +1,30 @@
+# Cloudflare Pages deployment config for ReconIQ.
+# The Pages project fronts the Meta-hosted app; origin is set via a
+# Cloudflare Worker route that rewrites the Host header.
+name = "reconiq-app"
+compatibility_date = "2026-07-01"
+pages_build_output_dir = "dist"
+
+[env.production]
+name = "reconiq-app"
+
+[env.production.vars]
+APP_ENV = "production"
+SITE_URL = "https://app.reconiq.example"
+ADMIN_URL = "https://admin.reconiq.example"
+
+[env.preview]
+name = "reconiq-app-preview"
+
+[env.preview.vars]
+APP_ENV = "preview"
+
+# Route configuration — one Worker per origin so `/mkt-admin` can carry
+# stricter WAF/Access policies without leaking cookies into the app origin.
+[[env.production.routes]]
+pattern = "app.reconiq.example/*"
+zone_name = "reconiq.example"
+
+[[env.production.routes]]
+pattern = "admin.reconiq.example/*"
+zone_name = "reconiq.example"

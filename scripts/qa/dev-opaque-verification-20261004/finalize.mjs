@@ -1,0 +1,21 @@
+import {readFile,writeFile,readdir} from 'node:fs/promises';
+import {fileURLToPath} from 'node:url';
+import {query,identity} from './diagnose.mjs';
+import {loadFrozen,rewritePacket,sha} from './rewrite.mjs';
+const root=fileURLToPath(new URL('./',import.meta.url)),out=root+'output/';
+const {prepared,packet}=await loadFrozen();const rewrite=rewritePacket(packet);
+if(sha(await readFile(out+'DEV-REVIEW-ONLY-DRY-RUN.sql','utf8'))!==sha(rewrite.candidate))throw Error('Candidate artifact drift');
+const full=JSON.parse(await readFile(out+'probe-summary.json','utf8'));
+const cases=JSON.parse(await readFile(out+'behavior-probe.json','utf8'));
+const oldError=JSON.parse(await readFile(out+'old-largest-plan-error.json','utf8'));
+const plan=JSON.parse(await readFile(out+'new-largest-plan.json','utf8'));
+if(!full.temporaryOnlyRollbackVerified||full.proof.tables!==34||cases.rows.length!==9||cases.rows.some(x=>x.passed!==true)||!oldError.raw.includes('57014'))throw Error('Required meaningful proof incomplete');
+const before=await query('final-identity',identity);
+const ports=await query('final-ports',`SELECT n.nspname AS schema,p.proname AS name,count(*)::int AS count FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace WHERE (n.nspname='public' AND p.proname IN ('prepare_public_ai_inference','read_reconciliation_runs_for_api')) OR (n.nspname='private' AND p.proname='reserve_public_ai_dispatch') GROUP BY n.nspname,p.proname ORDER BY n.nspname,p.proname`);
+const activity=await query('final-activity',`SELECT pid,state,wait_event_type,wait_event FROM pg_stat_activity WHERE datname=current_database() AND pid<>pg_backend_pid() AND state='active' AND (position('_oa_oldrows' in query)>0 OR position('_oa_probe' in query)>0) ORDER BY pid`);
+if(before.rows[0].ledger!==431||before.rows[0].latest!=='20261004080000'||ports.rows.length||activity.rows.length)throw Error('Final target or activity changed; parent must review');
+const costs=[];for(const name of await readdir(out)){if(/^cost-.*\.json$/.test(name)&&!name.endsWith('-error.json')){const r=JSON.parse(await readFile(out+name,'utf8'));costs.push({...r.rows[0],requestMs:r.elapsedMs});}}
+await writeFile(out+'per-table-cost-summary.json',JSON.stringify(costs.sort((a,b)=>Number(b.projection_bytes)-Number(a.projection_bytes)),null,2));
+const report={at:new Date().toISOString(),project:'YOUR_PROJECT_REF',state:'VERIFICATION_FIX_READY_FOR_PARENT_EXACT_MIGRATION_ROLLBACK',sourceSha256:prepared.sourceSha256,originalDryRunSha256:prepared.dryRunSha256,candidateDryRunSha256:sha(rewrite.candidate),onlyChangedBlocks:['snapshot','preserve'],frozenSourceGuardsBodiesAndAllOtherPacketBytesUnchanged:true,fullScopeProof:{tables:full.proof.tables,rows:full.proof.rows,requestMs:full.executionMs,functionContracts:full.proof.function_contracts,existingLedgerHashPreserved:true,workMemRestored:full.proof.work_mem_restored,behaviorCases:cases.rows.length},oldLargestTable:{table:'recon_exceptions',serverStatementTimeoutMs:20000,sqlstate:'57014',reproducedOnce:true},newLargestTable:{table:'recon_exceptions',executionMs:plan.rows[0]['QUERY PLAN'][0]['Execution Time'],sortMemoryKB:plan.rows[0]['QUERY PLAN'][0].Plan['Sort Space Used'],planWidth:plan.rows[0]['QUERY PLAN'][0].Plan['Plan Width']},finalIdentity:before.rows[0],newPortsAbsent:ports.rows.length===0,activeVerifierBackends:activity.rows.length,applyExecuted:false,fullCoupledMigrationRollbackExecuted:false,parentReleaseScriptsChanged:false,temporaryProbeUsesReadOnlyFlag:false,temporaryProbeBusinessWrites:false,temporaryObjectsRolledBack:true,parentNextAction:'Review both wrapper changes together; independently generate matching apply bytes, run exact coupled migration dry-run/rollback against current DEV guard, verify receipt and final identity, then parent alone decides apply. Do not replay v1.'};
+await writeFile(out+'READY.json',JSON.stringify(report,null,2));
+console.log(JSON.stringify(report));

@@ -1,0 +1,22 @@
+{
+  "name": "@fvi/app",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "description": "ReconIQ authenticated app — reconciliation platform, /mkt-admin, all APIs",
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite dev",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "deploy": "wrangler pages deploy ./dist --project-name reconiq"
+  },
+  "dependencies": {
+    "@fvi/api-contracts": "workspace:*",
+    "@fvi/brand": "workspace:*",
+    "@fvi/lib-shared": "workspace:*",
+    "@fvi/supabase-client": "workspace:*",
+    "@fvi/ui": "workspace:*"
+  }
+}

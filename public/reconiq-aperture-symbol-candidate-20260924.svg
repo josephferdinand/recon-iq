@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">ReconIQ aperture symbol — vector candidate</title>
+  <desc id="desc">An approximate, hand-authored vector interpretation of the owner-approved ReconIQ aperture and wing symbol. This candidate is not an approved master.</desc>
+  <defs>
+    <linearGradient id="aperture" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#78eaff"/>
+      <stop offset="0.54" stop-color="#00d4ff"/>
+      <stop offset="1" stop-color="#1e3a5f"/>
+    </linearGradient>
+    <linearGradient id="wing" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1e3a5f"/>
+      <stop offset="0.56" stop-color="#244b78"/>
+      <stop offset="1" stop-color="#00d4ff"/>
+    </linearGradient>
+  </defs>
+  <!-- Candidate geometry is deliberately symmetric and simplified; the approved JPEG remains the visual authority. -->
+  <g>
+    <path fill="url(#aperture)" d="M256 12 C258 91 267 108 345 128 C267 130 258 145 256 222 C254 145 245 130 167 128 C245 108 254 91 256 12Z"/>
+    <path fill="url(#wing)" d="M239 112 H218 V260 C218 322 194 364 145 399 L39 474 H126 L181 435 C232 399 256 348 256 279 V112Z"/>
+    <path fill="url(#wing)" d="M273 112 H294 V260 C294 322 318 364 367 399 L473 474 H386 L331 435 C280 399 256 348 256 279 V112Z"/>
+    <path fill="#1e3a5f" d="M228 183 H246 V279 C246 344 230 391 196 423 L175 438 C217 397 238 350 238 286 V183Z" opacity=".92"/>
+    <path fill="#1e3a5f" d="M284 183 H266 V279 C266 344 282 391 316 423 L337 438 C295 397 274 350 274 286 V183Z" opacity=".92"/>
+  </g>
+</svg>

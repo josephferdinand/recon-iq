@@ -1,0 +1,16 @@
+{
+  "name": "@fvi/lib-shared",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "description": "Cross-surface utility library (mostly empty today; grows as marketing and app share more logic)",
+  "main": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "lint": "eslint src",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  }
+}

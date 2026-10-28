@@ -1,0 +1,43 @@
+{
+  "name": "@falconveritas/fvi-sdk",
+  "version": "3.0.0",
+  "description": "Official TypeScript SDK for the ReconIQ (FVI) reconciliation platform — v3.0.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "QUICKSTART.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "fvi",
+    "falconveritas",
+    "reconciliation",
+    "fintech",
+    "sdk"
+  ],
+  "license": "UNLICENSED",
+  "publishConfig": {
+    "access": "restricted"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "sideEffects": false,
+  "devDependencies": {
+    "typescript": "^5.5.0"
+  }
+}

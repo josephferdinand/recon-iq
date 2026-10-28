@@ -1,0 +1,19 @@
+{
+  "name": "@fvi/supabase-client",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "description": "Supabase clients (publishable + service-role + generated types) shared across marketing and app",
+  "main": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "lint": "eslint src",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.108.2"
+  }
+}

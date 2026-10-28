@@ -1,0 +1,10 @@
+import{readFile,writeFile}from'node:fs/promises';import{createHash}from'node:crypto';
+const root='./LOCAL_USER/AppData/Local/FVI-QA-Private-20260925',sha=x=>createHash('sha256').update(x).digest('hex'),sql=await readFile('output/access-legacy-group-role-forward-20261005/CURRENT-ROLE-METADATA.sql','utf8');
+if(!/^\s*WITH\b/.test(sql.replace(/^--.*$/gm,'')))throw Error('Declared metadata/config SELECT');
+const vault=await readFile('./.private/CREDENTIALS.md','utf8'),a=vault.indexOf('<!-- FVI_CANONICAL_OPERATIONAL_CREDENTIALS_BEGIN -->'),z=vault.indexOf('<!-- FVI_CANONICAL_OPERATIONAL_CREDENTIALS_END -->');if(a<0||z<=a)throw Error('FVI authority boundary');const token=vault.slice(a,z).split(/\r?\n/).find(x=>/^\|\s*`SUPABASE_ACCESS_TOKEN`\s*\|/.test(x))?.split('|')[2]?.trim().replace(/^`|`$/g,'');if(!/^sbp_/.test(token??''))throw Error('FVI authority unavailable');
+const results=[];for(const[environment,ref,ledger]of[['PROD','YOUR_PROJECT_REF',458],['DEV','YOUR_PROJECT_REF',433]]){
+ const response=await fetch('https://api.supabase.com/v1/projects/'+ref+'/database/query',{method:'POST',headers:{authorization:'Bearer '+token,'content-type':'application/json'},body:JSON.stringify({query:sql,read_only:true}),signal:AbortSignal.timeout(30000)});if(!response.ok)throw Error('Legacy role metadata HTTP'+response.status);
+ const rows=await response.json(),metadata=rows[0]?.metadata;if(metadata?.engine!=='170006'||metadata.ledger!==ledger||metadata.latest!=='20261005080000')throw Error('Actual legacy role target drift');
+ const file=root+'/FVI-LEGACY-GROUP-ROLE-METADATA-'+environment+'-'+Date.now()+'.json';await writeFile(file,JSON.stringify({at:new Date().toISOString(),environment,ref,readOnly:true,noBusinessOrAuthRows:true,querySHA256:sha(sql),metadata},null,2),{flag:'wx'});
+ const result={environment,ref,ledger,file,sha256:sha(await readFile(file)),roles:metadata.builtin_roles?.length,readOnly:true};results.push(result);console.log(JSON.stringify(result));
+}await writeFile('docs/evidence/FVI_LEGACY_GROUP_ROLE_METADATA_2026-10-05-'+Date.now()+'.json',JSON.stringify({at:new Date().toISOString(),results,noSQLApplied:true},null,2),{flag:'wx'});

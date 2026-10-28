@@ -1,0 +1,22 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "fvi-aidp-job-scheduler",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-09-04",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": false,
+  "preview_urls": false,
+  "observability": { "enabled": true, "head_sampling_rate": 1 },
+  "env": {
+    "prod": {
+      "name": "fvi-aidp-job-scheduler-prod",
+      "vars": { "FVI_APP_URL": "https://app.reconiq.example", "BATCH_SIZE": "5" },
+      "triggers": { "crons": ["* * * * *"] }
+    },
+    "dev": {
+      "name": "fvi-aidp-job-scheduler-dev",
+      "vars": { "FVI_APP_URL": "https://dev.app.reconiq.example", "BATCH_SIZE": "2" },
+      "triggers": { "crons": ["*/5 * * * *"] }
+    }
+  }
+}

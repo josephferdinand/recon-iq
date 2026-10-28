@@ -1,0 +1,7 @@
+import { readFile, writeFile } from "node:fs/promises";
+import path from "node:path";
+import { actorSession } from "./governance-approval-hosted-20261002.mjs";
+const input=JSON.parse(await readFile(process.env.FVI_GOVERNANCE_QA_INPUT_FILE,"utf8"));const {token}=await actorSession(input.actors.requester,input.supabase_url);const headers={apikey:input.publishable_key,Authorization:`Bearer ${token}`,"Content-Type":"application/json"};
+const requestId="d387d3c8-6eee-41b7-a61c-f0ff5cac83e3";
+const targets=[{name:"request_row",endpoint:`governance_membership_requests?${new URLSearchParams({select:"id,status,version,requested_by,group_id",id:`eq.${requestId}`,tenant_id:`eq.${input.tenant_id}`})}`},{name:"own_current_membership",endpoint:`tenant_members?${new URLSearchParams({select:"role,active",user_id:`eq.${input.actors.requester.user_id}`,tenant_id:`eq.${input.tenant_id}`})}`}];
+const results=await Promise.all(targets.map(async target=>{try{const response=await fetch(`${input.supabase_url}/rest/v1/${target.endpoint}`,{headers,signal:AbortSignal.timeout(15000)});const text=await response.text();let body;try{body=JSON.parse(text)}catch{body={transport_message:text.slice(0,180)}}return{name:target.name,http:response.status,body};}catch(error){return{name:target.name,error:error.name}}}));const file=path.join(path.dirname(process.env.FVI_GOVERNANCE_QA_INPUT_FILE),"PROD-REQUEST-READONLY-STATUS.json");await writeFile(file,JSON.stringify({at:new Date().toISOString(),results},null,2));console.log(JSON.stringify(results));

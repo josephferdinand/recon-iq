@@ -1,0 +1,6 @@
+import{readFile,writeFile,mkdir}from'node:fs/promises';import{createHash}from'node:crypto';
+const root='output/recovery-current-458-433-successor-20261005',source=root+'/admin-gate-revision-03/prepare-admin-gate.mjs',output=root+'/parent-literal-wrapper-v4',sha=x=>createHash('sha256').update(x).digest('hex');
+const before=await readFile(source,'utf8');let after=before;
+for(const[a,b]of[[".replace(oldBody,body)",".replace(oldBody,()=>body)"],[".replace(/ROLLBACK;\\s*$/,adminPost+'ROLLBACK;\\n')",".replace(/ROLLBACK;\\s*$/,()=>adminPost+'ROLLBACK;\\n')"]]){if(after.split(a).length!==2)throw Error('Exact two string-replacement operations changed');after=after.replace(a,b);}
+await mkdir(output,{recursive:true});await writeFile(output+'/prepare-admin-gate.mjs',after,{flag:'wx'});
+await writeFile(output+'/BUILDER-LITERAL-REPAIR.json',JSON.stringify({at:new Date().toISOString(),source,preSHA256:sha(before),postSHA256:sha(after),scope:'Only use callback literal replacements; SQL raw body/preservation algorithms unchanged',sourceBodyExpected:'a8ef6e790d88154c930f87937ccad5be8fa255f6d5e42e9926799e10829cc9ff',native27UnchangedReused:true,SQLExecuted:false},null,2),{flag:'wx'});console.log(JSON.stringify({builder:output+'/prepare-admin-gate.mjs',sourceBodyChanged:false,SQLExecuted:false}));

@@ -1,0 +1,19 @@
+.env
+.env.*
+!.env.example
+.dev.vars*
+.private/
+.git/
+node_modules/
+dist/
+.wrangler/
+test-results/
+playwright-report/
+*.log
+_e2e_run/
+*.storage-state.json
+dev-session.json
+.tmp-*
+
+# Supabase CLI temp
+supabase/.temp/

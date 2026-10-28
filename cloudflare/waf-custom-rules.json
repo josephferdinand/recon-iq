@@ -1,0 +1,37 @@
+{
+  "$comment": "Sprint 1 hardening - custom WAF rules for ReconIQ. Apply via the Cloudflare rulesets API on the http_request_firewall_custom phase. Rules are evaluated top-to-bottom; the first match wins. Order is critical: ALLOW > CHALLENGE > BLOCK. Edit and re-apply with scripts/apply-waf-rules.sh. Rate-limit rules (stripe webhook, AI endpoint) live in a separate rate-limit ruleset applied by scripts/apply-waf-ratelimit-rules.sh.",
+  "$schema": "https://api.cloudflare.com/client/v4/zones/{zone_id}/rulesets",
+  "phase": "http_request_firewall_custom",
+  "rules": [
+    {
+      "action": "block",
+      "description": "P-M-12: Block SCIM POSTs from non-allowlisted origins (defense vs spoofed SCIM). IdPs (Okta/Entra/Google) and FVI origins are allowlisted via the `not any(...)` clause.",
+      "expression": "http.request.method eq \"POST\" and starts_with(http.request.uri.path, \"/api/public/scim/v2/\") and not any(http.request.headers[\"origin\"][*] in {\"https://*.okta.com\" \"https://*.okta-emea.com\" \"https://*.oktapreview.com\" \"https://login.microsoftonline.com\" \"https://graph.microsoft.com\" \"https://*.google.com\" \"https://app-fvi.reconiq.example\" \"https://staging-fvi.reconiq.example\"})",
+      "enabled": true
+    },
+    {
+      "action": "js_challenge",
+      "description": "P-A-04: JS challenge on /api/public/oauth/token from non-allowlisted origins (credential stuffing defense)",
+      "expression": "http.request.method eq \"POST\" and http.request.uri.path eq \"/api/public/oauth/token\" and not any(http.request.headers[\"origin\"][*] in {\"https://app-fvi.reconiq.example\" \"https://staging-fvi.reconiq.example\" \"https://reconiq.example\" \"https://www.reconiq.example\" \"https://support-fvi.reconiq.example\" \"https://admin.reconiq.example\"})",
+      "enabled": true
+    },
+    {
+      "action": "block",
+      "description": "P-M-11: Block SQL injection patterns in query string (defense-in-depth on top of parameterized queries). Free-tier-compatible: case-sensitive substring match; covers the common attack probes.",
+      "expression": "(http.request.uri.query contains \"union select\" or http.request.uri.query contains \"UNION SELECT\" or http.request.uri.query contains \"drop table\" or http.request.uri.query contains \"DROP TABLE\" or http.request.uri.query contains \"or 1=1\" or http.request.uri.query contains \"OR 1=1\" or http.request.uri.query contains \";--\")",
+      "enabled": true
+    },
+    {
+      "action": "managed_challenge",
+      "description": "P-M-09: Bot Fight Mode for /contact and /book-demo POSTs (lead-gen spam protection)",
+      "expression": "http.request.uri.path in {\"/contact\" \"/book-demo\"} and http.request.method eq \"POST\"",
+      "enabled": true
+    },
+    {
+      "action": "block",
+      "description": "GEO BLOCKLIST PLACEHOLDER - admin-toggled geographic blocklist (currently disabled). To enable: replace ip.geoip.country list with ISO 3166-1 alpha-2 codes and set enabled to true.",
+      "expression": "ip.geoip.country in {\"XX\"}",
+      "enabled": false
+    }
+  ]
+}

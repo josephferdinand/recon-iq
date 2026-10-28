@@ -1,0 +1,1882 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* Brand-fixed dual palette used by marketing + auth pages
+ * (independent of user theme so the brand always reads the same). */
+:root {
+  /* Legacy warm brand tokens (retained for marketing/auth) */
+  --brand-coffee:       #0a0f1c;
+  --brand-coffee-deep:  #05080f;
+  --brand-coffee-soft:  #0f1524;
+
+  --brand-cream:        #f4ede0;
+  --brand-cream-soft:   #faf6ec;
+  --brand-gold:         #c9a44c;
+  --brand-gold-ink:     #765817;
+
+  /* ===== ReconIQ — Neural Interface palette (app-wide) =====
+   * Sourced from the reference HTML (fvi-main). These tokens are
+   * available in every theme (light + dark, all palettes) so that
+   * gold / cyan / violet accents render identically everywhere. */
+  --ink-void:   #030508;
+  --ink-0:      #050810;
+  --ink-1:      #0A0F1A;
+  --ink-2:      #0F1626;
+  --ink-3:      #141D33;
+  --ink-4:      #1B2742;
+
+  --line:       rgba(255,255,255,0.06);
+  --line-2:     rgba(255,255,255,0.10);
+  --line-gold:  rgba(212,181,129,0.25);
+
+  --fvi-text-100: #F6F8FC;
+  --fvi-text-90:  rgba(246,248,252,0.86);
+  --fvi-text-70:  rgba(246,248,252,0.62);
+  --fvi-text-50:  rgba(246,248,252,0.40);
+  --fvi-text-30:  rgba(246,248,252,0.22);
+
+  --fvi-gold:     #D4B581;
+  --fvi-gold-hi:  #F2DDB4;
+  --fvi-gold-lo:  #8C7651;
+  --fvi-gold-deep:#5C4F36;
+
+  --fvi-cyan:     #6BE5FF;
+  --fvi-cyan-hi:  #B3F1FF;
+  --fvi-cyan-deep:#1E6F8C;
+
+  --fvi-violet:     #8B7CFF;
+  --fvi-violet-hi:  #B6ACFF;
+  --fvi-violet-deep:#3D3577;
+
+  --fvi-emerald:    #66E5B0;
+  --fvi-emerald-hi: #9CF1CB;
+  --fvi-amber:      #F5C46B;
+  --fvi-crimson:    #FF6B7A;
+
+  --fvi-ease-out:    cubic-bezier(.16,1,.3,1);
+  --fvi-ease-spring: cubic-bezier(.34,1.56,.64,1);
+  --fvi-ease-fluid:  cubic-bezier(.7,0,.3,1);
+
+  --fvi-shadow-1: 0 8px 32px -8px rgba(0,0,0,.6);
+  --fvi-shadow-2: 0 30px 80px -20px rgba(0,0,0,.8);
+}
+
+/*
+ * ReconIQ — design tokens
+ * Default Light: "Porcelain"   |  Default Dark: shared dark surface
+ * Supported canvases: porcelain, cloudy-mist, arctic-frost, coffee-warm-sand
+ * Supported navigation: navy, graphite, sapphire, forest
+ * Typography: Space Grotesk (display) + DM Sans (body)
+ * All colors are oklch.
+ */
+
+@theme inline {
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-gold: var(--gold);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+/* ============================================================
+   LIGHT — Porcelain (default/fallback)
+   ============================================================ */
+:root {
+  --radius: 0.625rem;
+  --background: oklch(0.992 0.003 250);
+  --foreground: oklch(0.21 0.025 260);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.21 0.025 260);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.21 0.025 260);
+  --primary: oklch(0.47 0.12 185);
+  --primary-foreground: oklch(0.99 0.005 250);
+  --secondary: oklch(0.955 0.012 250);
+  --secondary-foreground: oklch(0.30 0.03 260);
+  --muted: oklch(0.965 0.008 250);
+  --muted-foreground: oklch(0.52 0.02 255);
+  --accent: oklch(0.93 0.035 185);
+  --accent-foreground: oklch(0.27 0.07 185);
+  --destructive: oklch(0.58 0.20 27);
+  --destructive-foreground: oklch(0.99 0.005 250);
+  --gold: oklch(0.70 0.12 75);
+  --success: oklch(0.62 0.14 150);
+  --warning: oklch(0.75 0.15 75);
+  --border: oklch(0.90 0.012 250);
+  --input: oklch(0.93 0.012 250);
+  --ring: oklch(0.47 0.12 185);
+  --chart-1: oklch(0.47 0.12 185);
+  --chart-2: oklch(0.55 0.16 256);
+  --chart-3: oklch(0.65 0.15 145);
+  --chart-4: oklch(0.70 0.15 50);
+  --chart-5: oklch(0.60 0.20 320);
+  --sidebar: oklch(0.975 0.006 250);
+  --sidebar-foreground: oklch(0.25 0.025 260);
+  --sidebar-primary: oklch(0.47 0.12 185);
+  --sidebar-primary-foreground: oklch(0.99 0.005 250);
+  --sidebar-accent: oklch(0.93 0.025 185);
+  --sidebar-accent-foreground: oklch(0.27 0.07 185);
+  --sidebar-border: oklch(0.90 0.012 250);
+  --sidebar-ring: oklch(0.47 0.12 185);
+}
+
+/* ============================================================
+   LIGHT — Cloudy Mist (soft low-glare operational grey)
+   ============================================================ */
+:root[data-palette="cloudy-mist"]:not(.dark) {
+  --background: oklch(0.992 0.003 250);
+  --foreground: oklch(0.21 0.025 260);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.21 0.025 260);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.21 0.025 260);
+  --primary: oklch(0.55 0.18 256);
+  --primary-foreground: oklch(0.99 0.005 250);
+  --secondary: oklch(0.955 0.012 250);
+  --secondary-foreground: oklch(0.30 0.03 260);
+  --muted: oklch(0.965 0.008 250);
+  --muted-foreground: oklch(0.52 0.02 255);
+  --accent: oklch(0.93 0.04 256);
+  --accent-foreground: oklch(0.30 0.10 260);
+  --destructive: oklch(0.58 0.20 27);
+  --destructive-foreground: oklch(0.99 0.005 250);
+  --success: oklch(0.62 0.14 150);
+  --warning: oklch(0.75 0.15 75);
+  --border: oklch(0.90 0.012 250);
+  --input: oklch(0.93 0.012 250);
+  --ring: oklch(0.55 0.18 256);
+  --chart-1: oklch(0.55 0.18 256);
+  --chart-2: oklch(0.62 0.14 195);
+  --chart-3: oklch(0.65 0.15 145);
+  --chart-4: oklch(0.70 0.15 50);
+  --chart-5: oklch(0.60 0.20 320);
+  --sidebar: oklch(0.975 0.006 250);
+  --sidebar-foreground: oklch(0.25 0.025 260);
+  --sidebar-primary: oklch(0.55 0.18 256);
+  --sidebar-primary-foreground: oklch(0.99 0.005 250);
+  --sidebar-accent: oklch(0.93 0.025 256);
+  --sidebar-accent-foreground: oklch(0.30 0.08 260);
+  --sidebar-border: oklch(0.90 0.012 250);
+  --sidebar-ring: oklch(0.55 0.18 256);
+}
+
+/* ============================================================
+   LIGHT — Paper & Ink (editorial Swiss, high contrast)
+   ============================================================ */
+:root[data-palette="paper-ink"]:not(.dark) {
+  --background: oklch(0.975 0.003 90);
+  --foreground: oklch(0.16 0.005 60);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.16 0.005 60);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.16 0.005 60);
+  --primary: oklch(0.20 0.005 60);
+  --primary-foreground: oklch(0.98 0.003 90);
+  --secondary: oklch(0.935 0.005 80);
+  --secondary-foreground: oklch(0.20 0.005 60);
+  --muted: oklch(0.945 0.004 80);
+  --muted-foreground: oklch(0.48 0.008 70);
+  --accent: oklch(0.62 0.22 25);
+  --accent-foreground: oklch(0.99 0.003 90);
+  --destructive: oklch(0.55 0.22 27);
+  --destructive-foreground: oklch(0.99 0.003 90);
+  --success: oklch(0.55 0.13 150);
+  --warning: oklch(0.70 0.15 75);
+  --border: oklch(0.86 0.005 80);
+  --input: oklch(0.90 0.005 80);
+  --ring: oklch(0.20 0.005 60);
+  --chart-1: oklch(0.20 0.005 60);
+  --chart-2: oklch(0.62 0.22 25);
+  --chart-3: oklch(0.50 0.08 230);
+  --chart-4: oklch(0.55 0.13 150);
+  --chart-5: oklch(0.70 0.15 75);
+  --sidebar: oklch(0.955 0.004 80);
+  --sidebar-foreground: oklch(0.20 0.005 60);
+  --sidebar-primary: oklch(0.20 0.005 60);
+  --sidebar-primary-foreground: oklch(0.98 0.003 90);
+  --sidebar-accent: oklch(0.91 0.008 80);
+  --sidebar-accent-foreground: oklch(0.20 0.005 60);
+  --sidebar-border: oklch(0.86 0.005 80);
+  --sidebar-ring: oklch(0.20 0.005 60);
+}
+
+/* ============================================================
+   LIGHT — Arctic Frost (fintech crisp blue)
+   ============================================================ */
+:root[data-palette="arctic-frost"]:not(.dark) {
+  --background: oklch(0.985 0.012 230);
+  --foreground: oklch(0.22 0.035 235);
+  --card: oklch(0.998 0.005 230);
+  --card-foreground: oklch(0.22 0.035 235);
+  --popover: oklch(0.998 0.005 230);
+  --popover-foreground: oklch(0.22 0.035 235);
+  --primary: oklch(0.45 0.12 230);
+  --primary-foreground: oklch(0.99 0.008 230);
+  --secondary: oklch(0.93 0.025 225);
+  --secondary-foreground: oklch(0.28 0.045 235);
+  --muted: oklch(0.95 0.018 225);
+  --muted-foreground: oklch(0.50 0.035 230);
+  --accent: oklch(0.78 0.10 215);
+  --accent-foreground: oklch(0.22 0.055 230);
+  --destructive: oklch(0.55 0.20 27);
+  --destructive-foreground: oklch(0.99 0.008 230);
+  --success: oklch(0.60 0.13 165);
+  --warning: oklch(0.74 0.15 70);
+  --border: oklch(0.87 0.022 225);
+  --input: oklch(0.91 0.020 225);
+  --ring: oklch(0.45 0.12 230);
+  --chart-1: oklch(0.45 0.12 230);
+  --chart-2: oklch(0.62 0.13 200);
+  --chart-3: oklch(0.65 0.14 165);
+  --chart-4: oklch(0.55 0.18 270);
+  --chart-5: oklch(0.70 0.15 320);
+  --sidebar: oklch(0.96 0.018 228);
+  --sidebar-foreground: oklch(0.25 0.04 235);
+  --sidebar-primary: oklch(0.45 0.12 230);
+  --sidebar-primary-foreground: oklch(0.99 0.008 230);
+  --sidebar-accent: oklch(0.90 0.035 225);
+  --sidebar-accent-foreground: oklch(0.25 0.055 235);
+  --sidebar-border: oklch(0.87 0.022 225);
+  --sidebar-ring: oklch(0.45 0.12 230);
+}
+
+
+/* ============================================================
+   LIGHT — Coffee Warm Sand (warm latte beige, espresso accents)
+   ============================================================ */
+:root[data-palette="coffee-warm-sand"]:not(.dark) {
+  --background: oklch(0.965 0.018 70);
+  --foreground: oklch(0.25 0.035 50);
+  --card: oklch(0.99 0.010 70);
+  --card-foreground: oklch(0.25 0.035 50);
+  --popover: oklch(0.99 0.010 70);
+  --popover-foreground: oklch(0.25 0.035 50);
+  --primary: oklch(0.42 0.080 50);
+  --primary-foreground: oklch(0.98 0.012 70);
+  --secondary: oklch(0.91 0.030 65);
+  --secondary-foreground: oklch(0.30 0.045 50);
+  --muted: oklch(0.93 0.020 70);
+  --muted-foreground: oklch(0.50 0.030 55);
+  --accent: oklch(0.82 0.055 60);
+  --accent-foreground: oklch(0.26 0.045 50);
+  --destructive: oklch(0.55 0.20 27);
+  --destructive-foreground: oklch(0.98 0.012 70);
+  --success: oklch(0.60 0.13 145);
+  --warning: oklch(0.74 0.14 70);
+  --border: oklch(0.86 0.025 65);
+  --input: oklch(0.90 0.022 65);
+  --ring: oklch(0.42 0.080 50);
+  --chart-1: oklch(0.42 0.080 50);
+  --chart-2: oklch(0.62 0.10 60);
+  --chart-3: oklch(0.55 0.12 35);
+  --chart-4: oklch(0.65 0.12 145);
+  --chart-5: oklch(0.50 0.10 230);
+  --sidebar: oklch(0.945 0.020 70);
+  --sidebar-foreground: oklch(0.28 0.040 50);
+  --sidebar-primary: oklch(0.42 0.080 50);
+  --sidebar-primary-foreground: oklch(0.98 0.012 70);
+  --sidebar-accent: oklch(0.88 0.038 65);
+  --sidebar-accent-foreground: oklch(0.26 0.045 50);
+  --sidebar-border: oklch(0.86 0.025 65);
+  --sidebar-ring: oklch(0.42 0.080 50);
+}
+
+/* ============================================================
+   LIGHT — Cream & Amber (soft cream paired with rich amber)
+   ============================================================ */
+:root[data-palette="cream-amber"]:not(.dark) {
+  --background: oklch(0.975 0.022 90);
+  --foreground: oklch(0.26 0.035 65);
+  --card: oklch(0.995 0.012 90);
+  --card-foreground: oklch(0.26 0.035 65);
+  --popover: oklch(0.995 0.012 90);
+  --popover-foreground: oklch(0.26 0.035 65);
+  --primary: oklch(0.62 0.16 70);
+  --primary-foreground: oklch(0.20 0.030 60);
+  --secondary: oklch(0.93 0.040 85);
+  --secondary-foreground: oklch(0.30 0.045 65);
+  --muted: oklch(0.95 0.025 85);
+  --muted-foreground: oklch(0.50 0.035 70);
+  --accent: oklch(0.85 0.080 80);
+  --accent-foreground: oklch(0.28 0.050 65);
+  --destructive: oklch(0.55 0.20 27);
+  --destructive-foreground: oklch(0.98 0.012 90);
+  --success: oklch(0.60 0.13 145);
+  --warning: oklch(0.74 0.14 70);
+  --border: oklch(0.87 0.035 85);
+  --input: oklch(0.91 0.030 85);
+  --ring: oklch(0.62 0.16 70);
+  --chart-1: oklch(0.62 0.16 70);
+  --chart-2: oklch(0.55 0.10 50);
+  --chart-3: oklch(0.50 0.10 220);
+  --chart-4: oklch(0.65 0.13 145);
+  --chart-5: oklch(0.55 0.18 25);
+  --sidebar: oklch(0.955 0.025 88);
+  --sidebar-foreground: oklch(0.28 0.040 65);
+  --sidebar-primary: oklch(0.62 0.16 70);
+  --sidebar-primary-foreground: oklch(0.20 0.030 60);
+  --sidebar-accent: oklch(0.90 0.060 80);
+  --sidebar-accent-foreground: oklch(0.28 0.050 65);
+  --sidebar-border: oklch(0.87 0.035 85);
+  --sidebar-ring: oklch(0.62 0.16 70);
+}
+
+/* ============================================================
+   LIGHT — Sage & Bone (bone neutral, sage green accent)
+   ============================================================ */
+:root[data-palette="sage-bone"]:not(.dark) {
+  --background: oklch(0.965 0.012 100);
+  --foreground: oklch(0.24 0.020 140);
+  --card: oklch(0.99 0.008 100);
+  --card-foreground: oklch(0.24 0.020 140);
+  --popover: oklch(0.99 0.008 100);
+  --popover-foreground: oklch(0.24 0.020 140);
+  --primary: oklch(0.45 0.080 145);
+  --primary-foreground: oklch(0.98 0.010 100);
+  --secondary: oklch(0.92 0.018 110);
+  --secondary-foreground: oklch(0.28 0.030 140);
+  --muted: oklch(0.94 0.014 105);
+  --muted-foreground: oklch(0.50 0.022 130);
+  --accent: oklch(0.80 0.055 140);
+  --accent-foreground: oklch(0.25 0.040 140);
+  --destructive: oklch(0.55 0.20 27);
+  --destructive-foreground: oklch(0.98 0.010 100);
+  --success: oklch(0.58 0.13 150);
+  --warning: oklch(0.74 0.14 70);
+  --border: oklch(0.86 0.018 110);
+  --input: oklch(0.90 0.016 110);
+  --ring: oklch(0.45 0.080 145);
+  --chart-1: oklch(0.45 0.080 145);
+  --chart-2: oklch(0.55 0.10 60);
+  --chart-3: oklch(0.50 0.10 230);
+  --chart-4: oklch(0.65 0.13 145);
+  --chart-5: oklch(0.62 0.16 35);
+  --sidebar: oklch(0.945 0.014 105);
+  --sidebar-foreground: oklch(0.26 0.024 140);
+  --sidebar-primary: oklch(0.45 0.080 145);
+  --sidebar-primary-foreground: oklch(0.98 0.010 100);
+  --sidebar-accent: oklch(0.88 0.035 140);
+  --sidebar-accent-foreground: oklch(0.25 0.040 140);
+  --sidebar-border: oklch(0.86 0.018 110);
+  --sidebar-ring: oklch(0.45 0.080 145);
+}
+
+/* ============================================================
+   LIGHT — Rose & Quartz (quartz pink, mauve depth)
+   ============================================================ */
+:root[data-palette="rose-quartz"]:not(.dark) {
+  --background: oklch(0.975 0.012 20);
+  --foreground: oklch(0.26 0.040 10);
+  --card: oklch(0.995 0.006 20);
+  --card-foreground: oklch(0.26 0.040 10);
+  --popover: oklch(0.995 0.006 20);
+  --popover-foreground: oklch(0.26 0.040 10);
+  --primary: oklch(0.46 0.110 10);
+  --primary-foreground: oklch(0.98 0.010 20);
+  --secondary: oklch(0.93 0.030 15);
+  --secondary-foreground: oklch(0.30 0.050 10);
+  --muted: oklch(0.95 0.022 18);
+  --muted-foreground: oklch(0.52 0.030 12);
+  --accent: oklch(0.82 0.070 12);
+  --accent-foreground: oklch(0.28 0.055 10);
+  --destructive: oklch(0.55 0.20 27);
+  --destructive-foreground: oklch(0.98 0.010 20);
+  --success: oklch(0.60 0.13 145);
+  --warning: oklch(0.74 0.14 70);
+  --border: oklch(0.87 0.030 15);
+  --input: oklch(0.91 0.025 15);
+  --ring: oklch(0.46 0.110 10);
+  --chart-1: oklch(0.46 0.110 10);
+  --chart-2: oklch(0.55 0.14 320);
+  --chart-3: oklch(0.50 0.10 230);
+  --chart-4: oklch(0.65 0.13 145);
+  --chart-5: oklch(0.65 0.16 50);
+  --sidebar: oklch(0.955 0.018 18);
+  --sidebar-foreground: oklch(0.28 0.040 10);
+  --sidebar-primary: oklch(0.46 0.110 10);
+  --sidebar-primary-foreground: oklch(0.98 0.010 20);
+  --sidebar-accent: oklch(0.89 0.045 12);
+  --sidebar-accent-foreground: oklch(0.28 0.055 10);
+  --sidebar-border: oklch(0.87 0.030 15);
+  --sidebar-ring: oklch(0.46 0.110 10);
+}
+
+
+/* ============================================================
+   CHROME — top bar + left rail color (overrides sidebar tokens).
+   Independent from the palette so users can mix any chrome with
+   any canvas palette.  Set on <html data-chrome="..."> by
+   ThemeProvider.  Uses !important so chrome wins over palette
+   even when palette declarations appear later in this file.
+   ============================================================ */
+
+:root[data-chrome="navy"] {
+  --sidebar: #0e1a30 !important;
+  --sidebar-foreground: #e6ecf5 !important;
+  --sidebar-primary: #c9a44c !important;
+  --sidebar-primary-foreground: #0e1a30 !important;
+  --sidebar-accent: #1c2c4d !important;
+  --sidebar-accent-foreground: #ffffff !important;
+  --sidebar-border: #1c2c4d !important;
+  --sidebar-ring: #c9a44c !important;
+}
+
+:root[data-chrome="midnight"] {
+  --sidebar: #0a0f24 !important;
+  --sidebar-foreground: #e8eaff !important;
+  --sidebar-primary: #6366f1 !important;
+  --sidebar-primary-foreground: #ffffff !important;
+  --sidebar-accent: #1a2548 !important;
+  --sidebar-accent-foreground: #ffffff !important;
+  --sidebar-border: #1a2548 !important;
+  --sidebar-ring: #818cf8 !important;
+}
+
+:root[data-chrome="charcoal"] {
+  --sidebar: #1a1a1a !important;
+  --sidebar-foreground: #ededed !important;
+  --sidebar-primary: #d4d4d4 !important;
+  --sidebar-primary-foreground: #1a1a1a !important;
+  --sidebar-accent: #2a2a2a !important;
+  --sidebar-accent-foreground: #ffffff !important;
+  --sidebar-border: #2a2a2a !important;
+  --sidebar-ring: #d4d4d4 !important;
+}
+
+:root[data-chrome="graphite"] {
+  --sidebar: #3a3f47 !important;
+  --sidebar-foreground: #f1f5f9 !important;
+  --sidebar-primary: #94a3b8 !important;
+  --sidebar-primary-foreground: #1a1a1a !important;
+  --sidebar-accent: #4b525c !important;
+  --sidebar-accent-foreground: #ffffff !important;
+  --sidebar-border: #4b525c !important;
+  --sidebar-ring: #cbd5e1 !important;
+}
+
+:root[data-chrome="slate"] {
+  --sidebar: #1f2937 !important;
+  --sidebar-foreground: #f1f5f9 !important;
+  --sidebar-primary: #60a5fa !important;
+  --sidebar-primary-foreground: #0b1220 !important;
+  --sidebar-accent: #374151 !important;
+  --sidebar-accent-foreground: #ffffff !important;
+  --sidebar-border: #374151 !important;
+  --sidebar-ring: #93c5fd !important;
+}
+
+:root[data-chrome="forest"] {
+  --sidebar: #14352a !important;
+  --sidebar-foreground: #e8f5ec !important;
+  --sidebar-primary: #6ee7b7 !important;
+  --sidebar-primary-foreground: #0a2018 !important;
+  --sidebar-accent: #1f4a3a !important;
+  --sidebar-accent-foreground: #ffffff !important;
+  --sidebar-border: #1f4a3a !important;
+  --sidebar-ring: #6ee7b7 !important;
+}
+
+:root[data-chrome="crimson"] {
+  --sidebar: #3b0d12 !important;
+  --sidebar-foreground: #fdecee !important;
+  --sidebar-primary: #f87171 !important;
+  --sidebar-primary-foreground: #2a0709 !important;
+  --sidebar-accent: #5a1820 !important;
+  --sidebar-accent-foreground: #ffffff !important;
+  --sidebar-border: #5a1820 !important;
+  --sidebar-ring: #fca5a5 !important;
+}
+
+:root[data-chrome="sapphire"] {
+  --sidebar: #0b2a5b !important;
+  --sidebar-foreground: #e6efff !important;
+  --sidebar-primary: #60a5fa !important;
+  --sidebar-primary-foreground: #04122b !important;
+  --sidebar-accent: #133a7a !important;
+  --sidebar-accent-foreground: #ffffff !important;
+  --sidebar-border: #133a7a !important;
+  --sidebar-ring: #93c5fd !important;
+}
+
+:root[data-chrome="espresso"] {
+  --sidebar: #2a1810 !important;
+  --sidebar-foreground: #f3e6d8 !important;
+  --sidebar-primary: #d4a574 !important;
+  --sidebar-primary-foreground: #1a0e08 !important;
+  --sidebar-accent: #3d2418 !important;
+  --sidebar-accent-foreground: #ffffff !important;
+  --sidebar-border: #3d2418 !important;
+  --sidebar-ring: #d4a574 !important;
+}
+
+:root[data-chrome="plum"] {
+  --sidebar: #2e1037 !important;
+  --sidebar-foreground: #f3e8f7 !important;
+  --sidebar-primary: #c084fc !important;
+  --sidebar-primary-foreground: #1b0820 !important;
+  --sidebar-accent: #421a4e !important;
+  --sidebar-accent-foreground: #ffffff !important;
+  --sidebar-border: #421a4e !important;
+  --sidebar-ring: #d8b4fe !important;
+}
+
+/* ── Light chromes ────────────────────────────────────────────
+   The top bar + left rail can also be light. We keep accents
+   subtle and text dark so the rail still feels like a distinct
+   surface against any canvas palette. */
+
+:root[data-chrome="porcelain"] {
+  --sidebar: #ffffff !important;
+  --sidebar-foreground: #0f172a !important;
+  --sidebar-primary: #0f172a !important;
+  --sidebar-primary-foreground: #ffffff !important;
+  --sidebar-accent: #f1f5f9 !important;
+  --sidebar-accent-foreground: #0f172a !important;
+  --sidebar-border: #e2e8f0 !important;
+  --sidebar-ring: #0f172a !important;
+}
+
+:root[data-chrome="linen"] {
+  --sidebar: #faf7f0 !important;
+  --sidebar-foreground: #1f1d18 !important;
+  --sidebar-primary: #1f1d18 !important;
+  --sidebar-primary-foreground: #faf7f0 !important;
+  --sidebar-accent: #efe9dc !important;
+  --sidebar-accent-foreground: #1f1d18 !important;
+  --sidebar-border: #e4dcc9 !important;
+  --sidebar-ring: #5c3b1e !important;
+}
+
+:root[data-chrome="mist"] {
+  --sidebar: #f6f8fb !important;
+  --sidebar-foreground: #1e293b !important;
+  --sidebar-primary: #3b5bdb !important;
+  --sidebar-primary-foreground: #ffffff !important;
+  --sidebar-accent: #e6ebf2 !important;
+  --sidebar-accent-foreground: #1e293b !important;
+  --sidebar-border: #d8dee8 !important;
+  --sidebar-ring: #3b5bdb !important;
+}
+
+:root[data-chrome="pearl"] {
+  --sidebar: #f4f4f5 !important;
+  --sidebar-foreground: #27272a !important;
+  --sidebar-primary: #27272a !important;
+  --sidebar-primary-foreground: #f4f4f5 !important;
+  --sidebar-accent: #e4e4e7 !important;
+  --sidebar-accent-foreground: #27272a !important;
+  --sidebar-border: #d4d4d8 !important;
+  --sidebar-ring: #52525b !important;
+}
+
+:root[data-chrome="sand"] {
+  --sidebar: #f5efe4 !important;
+  --sidebar-foreground: #3b2a16 !important;
+  --sidebar-primary: #7a4a0f !important;
+  --sidebar-primary-foreground: #fcf6e6 !important;
+  --sidebar-accent: #e7ddc8 !important;
+  --sidebar-accent-foreground: #3b2a16 !important;
+  --sidebar-border: #d8cbac !important;
+  --sidebar-ring: #a47148 !important;
+}
+
+:root[data-chrome="sage-light"] {
+  --sidebar: #eef3ec !important;
+  --sidebar-foreground: #243a27 !important;
+  --sidebar-primary: #3e5a40 !important;
+  --sidebar-primary-foreground: #f4f9f1 !important;
+  --sidebar-accent: #dbe6d6 !important;
+  --sidebar-accent-foreground: #243a27 !important;
+  --sidebar-border: #c8d6c2 !important;
+  --sidebar-ring: #3e5a40 !important;
+}
+
+:root[data-chrome="sky-light"] {
+  --sidebar: #eaf1fb !important;
+  --sidebar-foreground: #0b2a5b !important;
+  --sidebar-primary: #0b2a5b !important;
+  --sidebar-primary-foreground: #eaf1fb !important;
+  --sidebar-accent: #d4e3f4 !important;
+  --sidebar-accent-foreground: #0b2a5b !important;
+  --sidebar-border: #bcd1ea !important;
+  --sidebar-ring: #133a7a !important;
+}
+
+:root[data-chrome="blush"] {
+  --sidebar: #fbf1f1 !important;
+  --sidebar-foreground: #3a1c22 !important;
+  --sidebar-primary: #7a3d4a !important;
+  --sidebar-primary-foreground: #fbf1f1 !important;
+  --sidebar-accent: #f2d9da !important;
+  --sidebar-accent-foreground: #3a1c22 !important;
+  --sidebar-border: #e7c4c6 !important;
+  --sidebar-ring: #c68a90 !important;
+}
+
+:root[data-chrome="honey-light"] {
+  --sidebar: #fcf6e6 !important;
+  --sidebar-foreground: #3f2a05 !important;
+  --sidebar-primary: #a16207 !important;
+  --sidebar-primary-foreground: #fcf6e6 !important;
+  --sidebar-accent: #f4e5b8 !important;
+  --sidebar-accent-foreground: #3f2a05 !important;
+  --sidebar-border: #e9d493 !important;
+  --sidebar-ring: #a16207 !important;
+}
+
+:root[data-chrome="mint-light"] {
+  --sidebar: #ecf6f1 !important;
+  --sidebar-foreground: #0f5132 !important;
+  --sidebar-primary: #0f5132 !important;
+  --sidebar-primary-foreground: #ecf6f1 !important;
+  --sidebar-accent: #d4ebe0 !important;
+  --sidebar-accent-foreground: #0f5132 !important;
+  --sidebar-border: #b9dcca !important;
+  --sidebar-ring: #198754 !important;
+}
+
+
+
+/* ============================================================
+   TOPBAR — independent chrome for the top bar in dual-tone mode.
+   Scoped to .fvi-topbar so it only re-maps sidebar tokens for
+   the header element, leaving the left rail on data-chrome.
+   ============================================================ */
+
+:root[data-topbar="navy"] .fvi-topbar {
+  --sidebar: #0e1a30 !important;
+  --sidebar-foreground: #e6ecf5 !important;
+  --sidebar-primary: #c9a44c !important;
+  --sidebar-primary-foreground: #0e1a30 !important;
+  --sidebar-accent: #1c2c4d !important;
+  --sidebar-accent-foreground: #ffffff !important;
+  --sidebar-border: #1c2c4d !important;
+  --sidebar-ring: #c9a44c !important;
+}
+:root[data-topbar="midnight"] .fvi-topbar {
+  --sidebar: #0a0f24 !important;
+  --sidebar-foreground: #e8eaff !important;
+  --sidebar-primary: #6366f1 !important;
+  --sidebar-primary-foreground: #ffffff !important;
+  --sidebar-accent: #1a2548 !important;
+  --sidebar-accent-foreground: #ffffff !important;
+  --sidebar-border: #1a2548 !important;
+  --sidebar-ring: #818cf8 !important;
+}
+:root[data-topbar="charcoal"] .fvi-topbar {
+  --sidebar: #1a1a1a !important;
+  --sidebar-foreground: #ededed !important;
+  --sidebar-primary: #d4d4d4 !important;
+  --sidebar-primary-foreground: #1a1a1a !important;
+  --sidebar-accent: #2a2a2a !important;
+  --sidebar-accent-foreground: #ffffff !important;
+  --sidebar-border: #2a2a2a !important;
+  --sidebar-ring: #d4d4d4 !important;
+}
+:root[data-topbar="graphite"] .fvi-topbar {
+  --sidebar: #3a3f47 !important;
+  --sidebar-foreground: #f1f5f9 !important;
+  --sidebar-primary: #94a3b8 !important;
+  --sidebar-primary-foreground: #1a1a1a !important;
+  --sidebar-accent: #4b525c !important;
+  --sidebar-accent-foreground: #ffffff !important;
+  --sidebar-border: #4b525c !important;
+  --sidebar-ring: #cbd5e1 !important;
+}
+:root[data-topbar="slate"] .fvi-topbar {
+  --sidebar: #1f2937 !important;
+  --sidebar-foreground: #f1f5f9 !important;
+  --sidebar-primary: #60a5fa !important;
+  --sidebar-primary-foreground: #0b1220 !important;
+  --sidebar-accent: #374151 !important;
+  --sidebar-accent-foreground: #ffffff !important;
+  --sidebar-border: #374151 !important;
+  --sidebar-ring: #93c5fd !important;
+}
+:root[data-topbar="forest"] .fvi-topbar {
+  --sidebar: #14352a !important;
+  --sidebar-foreground: #e8f5ec !important;
+  --sidebar-primary: #6ee7b7 !important;
+  --sidebar-primary-foreground: #0a2018 !important;
+  --sidebar-accent: #1f4a3a !important;
+  --sidebar-accent-foreground: #ffffff !important;
+  --sidebar-border: #1f4a3a !important;
+  --sidebar-ring: #6ee7b7 !important;
+}
+:root[data-topbar="crimson"] .fvi-topbar {
+  --sidebar: #3b0d12 !important;
+  --sidebar-foreground: #fdecee !important;
+  --sidebar-primary: #f87171 !important;
+  --sidebar-primary-foreground: #2a0709 !important;
+  --sidebar-accent: #5a1820 !important;
+  --sidebar-accent-foreground: #ffffff !important;
+  --sidebar-border: #5a1820 !important;
+  --sidebar-ring: #fca5a5 !important;
+}
+:root[data-topbar="sapphire"] .fvi-topbar {
+  --sidebar: #0b2a5b !important;
+  --sidebar-foreground: #e6efff !important;
+  --sidebar-primary: #60a5fa !important;
+  --sidebar-primary-foreground: #04122b !important;
+  --sidebar-accent: #133a7a !important;
+  --sidebar-accent-foreground: #ffffff !important;
+  --sidebar-border: #133a7a !important;
+  --sidebar-ring: #93c5fd !important;
+}
+:root[data-topbar="espresso"] .fvi-topbar {
+  --sidebar: #2a1810 !important;
+  --sidebar-foreground: #f3e6d8 !important;
+  --sidebar-primary: #d4a574 !important;
+  --sidebar-primary-foreground: #1a0e08 !important;
+  --sidebar-accent: #3d2418 !important;
+  --sidebar-accent-foreground: #ffffff !important;
+  --sidebar-border: #3d2418 !important;
+  --sidebar-ring: #d4a574 !important;
+}
+:root[data-topbar="plum"] .fvi-topbar {
+  --sidebar: #2e1037 !important;
+  --sidebar-foreground: #f3e8f7 !important;
+  --sidebar-primary: #c084fc !important;
+  --sidebar-primary-foreground: #1b0820 !important;
+  --sidebar-accent: #421a4e !important;
+  --sidebar-accent-foreground: #ffffff !important;
+  --sidebar-border: #421a4e !important;
+  --sidebar-ring: #d8b4fe !important;
+}
+:root[data-topbar="porcelain"] .fvi-topbar {
+  --sidebar: #ffffff !important;
+  --sidebar-foreground: #0f172a !important;
+  --sidebar-primary: #0f172a !important;
+  --sidebar-primary-foreground: #ffffff !important;
+  --sidebar-accent: #f1f5f9 !important;
+  --sidebar-accent-foreground: #0f172a !important;
+  --sidebar-border: #e2e8f0 !important;
+  --sidebar-ring: #0f172a !important;
+}
+:root[data-topbar="linen"] .fvi-topbar {
+  --sidebar: #faf7f0 !important;
+  --sidebar-foreground: #1f1d18 !important;
+  --sidebar-primary: #1f1d18 !important;
+  --sidebar-primary-foreground: #faf7f0 !important;
+  --sidebar-accent: #efe9dc !important;
+  --sidebar-accent-foreground: #1f1d18 !important;
+  --sidebar-border: #e4dcc9 !important;
+  --sidebar-ring: #5c3b1e !important;
+}
+:root[data-topbar="mist"] .fvi-topbar {
+  --sidebar: #f6f8fb !important;
+  --sidebar-foreground: #1e293b !important;
+  --sidebar-primary: #3b5bdb !important;
+  --sidebar-primary-foreground: #ffffff !important;
+  --sidebar-accent: #e6ebf2 !important;
+  --sidebar-accent-foreground: #1e293b !important;
+  --sidebar-border: #d8dee8 !important;
+  --sidebar-ring: #3b5bdb !important;
+}
+:root[data-topbar="pearl"] .fvi-topbar {
+  --sidebar: #f4f4f5 !important;
+  --sidebar-foreground: #27272a !important;
+  --sidebar-primary: #27272a !important;
+  --sidebar-primary-foreground: #f4f4f5 !important;
+  --sidebar-accent: #e4e4e7 !important;
+  --sidebar-accent-foreground: #27272a !important;
+  --sidebar-border: #d4d4d8 !important;
+  --sidebar-ring: #52525b !important;
+}
+:root[data-topbar="sand"] .fvi-topbar {
+  --sidebar: #f5efe4 !important;
+  --sidebar-foreground: #3b2a16 !important;
+  --sidebar-primary: #7a4a0f !important;
+  --sidebar-primary-foreground: #fcf6e6 !important;
+  --sidebar-accent: #e7ddc8 !important;
+  --sidebar-accent-foreground: #3b2a16 !important;
+  --sidebar-border: #d8cbac !important;
+  --sidebar-ring: #a47148 !important;
+}
+:root[data-topbar="sage-light"] .fvi-topbar {
+  --sidebar: #eef3ec !important;
+  --sidebar-foreground: #243a27 !important;
+  --sidebar-primary: #3e5a40 !important;
+  --sidebar-primary-foreground: #f4f9f1 !important;
+  --sidebar-accent: #dbe6d6 !important;
+  --sidebar-accent-foreground: #243a27 !important;
+  --sidebar-border: #c8d6c2 !important;
+  --sidebar-ring: #3e5a40 !important;
+}
+:root[data-topbar="sky-light"] .fvi-topbar {
+  --sidebar: #eaf1fb !important;
+  --sidebar-foreground: #0b2a5b !important;
+  --sidebar-primary: #0b2a5b !important;
+  --sidebar-primary-foreground: #eaf1fb !important;
+  --sidebar-accent: #d4e3f4 !important;
+  --sidebar-accent-foreground: #0b2a5b !important;
+  --sidebar-border: #bcd1ea !important;
+  --sidebar-ring: #133a7a !important;
+}
+:root[data-topbar="blush"] .fvi-topbar {
+  --sidebar: #fbf1f1 !important;
+  --sidebar-foreground: #3a1c22 !important;
+  --sidebar-primary: #7a3d4a !important;
+  --sidebar-primary-foreground: #fbf1f1 !important;
+  --sidebar-accent: #f2d9da !important;
+  --sidebar-accent-foreground: #3a1c22 !important;
+  --sidebar-border: #e7c4c6 !important;
+  --sidebar-ring: #c68a90 !important;
+}
+:root[data-topbar="honey-light"] .fvi-topbar {
+  --sidebar: #fcf6e6 !important;
+  --sidebar-foreground: #3f2a05 !important;
+  --sidebar-primary: #a16207 !important;
+  --sidebar-primary-foreground: #fcf6e6 !important;
+  --sidebar-accent: #f4e5b8 !important;
+  --sidebar-accent-foreground: #3f2a05 !important;
+  --sidebar-border: #e9d493 !important;
+  --sidebar-ring: #a16207 !important;
+}
+:root[data-topbar="mint-light"] .fvi-topbar {
+  --sidebar: #ecf6f1 !important;
+  --sidebar-foreground: #0f5132 !important;
+  --sidebar-primary: #0f5132 !important;
+  --sidebar-primary-foreground: #ecf6f1 !important;
+  --sidebar-accent: #d4ebe0 !important;
+  --sidebar-accent-foreground: #0f5132 !important;
+  --sidebar-border: #b9dcca !important;
+  --sidebar-ring: #198754 !important;
+}
+
+@layer base {
+  [data-slot="card-header"] + [data-slot="card-content"],
+  [data-slot="card-content"] + [data-slot="card-footer"],
+  [data-slot="card-header"] + [data-slot="card-footer"] {
+    padding-top: 0;
+  }
+
+  * {
+    border-color: var(--color-border);
+  }
+  html, body {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+  }
+  h1, h2, h3, h4, .font-display {
+    font-family: var(--font-display);
+    letter-spacing: -0.01em;
+  }
+}
+
+/* ────────────────────────────────────────────────────────────
+   Guided Tour (driver.js) — FVI "Midnight Aurora" v2
+   Premium glassmorphic popover with gold filigree.
+   ──────────────────────────────────────────────────────────── */
+.driver-overlay,
+.driver-overlay-animated {
+  backdrop-filter: blur(6px) saturate(120%);
+  background: radial-gradient(
+    ellipse at center,
+    rgba(10, 25, 47, 0.35) 0%,
+    rgba(5, 12, 24, 0.72) 100%
+  ) !important;
+}
+
+/* Subtle gold ring around the highlighted stage element */
+.driver-active-element,
+.driver-active-element * {
+  pointer-events: auto;
+}
+.driver-highlighted-element {
+  box-shadow:
+    0 0 0 2px rgba(197, 160, 89, 0.55),
+    0 0 0 6px rgba(197, 160, 89, 0.18),
+    0 12px 40px -8px rgba(197, 160, 89, 0.35) !important;
+  transition: box-shadow 240ms ease;
+}
+
+/* ============================================================
+   Guided tour popover — theme-aware (uses semantic tokens)
+   ============================================================ */
+/* When no element is highlighted, driver.js renders the popover without an arrow —
+   center it on the viewport instead of leaving it pinned to the bottom. */
+.driver-popover.fvi-tour:has(.driver-popover-arrow-none),
+.driver-popover.fvi-tour:not(:has(.driver-popover-arrow)) {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  right: auto !important;
+  bottom: auto !important;
+  transform: translate(-50%, -50%) !important;
+}
+
+.driver-popover.fvi-tour {
+  position: relative;
+  background:
+    radial-gradient(120% 80% at 100% 0%, color-mix(in oklab, var(--primary) 14%, transparent) 0%, transparent 55%),
+    radial-gradient(100% 60% at 0% 100%, color-mix(in oklab, var(--accent) 22%, transparent) 0%, transparent 60%),
+    var(--popover);
+  color: var(--popover-foreground);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 0;
+  min-width: 360px;
+  max-width: 420px;
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--primary) 18%, transparent),
+    0 24px 60px -12px color-mix(in oklab, var(--foreground) 28%, transparent),
+    0 12px 32px -10px color-mix(in oklab, var(--primary) 16%, transparent);
+  overflow: hidden;
+  font-family: var(--font-body);
+  animation: fviTourIn 320ms cubic-bezier(.2,.9,.25,1);
+  isolation: isolate;
+}
+
+/* Gradient accent ring */
+.driver-popover.fvi-tour::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    140deg,
+    color-mix(in oklab, var(--primary) 55%, transparent) 0%,
+    color-mix(in oklab, var(--primary) 18%, transparent) 35%,
+    color-mix(in oklab, var(--foreground) 6%, transparent) 60%,
+    color-mix(in oklab, var(--primary) 45%, transparent) 100%
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Soft aurora glow */
+.driver-popover.fvi-tour::after {
+  content: "";
+  position: absolute;
+  top: -40%;
+  left: -20%;
+  width: 80%;
+  height: 80%;
+  background: radial-gradient(closest-side, color-mix(in oklab, var(--primary) 22%, transparent), transparent 70%);
+  filter: blur(20px);
+  pointer-events: none;
+  z-index: 0;
+  animation: fviTourFloat 8s ease-in-out infinite alternate;
+}
+
+@keyframes fviTourFloat {
+  0%   { transform: translate(0,0) scale(1); }
+  100% { transform: translate(20px, 16px) scale(1.1); }
+}
+
+@keyframes fviTourIn {
+  from { opacity: 0; transform: translateY(10px) scale(.96); filter: blur(4px); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);   filter: blur(0); }
+}
+
+/* Title */
+.driver-popover.fvi-tour .driver-popover-title {
+  position: relative;
+  z-index: 1;
+  font-family: var(--font-display, var(--font-body));
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: var(--popover-foreground);
+  padding: 22px 48px 6px 56px;
+  line-height: 1.3;
+}
+
+/* Falcon monogram badge — uses primary token */
+.driver-popover.fvi-tour .driver-popover-title::before {
+  content: "";
+  position: absolute;
+  left: 20px;
+  top: 20px;
+  width: 28px;
+  height: 28px;
+  border-radius: 9px;
+  background: linear-gradient(160deg,
+    color-mix(in oklab, var(--primary) 90%, white 20%) 0%,
+    var(--primary) 100%);
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--primary) 40%, transparent),
+    0 4px 12px -2px color-mix(in oklab, var(--primary) 50%, transparent),
+    inset 0 1px 0 color-mix(in oklab, white 35%, transparent);
+}
+.driver-popover.fvi-tour .driver-popover-title::after {
+  content: "F";
+  position: absolute;
+  left: 20px;
+  top: 20px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display, var(--font-body));
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--primary-foreground);
+  line-height: 1;
+}
+
+.driver-popover.fvi-tour .driver-popover-description {
+  position: relative;
+  z-index: 1;
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: color-mix(in oklab, var(--popover-foreground) 80%, transparent);
+  padding: 6px 24px 18px 56px;
+}
+
+/* Rich content inside descriptions */
+.driver-popover.fvi-tour .driver-popover-description p { margin: 0 0 8px; }
+.driver-popover.fvi-tour .driver-popover-description ul {
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 6px;
+}
+.driver-popover.fvi-tour .driver-popover-description li {
+  position: relative;
+  padding-left: 18px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: color-mix(in oklab, var(--popover-foreground) 85%, transparent);
+}
+.driver-popover.fvi-tour .driver-popover-description li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 8px;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--primary);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 18%, transparent);
+}
+.driver-popover.fvi-tour .driver-popover-description strong { color: var(--popover-foreground); font-weight: 600; }
+.driver-popover.fvi-tour .driver-popover-description kbd {
+  display: inline-block;
+  padding: 1px 6px;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 11px;
+  color: var(--popover-foreground);
+  background: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+}
+
+/* Footer */
+.driver-popover.fvi-tour .driver-popover-footer {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px 16px 18px;
+  background: color-mix(in oklab, var(--muted) 50%, transparent);
+  border-top: 1px solid var(--border);
+}
+
+.driver-popover.fvi-tour .driver-popover-progress-text {
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--popover-foreground) 65%, transparent);
+  margin-right: auto;
+  font-feature-settings: "tnum";
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.driver-popover.fvi-tour .driver-popover-progress-text::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--primary);
+  box-shadow: 0 0 8px color-mix(in oklab, var(--primary) 60%, transparent);
+  animation: fviTourPulse 1.8s ease-in-out infinite;
+}
+@keyframes fviTourPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.55; transform: scale(0.85); }
+}
+
+/* Buttons */
+.driver-popover.fvi-tour .driver-popover-prev-btn,
+.driver-popover.fvi-tour .driver-popover-next-btn {
+  all: unset;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 8px;
+  transition: all 180ms cubic-bezier(.2,.9,.25,1);
+  line-height: 1;
+  letter-spacing: 0.01em;
+}
+
+.driver-popover.fvi-tour .driver-popover-prev-btn {
+  color: color-mix(in oklab, var(--popover-foreground) 75%, transparent);
+  padding: 8px 12px;
+  border: 1px solid transparent;
+}
+.driver-popover.fvi-tour .driver-popover-prev-btn:hover {
+  color: var(--popover-foreground);
+  background: var(--muted);
+  border-color: var(--border);
+}
+
+.driver-popover.fvi-tour .driver-popover-next-btn {
+  color: var(--primary-foreground);
+  background: var(--primary);
+  font-weight: 700;
+  box-shadow:
+    0 1px 0 color-mix(in oklab, white 25%, transparent) inset,
+    0 6px 18px -4px color-mix(in oklab, var(--primary) 55%, transparent),
+    0 2px 6px color-mix(in oklab, var(--foreground) 18%, transparent);
+}
+.driver-popover.fvi-tour .driver-popover-next-btn:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+.driver-popover.fvi-tour .driver-popover-next-btn:active {
+  transform: translateY(0);
+}
+
+/* Close button */
+.driver-popover.fvi-tour .driver-popover-close-btn {
+  all: unset;
+  cursor: pointer;
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  color: color-mix(in oklab, var(--popover-foreground) 60%, transparent);
+  font-size: 16px;
+  line-height: 1;
+  z-index: 3;
+  border: 1px solid transparent;
+  transition: all 160ms ease;
+}
+.driver-popover.fvi-tour .driver-popover-close-btn:hover {
+  background: var(--muted);
+  border-color: var(--border);
+  color: var(--popover-foreground);
+  transform: rotate(90deg);
+}
+
+/* Arrow — recolor to match popover background */
+.driver-popover.fvi-tour .driver-popover-arrow-side-left.driver-popover-arrow   { border-left-color: var(--popover); }
+.driver-popover.fvi-tour .driver-popover-arrow-side-right.driver-popover-arrow  { border-right-color: var(--popover); }
+.driver-popover.fvi-tour .driver-popover-arrow-side-top.driver-popover-arrow    { border-top-color: var(--popover); }
+.driver-popover.fvi-tour .driver-popover-arrow-side-bottom.driver-popover-arrow { border-bottom-color: var(--popover); }
+
+
+
+
+
+
+/* ============================================================
+   UX/Productivity v2 — Density tokens
+   ============================================================ */
+:root {
+  --density-row-h: 36px;
+  --density-cell-px: 12px;
+  --density-cell-py: 8px;
+  --density-gap: 0.75rem;
+  --density-font: 0.875rem;
+}
+:root[data-density="compact"] {
+  --density-row-h: 28px;
+  --density-cell-px: 8px;
+  --density-cell-py: 4px;
+  --density-gap: 0.375rem;
+  --density-font: 0.8125rem;
+}
+:root[data-density="cozy"] {
+  --density-row-h: 32px;
+  --density-cell-px: 10px;
+  --density-cell-py: 6px;
+  --density-gap: 0.5rem;
+  --density-font: 0.875rem;
+}
+:root[data-density="comfortable"] {
+  --density-row-h: 40px;
+  --density-cell-px: 16px;
+  --density-cell-py: 10px;
+  --density-gap: 1rem;
+  --density-font: 0.9375rem;
+}
+
+:root[data-density="compact"] table th,
+:root[data-density="compact"] table td { padding: 4px 8px; font-size: 0.8125rem; }
+:root[data-density="cozy"] table th,
+:root[data-density="cozy"] table td { padding: 6px 10px; }
+:root[data-density="comfortable"] table th,
+:root[data-density="comfortable"] table td { padding: 10px 14px; }
+
+:root[data-reduce-motion] *,
+:root[data-reduce-motion] *::before,
+:root[data-reduce-motion] *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+
+:root[data-high-contrast] {
+  --border: oklch(0.20 0 0);
+  --ring: oklch(0.20 0 0);
+}
+
+/* ============================================================
+   DARK — Neural Void (mirrors the FVI reference HTML palette)
+   Ink-void base, gold primary, cyan + violet as chart accents.
+   Toggled via `.dark` class on <html>.
+   ============================================================ */
+.dark {
+  --background: oklch(0.11 0.012 250);     /* ~ #050810 */
+  --foreground: oklch(0.97 0.005 250);     /* ~ #F6F8FC */
+  --card: oklch(0.14 0.018 250);           /* ~ #0A0F1A */
+  --card-foreground: oklch(0.97 0.005 250);
+  --popover: oklch(0.14 0.018 250);
+  --popover-foreground: oklch(0.97 0.005 250);
+  --primary: oklch(0.80 0.11 82);          /* ~ #D4B581 gold */
+  --primary-foreground: oklch(0.11 0.012 250);
+  --secondary: oklch(0.20 0.025 250);      /* ~ #0F1626 */
+  --secondary-foreground: oklch(0.97 0.005 250);
+  --muted: oklch(0.18 0.020 250);
+  --muted-foreground: oklch(0.72 0.010 250);
+  --accent: oklch(0.24 0.035 250);         /* ~ #141D33 */
+  --accent-foreground: oklch(0.97 0.005 250);
+  --destructive: oklch(0.66 0.20 20);      /* ~ #FF6B7A */
+  --destructive-foreground: oklch(0.11 0.012 250);
+  --border: oklch(0.28 0.030 250);
+  --input: oklch(0.24 0.028 250);
+  --ring: oklch(0.80 0.11 82);
+  --success: oklch(0.82 0.15 160);         /* ~ #66E5B0 */
+  --warning: oklch(0.83 0.14 82);          /* ~ #F5C46B */
+  --gold: oklch(0.80 0.11 82);
+  --chart-1: oklch(0.80 0.11 82);          /* gold */
+  --chart-2: oklch(0.85 0.13 215);         /* cyan #6BE5FF */
+  --chart-3: oklch(0.72 0.18 285);         /* violet #8B7CFF */
+  --chart-4: oklch(0.82 0.15 160);         /* emerald */
+  --chart-5: oklch(0.66 0.20 20);          /* crimson */
+}
+
+/* ============================================================
+   App-wide scrollbar — theme-aware, subtle by default,
+   primary-tinted on hover. Uses semantic tokens so it
+   adapts to light/dark and tenant themes automatically.
+
+   Cross-browser support:
+   - Firefox: `scrollbar-width` + `scrollbar-color` (standard).
+   - Chromium/Edge: `::-webkit-scrollbar*` pseudo-elements.
+   - Safari (macOS/iOS): same WebKit pseudos, but Safari only
+     paints them when `-webkit-appearance: none` is set on the
+     scrollbar pseudo — otherwise the native overlay scrollbar
+     is used and our colors are ignored.
+   - Legacy Edge/IE: `-ms-overflow-style` for the `scrollbar-none`
+     utility.
+   - iOS momentum scroll preserved via `-webkit-overflow-scrolling`.
+   ============================================================ */
+/* Global defaults live in the @layer base block at the bottom of this
+   file (search "Global scrollbar: always visible, themed"). Duplicated
+   *-selector rules were removed to keep a single source of truth and
+   avoid Safari repainting flicker from conflicting -webkit-appearance
+   values. Momentum scroll + reduced-motion overrides retained below. */
+
+/* Preserve iOS momentum scrolling on any scrollable container */
+@supports (-webkit-touch-callout: none) {
+  * { -webkit-overflow-scrolling: touch; }
+}
+
+
+@utility scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklch, var(--foreground) 55%, transparent) transparent;
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+    -webkit-appearance: none;
+  }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-track:hover {
+    background-color: color-mix(in oklch, var(--muted-foreground) 6%, transparent);
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: color-mix(in oklch, var(--foreground) 55%, transparent);
+    border-radius: 9999px;
+    transition: background-color 140ms ease, box-shadow 140ms ease;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: color-mix(in oklch, var(--primary) 55%, var(--muted-foreground) 35%);
+  }
+  &::-webkit-scrollbar-thumb:active {
+    background-color: color-mix(in oklch, var(--primary) 75%, var(--foreground) 15%);
+    box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--primary) 40%, transparent);
+  }
+}
+
+@utility scrollbar-none {
+  scrollbar-width: none;          /* Firefox */
+  -ms-overflow-style: none;       /* Legacy Edge / IE */
+  &::-webkit-scrollbar { display: none; } /* Chromium / Safari */
+}
+
+/* NOTE: `sidebar-thin-scroll` is defined once at the bottom of this file
+   (search "Sidebar scrollbar: always visible, themed"). The earlier
+   duplicate was removed — @utility declarations don't merge, so the last
+   one won, and keeping both invited drift. */
+
+
+
+
+
+/* ------------------------------------------------------------------ */
+/* Reduced-motion overrides                                            */
+/* Framer-motion animations are already gated via <MotionConfig        */
+/* reducedMotion="user">. These rules tame the remaining CSS-driven    */
+/* effects: AtmosOverlay glow, hover sheens, transitions, and         */
+/* decorative pulses on the landing page.                              */
+/* ------------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  /* Neutralize the mouse-reactive atmos: keep the base tint, drop the
+     moving hotspot, and lower opacity so nothing appears to shimmer. */
+  .pointer-events-none.fixed.inset-0.z-0 {
+    opacity: 0.35 !important;
+    transition: none !important;
+  }
+
+  /* Kill hover sheens/scan-lines on capability tiles + any group hover
+     opacity transitions used purely for decoration. */
+  .group:hover .group-hover\:opacity-100,
+  .group:hover .group-hover\:opacity-80 {
+    opacity: 0 !important;
+  }
+  .group:hover .group-hover\:scale-\[1\.06\] {
+    transform: none !important;
+  }
+
+  /* Global damper — respect the user request without breaking layout. */
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* =====================================================================
+   Dynamic marketing-site theme overlay
+   Applied only when <html data-mkt-theme="on"> is set by MktThemeMount.
+   Uses `oklch(from <hex> ...)` to derive foreground pairs from the
+   admin-provided colour tokens without requiring extra config. Colours
+   are expressed as space-separated HSL-compat values so shadcn utilities
+   (bg-primary, text-primary-foreground, ...) pick them up transparently.
+   ===================================================================== */
+:root[data-mkt-theme="on"] {
+  /* Fallback token map — overridden by inline <style> from MktThemeMount */
+  --mkt-primary: #1E4E8C;
+  --mkt-secondary: #EAF4FF;
+  --mkt-accent: #4DA3FF;
+  --mkt-background: #F8FBFF;
+  --mkt-foreground: #0B1F3A;
+  --mkt-radius: 0.75rem;
+}
+
+/* Only re-map the shadcn brand tokens on public marketing routes;
+   authenticated tenant workspace routes are unaffected because
+   MktThemeMount removes the attribute on those paths. */
+html[data-mkt-theme="on"] {
+  --primary: var(--mkt-primary);
+  --primary-foreground: var(--mkt-background);
+  --secondary: var(--mkt-secondary);
+  --secondary-foreground: var(--mkt-foreground);
+  --accent: var(--mkt-accent);
+  --accent-foreground: var(--mkt-foreground);
+  --background: var(--mkt-background);
+  --foreground: var(--mkt-foreground);
+  --radius: var(--mkt-radius);
+}
+
+/* Dark-mode overlay: when either `.dark` (system/user toggled) or the
+   explicit `[data-mkt-mode="dark"]` attribute is present, MktThemeMount
+   has already swapped the --mkt-* vars to the dark pair — the shadcn
+   tokens above pick them up automatically. This block keeps a border /
+   ring hint consistent so cards don't wash out in dark mode. */
+html[data-mkt-theme="on"].dark,
+html[data-mkt-theme="on"][data-mkt-mode="dark"] {
+  --border: color-mix(in srgb, var(--mkt-foreground) 15%, transparent);
+  --input: color-mix(in srgb, var(--mkt-foreground) 20%, transparent);
+  --ring: var(--mkt-accent);
+  --muted: color-mix(in srgb, var(--mkt-foreground) 8%, var(--mkt-background));
+  --muted-foreground: color-mix(in srgb, var(--mkt-foreground) 70%, transparent);
+  --card: color-mix(in srgb, var(--mkt-foreground) 4%, var(--mkt-background));
+  --card-foreground: var(--mkt-foreground);
+  --popover: var(--mkt-background);
+  --popover-foreground: var(--mkt-foreground);
+}
+
+/* ---------- Sidebar scrollbar: always visible, themed ---------- */
+@utility sidebar-thin-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--sidebar-foreground) 30%, transparent) transparent;
+  scrollbar-gutter: stable;
+
+  &::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  &::-webkit-scrollbar-track {
+    background: color-mix(in srgb, var(--sidebar-foreground) 4%, transparent);
+    border-radius: 999px;
+    margin: 6px 0;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--sidebar-primary) 55%, transparent),
+      color-mix(in srgb, var(--sidebar-foreground) 35%, transparent)
+    );
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--sidebar-foreground) 15%, transparent);
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--sidebar-primary) 75%, transparent),
+      color-mix(in srgb, var(--sidebar-foreground) 55%, transparent)
+    );
+    background-clip: padding-box;
+  }
+  &::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+}
+
+/* ---------- Global scrollbar: always visible, themed ---------- */
+@layer base {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--foreground) 28%, transparent)
+      color-mix(in srgb, var(--foreground) 6%, transparent);
+  }
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+    -webkit-appearance: none; /* Safari: opt out of native overlay so themed styles paint */
+  }
+
+  *::-webkit-scrollbar-track {
+    background: color-mix(in srgb, var(--foreground) 5%, transparent);
+    border-radius: 999px;
+    margin: 4px;
+  }
+  *::-webkit-scrollbar-thumb {
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--primary) 55%, transparent),
+      color-mix(in srgb, var(--foreground) 35%, transparent)
+    );
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--foreground) 12%, transparent);
+    transition: background 0.2s ease;
+  }
+  *::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--primary) 80%, transparent),
+      color-mix(in srgb, var(--foreground) 55%, transparent)
+    );
+    background-clip: padding-box;
+  }
+  *::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+  /* Sidebar override — use sidebar tokens for contrast on dark panel */
+  [data-sidebar]::-webkit-scrollbar-thumb,
+  [data-sidebar] *::-webkit-scrollbar-thumb {
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--sidebar-primary) 60%, transparent),
+      color-mix(in srgb, var(--sidebar-foreground) 40%, transparent)
+    );
+    background-clip: padding-box;
+}
+
+/* ---------- High-contrast / Windows forced-colors mode ----------
+   In forced-colors mode (Windows High Contrast, Edge/Firefox HC themes)
+   the OS repaints backgrounds/borders with system colors. color-mix()
+   gradients aren't guaranteed to meet contrast, so we opt in to system
+   tokens (`CanvasText`, `Highlight`) and let the UA paint a solid,
+   accessible thumb. Applies to global, sidebar, and thin scrollbars. */
+@media (forced-colors: active) {
+  * {
+    scrollbar-color: CanvasText Canvas;
+  }
+  *::-webkit-scrollbar-track,
+  [data-sidebar] *::-webkit-scrollbar-track {
+    background: Canvas;
+    border: 1px solid CanvasText;
+  }
+  *::-webkit-scrollbar-thumb,
+  [data-sidebar]::-webkit-scrollbar-thumb,
+  [data-sidebar] *::-webkit-scrollbar-thumb {
+    background: CanvasText;
+    border: 2px solid Canvas;
+    box-shadow: none;
+    forced-color-adjust: none;
+  }
+  *::-webkit-scrollbar-thumb:hover,
+  *::-webkit-scrollbar-thumb:active {
+    background: Highlight;
+  }
+}
+
+}
+
+/* Hide Meta "Made with Meta" badge on published site without affecting layout */
+#meta-badge,
+a[href*="meta.dev"][aria-label*="Meta" i],
+a[href*="meta.dev"][title*="Meta" i],
+[data-meta-badge],
+[class*="meta-badge" i] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  position: fixed !important;
+  inset: auto !important;
+}
+
+/* Shared selected-list-row utility. Keep semantic status colors on child
+   badges; selected state is carried by the row surface, leading edge, and
+   check marker rather than by color alone. */
+.fvi-selected-row {
+  --fvi-selected-row-bg: var(--accent);
+  --fvi-selected-row-fg: var(--accent-foreground);
+  --fvi-selected-row-edge: var(--primary);
+  --fvi-selected-marker-bg: var(--accent-foreground);
+  --fvi-selected-marker-fg: var(--accent);
+  background-color: var(--fvi-selected-row-bg);
+  color: var(--fvi-selected-row-fg);
+}
+
+/* The active row follows the selected chrome, independent of the canvas palette.
+   Light chromes use their dark/colored primary; dark chromes use their darker
+   accent so the row remains a readable surface rather than a bright stripe. */
+:root[data-chrome] .fvi-selected-row {
+  --fvi-selected-row-bg: var(--sidebar-primary);
+  --fvi-selected-row-fg: var(--sidebar-primary-foreground);
+  --fvi-selected-row-edge: var(--sidebar-ring);
+  --fvi-selected-marker-bg: var(--sidebar-primary-foreground);
+  --fvi-selected-marker-fg: var(--sidebar-primary);
+}
+
+/* Navy is the owner-approved reference; the other dark chromes share its
+   surface treatment with their own theme tokens. */
+:root[data-chrome="navy"] .fvi-selected-row {
+  --fvi-selected-row-bg: var(--sidebar-accent);
+  --fvi-selected-row-fg: var(--sidebar-accent-foreground);
+  --fvi-selected-row-edge: var(--sidebar-primary);
+  --fvi-selected-marker-bg: var(--sidebar-primary);
+  --fvi-selected-marker-fg: var(--sidebar-primary-foreground);
+}
+
+:root:is([data-chrome="midnight"], [data-chrome="charcoal"], [data-chrome="graphite"], [data-chrome="slate"], [data-chrome="forest"], [data-chrome="crimson"], [data-chrome="sapphire"], [data-chrome="espresso"], [data-chrome="plum"]) .fvi-selected-row {
+  --fvi-selected-row-bg: var(--sidebar-accent);
+  --fvi-selected-row-fg: var(--sidebar-accent-foreground);
+  --fvi-selected-row-edge: var(--sidebar-primary);
+  --fvi-selected-marker-bg: var(--sidebar-primary);
+  --fvi-selected-marker-fg: var(--sidebar-primary-foreground);
+}
+
+.fvi-selected-row > :first-child {
+  position: relative;
+  padding-inline-start: 2.5rem !important;
+  border-inline-start: 4px solid var(--fvi-selected-row-edge);
+}
+
+.fvi-selected-row > :first-child::before {
+  content: "✓";
+  position: absolute;
+  inset-inline-start: 0.65rem;
+  top: 50%;
+  display: inline-grid;
+  width: 1.25rem;
+  height: 1.25rem;
+  place-items: center;
+  transform: translateY(-50%);
+  border-radius: 9999px;
+  background: var(--fvi-selected-marker-bg);
+  color: var(--fvi-selected-marker-fg);
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1;
+  pointer-events: none;
+}
+
+/* Public site navigation stays on the approved onyx brand surface even when
+   a light operator palette is active for the application. */
+.fvi-marketing-header {
+  background: color-mix(in oklab, var(--ink-void) 88%, transparent) !important;
+  border-color: color-mix(in oklab, var(--brand-gold) 14%, transparent) !important;
+  color: var(--brand-cream);
+}
+
+.fvi-marketing-header a:not([data-marketing-cta]) {
+  color: color-mix(in oklab, var(--brand-cream) 82%, transparent) !important;
+}
+
+.fvi-marketing-header a:not([data-marketing-cta]):hover {
+  color: var(--brand-gold) !important;
+}
+
+.fvi-marketing-header .fvi-marketing-header-back {
+  background: color-mix(in oklab, var(--ink-1) 84%, transparent) !important;
+  border-color: color-mix(in oklab, var(--brand-gold) 22%, transparent) !important;
+  color: var(--brand-cream) !important;
+}
+
+/* Some grids already expose a real checked selection control. Avoid a duplicate mark. */
+.fvi-selected-row > :first-child[data-selection-control]::before {
+  content: none;
+}
+
+.fvi-selected-row :where(.text-foreground, .text-muted-foreground) {
+  color: var(--fvi-selected-row-fg);
+}
+
+/* Keep the row's primary View affordance legible on the dark selected surface.
+   In Navy chrome this is the same gold/dark-ink pairing as the active rail. */
+.fvi-selected-row .fvi-row-view-action {
+  background-color: var(--fvi-selected-row-edge);
+  border-color: var(--fvi-selected-row-edge);
+  color: var(--sidebar-primary-foreground, var(--primary-foreground));
+  font-weight: 600;
+}
+
+.fvi-selected-row .fvi-row-view-action:hover {
+  background-color: color-mix(in oklab, var(--fvi-selected-row-edge) 88%, black);
+  color: var(--sidebar-primary-foreground, var(--primary-foreground));
+}
+
+/* Keep View reachable while wide, owner-scoped resource tables scroll. The
+   inspector toggle controls layout; hover never moves or resizes this column. */
+.fvi-sticky-view-cell {
+  position: sticky;
+  inset-inline-end: 0;
+  z-index: 1;
+  min-width: 5.75rem;
+  background: var(--card);
+  box-shadow: -1px 0 var(--border), -12px 0 16px -16px color-mix(in oklab, var(--foreground) 32%, transparent);
+}
+
+.fvi-selected-row .fvi-sticky-view-cell {
+  background: var(--fvi-selected-row-bg);
+  color: var(--fvi-selected-row-fg);
+}
+
+.fvi-selected-row:focus-visible,
+.fvi-selected-row :focus-visible {
+  outline: 3px solid var(--ring);
+  outline-offset: -3px;
+}
+
+@media (forced-colors: active) {
+  .fvi-sticky-view-cell {
+    background: Canvas;
+    border-inline-start: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  .fvi-selected-row .fvi-sticky-view-cell {
+    background: Highlight;
+    color: HighlightText;
+  }
+
+  .fvi-selected-row {
+    background: Highlight;
+    color: HighlightText;
+    border-block: 1px solid Highlight;
+  }
+
+  .fvi-selected-row > :first-child {
+    border-inline-start-color: HighlightText;
+  }
+
+  .fvi-selected-row > :first-child::before {
+    background: HighlightText;
+    color: Highlight;
+    border: 1px solid HighlightText;
+  }
+
+  .fvi-selected-row :where(.text-foreground, .text-muted-foreground) {
+    color: HighlightText;
+  }
+
+  .fvi-selected-row .fvi-row-view-action,
+  .fvi-selected-row .fvi-row-view-action:hover {
+    background: HighlightText;
+    border-color: HighlightText;
+    color: Highlight;
+  }
+
+  .fvi-selected-row:focus-visible,
+  .fvi-selected-row :focus-visible {
+    outline-color: HighlightText;
+  }
+}
+/* Approved FVI login: one-view desktop composition, with existing copy intact. */
+@media (min-width: 1280px) {
+  .fvi-auth-page { height: 100dvh; min-height: 720px; }
+  .fvi-auth-backdrop { background-position: center; background-size: 100% 100%; }
+  .fvi-auth-shell {
+    width: 100%; height: 100%; min-height: 0; max-width: none;
+    grid-template-columns: 51% 49%; gap: 0; padding: 0;
+  }
+  .fvi-auth-story {
+    min-width: 0; height: 100%; padding: clamp(20px, 3vh, 38px) clamp(28px, 4vw, 58px);
+  }
+  .fvi-auth-story-main { flex: 0 1 auto; justify-content: flex-start; min-height: 0; }
+  .fvi-auth-brand { gap: 18px; align-items: center; }
+  .fvi-auth-brand-logo { width: clamp(78px, 8vw, 108px); height: clamp(78px, 8vw, 108px); }
+  .fvi-auth-brand-title { font-size: clamp(26px, 2.35vw, 36px); }
+  .fvi-auth-platform { margin-top: clamp(10px, 1.8vh, 22px); }
+  .fvi-auth-eyebrow { margin-top: clamp(9px, 1.35vh, 16px); }
+  .fvi-auth-headline { margin-top: 7px; font-size: clamp(31px, 2.75vw, 42px); }
+  .fvi-auth-intro { margin-top: 9px; font-size: clamp(11px, .91vw, 14px); line-height: 1.4; }
+  .fvi-auth-features { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: clamp(9px, 1.6vh, 19px); column-gap: 26px; row-gap: 0; }
+  .fvi-auth-feature { min-width: 0; padding: clamp(5px, .7vh, 9px) 0; border-top: 1px solid rgba(227, 235, 246, .18); border-radius: 0; }
+  .fvi-auth-feature-title { font-size: clamp(11px, .9vw, 13px); }
+  .fvi-auth-feature-copy { font-size: clamp(10px, .77vw, 11.5px); line-height: 1.25; }
+  .fvi-auth-story-footer { margin-top: auto; padding-top: 7px; font-size: 10px; }
+  .fvi-auth-signin { height: 100%; min-width: 0; padding: 20px clamp(34px, 5vw, 70px); }
+  .fvi-auth-signin-stack { max-width: 500px; }
+  .fvi-auth-primary-logo { width: clamp(150px, 18vh, 210px); height: clamp(150px, 18vh, 210px); margin: 0 auto clamp(6px, 1.2vh, 16px); }
+  .fvi-auth-form-card { padding: clamp(20px, 2.5vh, 32px); background: rgba(255, 255, 255, .87); border-color: rgba(41, 62, 90, .15); }
+  .fvi-auth-maxim { margin-top: 0; }
+  .fvi-auth-maxim-copy { margin-top: 5px; }
+  .fvi-auth-welcome { margin-top: clamp(8px, 1.3vh, 16px); }
+  .fvi-auth-form { margin-top: clamp(12px, 1.8vh, 22px); }
+  .fvi-auth-invite { margin-top: 10px; }
+  .fvi-auth-footer-line { margin-top: 13px; }
+}
+
+@media (min-width: 1280px) and (max-height: 790px) {
+  .fvi-auth-story { padding-top: 16px; padding-bottom: 15px; }
+  .fvi-auth-brand-logo { width: 72px; height: 72px; }
+  .fvi-auth-brand-title { font-size: 28px; }
+  .fvi-auth-headline { font-size: 32px; line-height: 1.05; }
+  .fvi-auth-feature { padding-top: 4px; padding-bottom: 4px; }
+  .fvi-auth-primary-logo { width: 142px; height: 142px; }
+  .fvi-auth-form-card { padding: 17px 24px; }
+  .fvi-auth-maxim-copy { font-size: 11px; }
+  .fvi-auth-welcome { font-size: 27px; }
+  .fvi-auth-form { margin-top: 11px; gap: 12px; }
+}
+
+@media (min-width: 1280px) and (min-height: 850px) {
+  .fvi-auth-story { padding-top: 48px; padding-bottom: 24px; }
+  .fvi-auth-brand-logo { width: 112px; height: 112px; }
+  .fvi-auth-brand-title { font-size: 35px; }
+  .fvi-auth-platform { margin-top: 26px; }
+  .fvi-auth-eyebrow { margin-top: 17px; }
+  .fvi-auth-headline { margin-top: 11px; font-size: 42px; }
+  .fvi-auth-intro { margin-top: 16px; font-size: 13px; }
+  .fvi-auth-features { margin-top: 19px; }
+  .fvi-auth-feature { padding-top: 9px; padding-bottom: 9px; }
+  .fvi-auth-feature-title { font-size: 13px; }
+  .fvi-auth-feature-copy { font-size: 11.5px; }
+  .fvi-auth-primary-logo { width: min(31vh, 310px); height: min(31vh, 310px); margin-bottom: 2px; }
+  .fvi-auth-form-card { padding: 25px 32px; }
+}
+
+@media (max-width: 1279px) {
+  .fvi-auth-primary-logo { margin: 0 auto 14px; }
+}
+
+/* Owner row-selection alignment 2026-10-02 */
+.fvi-selected-row, :root[data-chrome] .fvi-selected-row {
+  --fvi-selected-row-bg: var(--sidebar);
+  --fvi-selected-row-fg: var(--sidebar-foreground);
+  --fvi-selected-row-edge: var(--sidebar-foreground);
+  --fvi-selected-marker-bg: var(--sidebar-foreground);
+  --fvi-selected-marker-fg: var(--sidebar);
+}
+.fvi-selected-row :where(button.text-primary, a.text-primary) { color: var(--fvi-selected-row-fg); }
+@media (forced-colors: active) {
+  .fvi-selected-row, :root[data-chrome] .fvi-selected-row {
+    --fvi-selected-row-bg: Highlight;
+    --fvi-selected-row-fg: HighlightText;
+    --fvi-selected-row-edge: HighlightText;
+  }
+}

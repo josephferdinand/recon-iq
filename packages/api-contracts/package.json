@@ -1,0 +1,17 @@
+{
+  "name": "@fvi/api-contracts",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "description": "Shared OpenAPI 3.1 types + Zod schemas used by both marketing and app for typed API contracts",
+  "main": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "lint": "eslint src",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "generate": "node scripts/generate-openapi.ts"
+  }
+}

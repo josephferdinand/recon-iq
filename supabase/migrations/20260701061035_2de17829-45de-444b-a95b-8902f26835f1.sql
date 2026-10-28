@@ -1,0 +1,1 @@
+GRANT EXECUTE ON FUNCTION private.is_platform_admin(uuid) TO anon;

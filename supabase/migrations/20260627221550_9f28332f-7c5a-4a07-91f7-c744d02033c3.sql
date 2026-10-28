@@ -1,0 +1,1 @@
+REVOKE ALL ON FUNCTION public.tg_snapshot_agent_policy() FROM PUBLIC, anon, authenticated;

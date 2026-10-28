@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="ReconIQ">
+  <rect width="32" height="32" rx="6" fill="#1e3a5f"/>
+  <rect x="2" y="2" width="28" height="28" rx="4.5" fill="none" stroke="#00d4ff" stroke-opacity="0.55" stroke-width="0.6"/>
+  <text x="16" y="16" text-anchor="middle" dominant-baseline="central"
+        fill="#f4ede0"
+        font-family="Inter, 'Space Grotesk', ui-sans-serif, system-ui, sans-serif"
+        font-weight="700" font-size="16" letter-spacing="-0.5">FV</text>
+</svg>

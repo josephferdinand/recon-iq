@@ -1,0 +1,30 @@
+{
+  "$schema": "https://turborepo.com/schema.json",
+  "ui": "stream",
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", ".nitro/**", ".tanstack/**"]
+    },
+    "lint": {
+      "dependsOn": ["^build"],
+      "outputs": []
+    },
+    "test": {
+      "dependsOn": ["^build"],
+      "outputs": ["coverage/**"]
+    },
+    "typecheck": {
+      "dependsOn": ["^build"],
+      "outputs": []
+    },
+    "deploy:marketing": {
+      "dependsOn": ["build", "test", "typecheck", "lint"],
+      "outputs": []
+    },
+    "deploy:app": {
+      "dependsOn": ["build", "test", "typecheck", "lint"],
+      "outputs": []
+    }
+  }
+}

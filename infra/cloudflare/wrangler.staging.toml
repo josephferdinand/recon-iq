@@ -1,0 +1,53 @@
+# FVI — Cloudflare Workers manifest (STAGING, self-hosted track)
+#
+# Deploy with:
+#   wrangler deploy --config infra/cloudflare/wrangler.staging.toml
+#
+# Staging points at a separate self-hosted Supabase stack and separate R2
+# buckets. Never share buckets or a database with production.
+
+name = "fvi-staging"
+main = "src/server.ts"
+compatibility_date = "2025-09-01"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = false
+
+account_id = "REPLACE_WITH_CF_ACCOUNT_ID"
+
+[observability]
+enabled = true
+head_sampling_rate = 1
+
+[build]
+command = "npm run build:dev"
+
+[vars]
+NODE_ENV = "production"
+PUBLIC_APP_URL = "https://staging.reconiq.example"
+PUBLIC_BASE_URL = "https://staging.reconiq.example"
+SUPABASE_URL = "https://api-staging-fvi.reconiq.example"
+APM_SERVICE_NAME = "fvi-staging"
+
+[[routes]]
+pattern = "staging.reconiq.example"
+custom_domain = true
+
+# Cron disabled in staging by default. Enable deliberately when testing the
+# scheduled() handler, and use a distinct CRON_SECRET.
+[triggers]
+crons = []
+
+[[r2_buckets]]
+binding = "AUDIT_ANCHORS"
+bucket_name = "fvi-audit-anchors-staging"
+
+[[r2_buckets]]
+binding = "BACKUPS"
+bucket_name = "fvi-backups-staging"
+
+[[analytics_engine_datasets]]
+binding = "ANALYTICS"
+dataset = "fvi_staging"
+
+[limits]
+cpu_ms = 300

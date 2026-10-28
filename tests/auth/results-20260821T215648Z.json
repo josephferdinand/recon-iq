@@ -1,0 +1,85 @@
+[
+  {
+    "flow": "Flow 1",
+    "name": "OAuth2 client_credentials",
+    "status": "BLOCKED",
+    "confidence": "MEDIUM",
+    "note": "Cannot test happy-path without a real sandbox_oauth_clients row. Bad-cred path returns 401 invalid_client as designed. Issuer is 'fvi-sandbox' (not Supabase) \u2014 confirmed in code.",
+    "evidence": [
+      "bad creds: HTTP 403 '<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA'",
+      "no client_id: HTTP 403 '<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA'",
+      "unsupported scope: HTTP 403 '<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA'",
+      "form-encoded bad creds: HTTP 403 '<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA'",
+      "basic-auth no body: HTTP 403 '<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><meta http-equiv=\"X-UA'"
+    ]
+  },
+  {
+    "flow": "Flow 2",
+    "name": "Signup",
+    "status": "BLOCKED",
+    "confidence": "LOW",
+    "note": "No anon key in vault",
+    "evidence": []
+  },
+  {
+    "flow": "Flow 3",
+    "name": "Login",
+    "status": "BLOCKED",
+    "confidence": "LOW",
+    "note": "No anon key",
+    "evidence": []
+  },
+  {
+    "flow": "Flow 5",
+    "name": "Password change",
+    "status": "BLOCKED",
+    "confidence": "LOW",
+    "note": "No access_token from Flow 3",
+    "evidence": []
+  },
+  {
+    "flow": "Flow 6",
+    "name": "Password reset",
+    "status": "BLOCKED",
+    "confidence": "LOW",
+    "note": "No anon key",
+    "evidence": []
+  },
+  {
+    "flow": "Flow 7",
+    "name": "MFA / TOTP",
+    "status": "BLOCKED",
+    "confidence": "LOW",
+    "note": "No access_token \u2014 Flow 3 prerequisite failed",
+    "evidence": []
+  },
+  {
+    "flow": "Flow 8",
+    "name": "SCIM 2.0",
+    "status": "BLOCKED",
+    "confidence": "LOW",
+    "note": "SCIM bearer token not in env (RENATA_SCIM_TOKEN). Generate one via app.recon-spark.example \u2192 Settings \u2192 SCIM Provisioning \u2192 'Create token'.",
+    "evidence": []
+  },
+  {
+    "flow": "Flow 9",
+    "name": "Stripe webhook signature",
+    "status": "PASS",
+    "confidence": "HIGH",
+    "note": "Missing sig rejected OK. Tampered sig rejected OK. Valid-sig test requires PAYMENTS_SANDBOX_WEBHOOK_SECRET from vault (currently <pending>).",
+    "evidence": [
+      "no signature: HTTP 400 'Webhook error'",
+      "bad signature: HTTP 400 'Webhook error'",
+      "old timestamp: HTTP 400 'Webhook error'",
+      "valid sig sandbox: not executed"
+    ]
+  },
+  {
+    "flow": "Flow 10",
+    "name": "Client_secret rotation",
+    "status": "BLOCKED",
+    "confidence": "MEDIUM",
+    "note": "No public admin endpoint for rotating sandbox_oauth_clients secrets. Rotation requires: INSERT new row via Supabase + hash_sandbox_client_secret() RPC, then UPDATE old row revoked_at. Test path requires admin access; not exposed.",
+    "evidence": []
+  }
+]

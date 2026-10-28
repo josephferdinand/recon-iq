@@ -1,0 +1,27 @@
+import { readFile, writeFile } from "node:fs/promises";
+import { randomUUID } from "node:crypto";
+import path from "node:path";
+import { loadInputs, rpc, actorSession, assertMembershipCount } from "./governance-approval-hosted-20261002.mjs";
+import { own, releaseAck } from "./governance-approval-hosted-20261002.release-20261004.mjs";
+await releaseAck();const input=await loadInputs();if(input.environment!=="DEV")throw new Error("DEV-only new negative proofs");
+if(!process.argv.includes("--execute")){await assertMembershipCount(input,0);console.log(JSON.stringify({mode:"read-only-preflight",environment:"DEV",current_owned_membership_count:0,hosted_mutations:false}));process.exit(0);}
+const file=path.join(own,"DEV-ACTUAL-DENIALS-20261004.json");const proof={at:new Date().toISOString(),status:"RUNNING",cases:[],steps:[]};await writeFile(file,JSON.stringify(proof),{flag:"wx"});const save=()=>writeFile(file,JSON.stringify(proof,null,2));process.env.FVI_GOVERNANCE_EVIDENCE_FILE=file;
+async function denied(label,action,code){try{await action();throw new Error(`${label} unexpectedly allowed`);}catch(error){if(error.code!==code)throw error;proof.cases.push({label,http:error.status,code:error.code,denied:true});await save();}}
+async function direct(actor,table,body){const {token}=await actorSession(actor,input.supabase_url);const response=await fetch(`${input.supabase_url}/rest/v1/${table}`,{method:"POST",headers:{apikey:input.publishable_key,Authorization:`Bearer ${token}`,"Content-Type":"application/json",Prefer:"return=representation"},body:JSON.stringify(body),signal:AbortSignal.timeout(15000)});const data=await response.json();if(response.ok){proof.unexpected_new_entity={table,result:data};await save();throw new Error("Ordinary directory creation unexpectedly permitted; no deletion or privilege change performed");}const error=new Error("Native directory refusal");error.code=data.code;error.status=response.status;throw error;}
+try{
+ await assertMembershipCount(input,0);
+ await denied("wrong tenant ordinary membership list",()=>rpc(input,input.actors.requester,"list_governance_membership_requests",{_tenant_id:"aa5ed999-69eb-41a0-a9c6-fbb439efcffb",_page:1,_page_size:1,_search:"",_own_only:true}),"42501");
+ const expired=await actorSession(input.actors.lapsed,input.supabase_url,{allowExpired:true});
+ await denied("genuinely expired DEV MFA token",()=>rpc(input,input.actors.lapsed,"list_governance_membership_requests",{_tenant_id:input.tenant_id,_page:1,_page_size:1,_search:"",_own_only:true},{session:expired}),"PGRST303");
+ await denied("ordinary DEV analyst cannot create BU",()=>direct(input.actors.requester,"business_units",{tenant_id:input.tenant_id,name:`Zeno denied BU ${randomUUID().slice(0,8)}`,created_by:input.actors.requester.user_id}),"42501");
+ await denied("ordinary DEV analyst cannot create group",()=>direct(input.actors.requester,"tenant_groups",{tenant_id:input.tenant_id,bu_id:input.bu_id,name:`Zeno denied group ${randomUUID().slice(0,8)}`,created_by:input.actors.requester.user_id}),"42501");
+ const args={_tenant_id:input.tenant_id,_bu_id:input.bu_id,_workspace_id:input.workspace_id,_group_id:input.group_id,_environment:"dev",_reason:"Zeno DEV actual tenant-admin self-approval independence control",_request_key:randomUUID()};proof.steps.push({stage:"before",actor:"maker",name:"submit",args});await save();
+ const request=(await rpc(input,input.actors.maker,"submit_governance_membership_request",args)).data;proof.admin_self_request_id=request.id;proof.steps.push({stage:"result",request});await save();
+ const decision={_tenant_id:input.tenant_id,_request_id:request.id,_expected_version:request.version,_decision:"approve",_reason:"Zeno DEV actual admin self-approval must be refused",_request_key:randomUUID()};
+ await denied("actual tenant admin cannot approve their own request",()=>rpc(input,input.actors.maker,"decide_governance_membership_request",decision),"42501");
+ const rejected=(await rpc(input,input.actors.checker,"decide_governance_membership_request",{...decision,_decision:"reject",_reason:"Independent checker closes NEW DEV admin self-denial control without granting",_request_key:randomUUID()})).data;if(rejected.status!=="rejected")throw new Error("Independent bounded control rejection differs");proof.closed_without_grant=rejected;await assertMembershipCount(input,0);await save();
+ const {token}=await actorSession(input.actors.checker,input.supabase_url);
+ const response=await fetch(`${input.supabase_url}/rest/v1/audit_log?${new URLSearchParams({select:"id,actor_user_id,occurred_at,action,resource_id,context",tenant_id:`eq.${input.tenant_id}`,"context->>outcome":"in.(denied,failed)",action:"like.governance.*",occurred_at:`gte.${proof.at}`})}`,{headers:{apikey:input.publishable_key,Authorization:`Bearer ${token}`},signal:AbortSignal.timeout(15000)});if(!response.ok)throw new Error("Current denied-event audit read refused");const rows=await response.json();proof.recorded_governance_denials=rows;proof.denial_persistence=rows.length?"PRESENT-REQUIRES-CORRELATION":"NO-DURABLE-DENIED-EVENTS-OBSERVED";
+ proof.status="ACTUAL-DEV-NEGATIVES-PASS-DENIAL-AUDIT-OPEN";await save();
+}catch(error){proof.status="FAIL";proof.failure={message:error.native_message??error.message,code:error.code??null,http:error.status??null};await save();process.exitCode=1;}
+console.log(JSON.stringify({status:proof.status,cases:proof.cases,failed:proof.failure,admin_self_request_id:proof.admin_self_request_id,denial_persistence:proof.denial_persistence,evidence:file}));

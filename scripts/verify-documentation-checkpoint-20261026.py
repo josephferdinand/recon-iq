@@ -1,0 +1,10 @@
+from pathlib import Path
+import subprocess,json,os,time,hashlib,re,datetime
+r=Path.cwd();tmp=r/'.codex-tmp/documentation-checkpoint-20261026';p=json.loads((tmp/'COMMIT.json').read_text());ref='refs/heads/'+p['branch'];remote=subprocess.check_output(['git','ls-remote','--heads','origin',ref],text=True).split()[0];assert remote==p['checkpoint_commit'];b=(r/'docs/handover/checkpoint-2026-10-26/BACKLOG.md').read_text(encoding='utf8');counts={'original':len(re.findall(r'^\| \d{2} \|',b,re.M)),'expanded':len(re.findall(r'^\| A\d{2} \|',b,re.M)),'audit':len(re.findall(r'^\| C\d{2} \|',b,re.M))};assert counts=={'original':12,'expanded':39,'audit':13},counts
+p.update(status='PUSH_VERIFIED',push_verified=True,verified_checkpoint_remote_sha=remote,verified_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),backlog_counts=counts,publication_url='https://github.com/reconiq-brand/reconiq-intelligence/tree/'+p['branch'],main_merge_or_deployment=False);target='docs/handover/checkpoint-2026-10-26/GIT_PUBLICATION.json';encoded=json.dumps(p,indent=2).encode();(r/target).write_bytes(encoded)
+env=os.environ.copy();env['GIT_INDEX_FILE']=str(r/'.git'/('fvi-docs-receipt-'+str(time.time_ns())+'.index'))
+def git(*a,input=None):
+ q=subprocess.run(['git','-c','gc.auto=0','-c','maintenance.auto=false',*a],input=input,capture_output=True,env=env)
+ if q.returncode:raise RuntimeError(q.stderr.decode(errors='replace')[:500])
+ return q.stdout.decode().strip()
+git('read-tree',remote);blob=git('hash-object','-w','--stdin',input=encoded);git('update-index','--add','--cacheinfo','100644,'+blob+','+target);tree=git('write-tree');tip=git('commit-tree',tree,'-p',remote,input=b'docs: record verified GitHub checkpoint publication [skip ci] [skip release]\n');git('update-ref',ref,tip,remote);(tmp/'FINAL-COMMIT.json').write_text(json.dumps({'checkpoint_commit':remote,'receipt_commit':tip,'branch':p['branch'],'push_verified':False},indent=2));print(json.dumps({'checkpoint_commit':remote,'receipt_commit':tip,'backlog_counts':counts,'first_push_verified':True}))

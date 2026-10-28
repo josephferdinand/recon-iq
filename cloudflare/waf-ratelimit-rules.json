@@ -1,0 +1,20 @@
+{
+  "$comment": "Sprint 1 hardening - rate-limit rules. Cloudflare free tier allows ONE rule per phase on http_ratelimit, so we combine the stripe-webhook (100/hour) and AI endpoints (60/min) into a single rule that picks the tighter window per path. Upgrade to Business plan or WAF Advanced to split these into two rules.",
+  "$schema": "https://api.cloudflare.com/client/v4/zones/{zone_id}/rulesets",
+  "phase": "http_ratelimit",
+  "kind": "zone",
+  "rules": [
+    {
+      "action": "block",
+      "description": "P-A-05+P-A-06: Free-tier rate-limit guard for /api/public/payments/webhook and /api/public/ai/*. Free tier allows only period=10s; rule uses 30 req/10s for both paths. Upgrade to Business plan or WAF Advanced to use 60/min (AI) and 100/h (webhook).",
+      "expression": "http.request.uri.path eq \"/api/public/payments/webhook\" or starts_with(http.request.uri.path, \"/api/public/ai/\")",
+      "ratelimit": {
+        "characteristics": ["cf.colo.id", "ip.src"],
+        "period": 10,
+        "requests_per_period": 30,
+        "mitigation_timeout": 10
+      },
+      "enabled": true
+    }
+  ]
+}

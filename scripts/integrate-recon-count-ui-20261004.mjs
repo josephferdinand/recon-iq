@@ -1,0 +1,17 @@
+import {readFile,writeFile,mkdir} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
+import path from 'node:path';
+const root='./LOCAL_USER/AppData/Local/Temp/fvi-codex-docs-release-20260930';
+const packet='./LOCAL_USER/AppData/Local/Temp/fvi-batch4-candidate-20260928/output/recon-cardinality-ui-20261004';
+const manifest=JSON.parse(await readFile(packet+'/hash-manifest.json','utf8'));
+if(manifest.runtime_path!=='src/components/recons-tab.tsx'||manifest.preimage_sha256!=='5169d6a0831fc72eab964cb1570baecfee0d4750111ceb93bee58c3606faa501'||manifest.postimage_sha256!=='5768b300a8f4a508935204b25a969448bc9863df45f3a1b0b8807f20e1db5842'||manifest.focused_tests.passed!==60)throw new Error('Frozen count editor packet drift');
+const sha=x=>createHash('sha256').update(x).digest('hex');
+const before=await readFile(root+'/'+manifest.runtime_path),after=await readFile(packet+'/postimages/'+manifest.runtime_path);
+if(sha(after)!==manifest.postimage_sha256||![manifest.preimage_sha256,manifest.postimage_sha256].includes(sha(before)))throw new Error('Exact count editor source conflict');
+const audit=path.join(root,'audit','recon-count-ui-intake-'+Date.now());
+await mkdir(audit,{recursive:true});
+await writeFile(audit+'/actual-before.tsx',before,{flag:'wx'});
+if(sha(before)!==manifest.postimage_sha256)await writeFile(root+'/'+manifest.runtime_path,after);
+if(sha(await readFile(root+'/'+manifest.runtime_path))!==manifest.postimage_sha256)throw new Error('Count editor intake readback differs');
+await writeFile(audit+'/receipt.json',JSON.stringify({at:new Date().toISOString(),file:manifest.runtime_path,actualBeforeSha256:sha(before),expectedPreimageSha256:manifest.preimage_sha256,postimageSha256:manifest.postimage_sha256,focusedChecksRetained:60,sourceIntegrated:true,deployed:false},null,2),{flag:'wx'});
+console.log(JSON.stringify({sourceIntegrated:true,file:manifest.runtime_path,receipt:audit+'/receipt.json'}));

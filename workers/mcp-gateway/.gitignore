@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.env*
+.DS_store
+*.tsbuildinfo
+.skybridge/
+.vercel/
+# Generated starter media is not part of the FVI dashboard.
+src/views/images/

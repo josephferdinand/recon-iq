@@ -1,0 +1,13 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "reconiq-dev",
+  "pages_build_output_dir": "./dist",
+  "compatibility_date": "2026-08-31",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "vars": {
+    "META_API_BASE_URL": "https://api.meta.ai/v1",
+    "META_MUSE_MODEL": "muse-spark-1.3"
+  }
+}

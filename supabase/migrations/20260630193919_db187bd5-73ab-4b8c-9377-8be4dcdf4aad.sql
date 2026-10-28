@@ -1,0 +1,1 @@
+REVOKE UPDATE ON public.red_team_scans FROM authenticated;

@@ -1,0 +1,13 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "fvi-email-queue-scheduler",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-09-14",
+  "triggers": {
+    "crons": ["* * * * *", "*/5 * * * *"],
+  },
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1,
+  },
+}

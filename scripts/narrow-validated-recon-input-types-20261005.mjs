@@ -1,0 +1,14 @@
+import{readFile,writeFile}from'node:fs/promises';
+import{createHash}from'node:crypto';
+import ts from'typescript';
+const file='./LOCAL_USER/AppData/Local/Temp/fvi-batch4-candidate-20260928/src/lib/recons.functions.ts';
+const before=await readFile(file,'utf8'),sha=x=>createHash('sha256').update(x).digest('hex');
+if(sha(before)!=='7f51ef5f042e12f29bd738c56bcf7ea99942151e966efab299bc39394bd25741')throw Error('Exact new selected caller preimage');
+const anchor='sideData.push({ side_id: s.side_id, rows: up.rows });';if(before.split(anchor).length!==2)throw Error('Unique runtime-validated rows boundary');
+const after=before.replace(anchor,'sideData.push({ side_id: s.side_id, rows: up.rows as SideData["rows"] });');
+const emit=x=>ts.transpileModule(x,{compilerOptions:{target:ts.ScriptTarget.ESNext,module:ts.ModuleKind.ESNext}}).outputText;
+if(emit(before)!==emit(after))throw Error('Type-only fix changed emitted runtime');
+const root='output/parent-integrated-next-20261005/core-successors';
+await writeFile(root+'/recons.functions.ts.before-validated-type',before,{flag:'wx'});await writeFile(file,after);
+await writeFile(root+'/RECON-FULL-RUN-INTEGRATION.json',JSON.stringify({at:new Date().toISOString(),exactSupplierPre:'f065284bbaa4dd1cad54403c2061c1568ada5bc045dfd921b59625e5ea63379b',supplierPost:sha(before),parentPost:sha(after),source:'output/recon-selected-caller-recovery-20261005/full-run-closure-next/postimages/src/lib/recons.functions.ts',local19Retained:true,typeFix:'Only assert the existing SideData row type after every row passes object-record validation; original array identity retained',emittedRuntimeIdentical:true,compilerPass:false,appUploaded:false,atomicGap:'Results can remain on failed run after unconfirmed terminal write; purpose-specific atomic RPC preparation assigned separately'},null,2),{flag:'wx'});
+console.log(JSON.stringify({parentPost:sha(after),emittedRuntimeIdentical:true,supplier19ChecksRetained:true}));

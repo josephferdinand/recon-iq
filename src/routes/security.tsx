@@ -393,20 +393,20 @@ function SectionHeading({
     <div className="mb-8 max-w-3xl">
       <div
         className="mb-3 text-[10px] font-semibold uppercase tracking-[0.3em]"
-        style={{ color: "#86868b" }}
+        style={{ color: "var(--mkt-text-3)" }}
       >
         {eyebrow}
       </div>
       <h2
         className="font-display text-2xl font-semibold md:text-3xl"
-        style={{ color: "#f5f5f7" }}
+        style={{ color: "var(--mkt-text)" }}
       >
         {title}
       </h2>
       {intro ? (
         <p
           className="mt-3 text-[15px] leading-relaxed"
-          style={{ color: "color-mix(in oklab, #f5f5f7 72%, transparent)" }}
+          style={{ color: "color-mix(in oklab, var(--mkt-text) 72%, transparent)" }}
         >
           {intro}
         </p>
@@ -417,7 +417,7 @@ function SectionHeading({
 
 function SecurityPage() {
   return (
-    <div className="min-h-screen bg-black text-[#f5f5f7]">
+    <div className="min-h-screen bg-[var(--mkt-bg)] text-[var(--mkt-text)] transition-colors duration-300">
       <MarketingNav />
     <main>
       {/* Hero */}
@@ -426,22 +426,22 @@ function SecurityPage() {
           <div
             className="mb-4 inline-flex items-center gap-2 rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em]"
             style={{
-              background: "color-mix(in oklab, #ffffff 5%, transparent)",
-              border: "1px solid color-mix(in oklab, #ffffff 10%, transparent)",
-              color: "#a1a1a6",
+              background: "color-mix(in oklab, var(--mkt-text) 5%, transparent)",
+              border: "1px solid color-mix(in oklab, var(--mkt-text) 10%, transparent)",
+              color: "var(--mkt-text-2)",
             }}
           >
             <ShieldCheck className="h-3 w-3" /> Security &amp; Compliance overview
           </div>
           <h1
             className="font-display text-3xl font-semibold tracking-tight md:text-5xl"
-            style={{ color: "#f5f5f7" }}
+            style={{ color: "var(--mkt-text)" }}
           >
             Security, privacy, and resilience at ReconIQ.
           </h1>
           <p
             className="mt-4 text-base leading-relaxed md:text-lg"
-            style={{ color: "color-mix(in oklab, #f5f5f7 72%, transparent)" }}
+            style={{ color: "color-mix(in oklab, var(--mkt-text) 72%, transparent)" }}
           >
             This page is maintained by ReconIQ (&ldquo;ReconIQ&rdquo;) to answer common
             security, privacy, and compliance questions about the ReconIQ reconciliation platform. It
@@ -450,7 +450,7 @@ function SecurityPage() {
           </p>
           <p
             className="mt-3 text-[13px] leading-relaxed"
-            style={{ color: "color-mix(in oklab, #f5f5f7 55%, transparent)" }}
+            style={{ color: "color-mix(in oklab, var(--mkt-text) 55%, transparent)" }}
           >
             Last reviewed: {LAST_UPDATED}. This overview is app-owned editable content and is not an
             independent assurance report or certification.
@@ -465,9 +465,9 @@ function SecurityPage() {
                   source: "security_page_hero",
                 })
               }
-              className="inline-flex items-center gap-1.5 rounded-full bg-white px-4 py-2 text-[12px] font-semibold text-black transition hover:bg-white/85"
+              className="inline-flex items-center gap-1.5 rounded-full bg-[var(--mkt-btn-bg)] px-4 py-2 text-[12px] font-semibold text-[var(--mkt-btn-text)] transition hover:opacity-85"
               style={{
-                border: "1px solid #ffffff",
+                border: "1px solid var(--mkt-btn-bg)",
               }}
             >
               Request the due-diligence pack <ArrowRight className="h-3.5 w-3.5" />
@@ -476,9 +476,9 @@ function SecurityPage() {
               to="/retention"
               className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-[12px] font-semibold transition hover:brightness-110"
               style={{
-                background: "color-mix(in oklab, #f5f5f7 6%, transparent)",
-                border: "1px solid color-mix(in oklab, #f5f5f7 22%, transparent)",
-                color: "color-mix(in oklab, #f5f5f7 85%, transparent)",
+                background: "color-mix(in oklab, var(--mkt-text) 6%, transparent)",
+                border: "1px solid color-mix(in oklab, var(--mkt-text) 22%, transparent)",
+                color: "color-mix(in oklab, var(--mkt-text) 85%, transparent)",
               }}
             >
               <BookOpen className="h-3.5 w-3.5" /> Data retention policy
@@ -492,26 +492,26 @@ function SecurityPage() {
         <div
           className="flex gap-4 rounded-2xl p-5 md:p-6"
           style={{
-            background: "color-mix(in oklab, #ffffff 6%, transparent)",
-            border: "1px solid color-mix(in oklab, #ffffff 22%, transparent)",
+            background: "color-mix(in oklab, var(--mkt-text) 6%, transparent)",
+            border: "1px solid color-mix(in oklab, var(--mkt-text) 22%, transparent)",
           }}
         >
           <AlertTriangle
             className="mt-0.5 h-5 w-5 flex-none"
-            style={{ color: "#2997ff" }}
+            style={{ color: "var(--mkt-accent)" }}
             aria-hidden="true"
           />
           <div className="space-y-2 text-[13.5px] leading-relaxed">
-            <p style={{ color: "color-mix(in oklab, #f5f5f7 88%, transparent)" }}>
-              <span className="font-semibold" style={{ color: "#f5f5f7" }}>
+            <p style={{ color: "color-mix(in oklab, var(--mkt-text) 88%, transparent)" }}>
+              <span className="font-semibold" style={{ color: "var(--mkt-text)" }}>
                 Scope.
               </span>{" "}
               This overview applies to the ReconIQ reconciliation platform hosted by ReconIQ
               Intelligence for enterprise customers. It does not cover customer-owned systems, data
               you export, or third-party services you integrate at your discretion.
             </p>
-            <p style={{ color: "color-mix(in oklab, #f5f5f7 72%, transparent)" }}>
-              <span className="font-semibold" style={{ color: "#f5f5f7" }}>
+            <p style={{ color: "color-mix(in oklab, var(--mkt-text) 72%, transparent)" }}>
+              <span className="font-semibold" style={{ color: "var(--mkt-text)" }}>
                 Honest disclosure.
               </span>{" "}
               We describe our architecture as &ldquo;aligned with&rdquo; recognised frameworks where
@@ -536,26 +536,26 @@ function SecurityPage() {
               key={party}
               className="rounded-2xl p-5"
               style={{
-                background: "color-mix(in oklab, #f5f5f7 3%, transparent)",
-                border: "1px solid color-mix(in oklab, #ffffff 12%, transparent)",
+                background: "color-mix(in oklab, var(--mkt-text) 3%, transparent)",
+                border: "1px solid color-mix(in oklab, var(--mkt-text) 12%, transparent)",
               }}
             >
               <div className="flex items-center gap-2">
                 <Layers
                   className="h-4 w-4"
-                  style={{ color: "#2997ff" }}
+                  style={{ color: "var(--mkt-accent)" }}
                   aria-hidden="true"
                 />
                 <h3
                   className="text-[14px] font-semibold tracking-tight"
-                  style={{ color: "#f5f5f7" }}
+                  style={{ color: "var(--mkt-text)" }}
                 >
                   {party}
                 </h3>
               </div>
               <p
                 className="mt-2 text-[12.5px] leading-relaxed"
-                style={{ color: "color-mix(in oklab, #f5f5f7 62%, transparent)" }}
+                style={{ color: "color-mix(in oklab, var(--mkt-text) 62%, transparent)" }}
               >
                 {scope}
               </p>
@@ -564,11 +564,11 @@ function SecurityPage() {
                   <li
                     key={e}
                     className="flex gap-2 text-[12.5px] leading-relaxed"
-                    style={{ color: "color-mix(in oklab, #f5f5f7 78%, transparent)" }}
+                    style={{ color: "color-mix(in oklab, var(--mkt-text) 78%, transparent)" }}
                   >
                     <span
                       className="mt-1.5 h-1 w-1 flex-none rounded-full"
-                      style={{ background: "#ffffff" }}
+                      style={{ background: "var(--mkt-text)" }}
                     />
                     {e}
                   </li>
@@ -592,31 +592,31 @@ function SecurityPage() {
               key={title}
               className="flex flex-col gap-3 rounded-2xl p-6"
               style={{
-                background: "color-mix(in oklab, #f5f5f7 3%, transparent)",
-                border: "1px solid color-mix(in oklab, #ffffff 12%, transparent)",
+                background: "color-mix(in oklab, var(--mkt-text) 3%, transparent)",
+                border: "1px solid color-mix(in oklab, var(--mkt-text) 12%, transparent)",
               }}
             >
               <div className="flex items-center gap-3">
                 <span
                   className="grid h-9 w-9 place-items-center rounded-lg"
                   style={{
-                    background: "color-mix(in oklab, #ffffff 12%, transparent)",
-                    border: "1px solid color-mix(in oklab, #ffffff 32%, transparent)",
-                    color: "#2997ff",
+                    background: "color-mix(in oklab, var(--mkt-text) 12%, transparent)",
+                    border: "1px solid color-mix(in oklab, var(--mkt-text) 32%, transparent)",
+                    color: "var(--mkt-accent)",
                   }}
                 >
                   <Icon className="h-4 w-4" />
                 </span>
                 <h3
                   className="text-[15px] font-semibold tracking-tight"
-                  style={{ color: "#f5f5f7" }}
+                  style={{ color: "var(--mkt-text)" }}
                 >
                   {title}
                 </h3>
               </div>
               <p
                 className="text-[13px] leading-relaxed"
-                style={{ color: "color-mix(in oklab, #f5f5f7 62%, transparent)" }}
+                style={{ color: "color-mix(in oklab, var(--mkt-text) 62%, transparent)" }}
               >
                 {summary}
               </p>
@@ -625,11 +625,11 @@ function SecurityPage() {
                   <li
                     key={it}
                     className="flex items-start gap-2 text-[12.5px] leading-relaxed"
-                    style={{ color: "color-mix(in oklab, #f5f5f7 78%, transparent)" }}
+                    style={{ color: "color-mix(in oklab, var(--mkt-text) 78%, transparent)" }}
                   >
                     <span
                       className="mt-1.5 h-1 w-1 flex-none rounded-full"
-                      style={{ background: "#ffffff" }}
+                      style={{ background: "var(--mkt-text)" }}
                     />
                     {it}
                   </li>
@@ -652,9 +652,9 @@ function SecurityPage() {
           <span
             className="rounded-full px-2.5 py-1 font-semibold uppercase tracking-[0.18em]"
             style={{
-              background: "color-mix(in oklab, #ffffff 12%, transparent)",
-              border: "1px solid color-mix(in oklab, #ffffff 32%, transparent)",
-              color: "#2997ff",
+              background: "color-mix(in oklab, var(--mkt-text) 12%, transparent)",
+              border: "1px solid color-mix(in oklab, var(--mkt-text) 32%, transparent)",
+              color: "var(--mkt-accent)",
             }}
           >
             Aligned by design — controls built to the framework, no third-party attestation yet
@@ -662,9 +662,9 @@ function SecurityPage() {
           <span
             className="rounded-full px-2.5 py-1 font-semibold uppercase tracking-[0.18em]"
             style={{
-              background: "color-mix(in oklab, #f5f5f7 4%, transparent)",
-              border: "1px solid color-mix(in oklab, #f5f5f7 18%, transparent)",
-              color: "color-mix(in oklab, #f5f5f7 70%, transparent)",
+              background: "color-mix(in oklab, var(--mkt-text) 4%, transparent)",
+              border: "1px solid color-mix(in oklab, var(--mkt-text) 18%, transparent)",
+              color: "color-mix(in oklab, var(--mkt-text) 70%, transparent)",
             }}
           >
             Not certified — out of scope for the ReconIQ service
@@ -674,18 +674,18 @@ function SecurityPage() {
         <div
           className="mt-6 overflow-hidden rounded-2xl"
           style={{
-            background: "color-mix(in oklab, #f5f5f7 2.5%, transparent)",
-            border: "1px solid color-mix(in oklab, #ffffff 14%, transparent)",
+            background: "color-mix(in oklab, var(--mkt-text) 2.5%, transparent)",
+            border: "1px solid color-mix(in oklab, var(--mkt-text) 14%, transparent)",
           }}
         >
           {FRAMEWORK_ALIGNMENT.map((row, idx) => (
             <details
               key={row.framework}
               className="group border-t first:border-t-0"
-              style={{ borderColor: "color-mix(in oklab, #ffffff 10%, transparent)" }}
+              style={{ borderColor: "color-mix(in oklab, var(--mkt-text) 10%, transparent)" }}
             >
               <summary
-                className="flex cursor-pointer list-none items-start gap-4 px-5 py-4 transition hover:bg-[color-mix(in_oklab,#ffffff_4%,transparent)]"
+                className="flex cursor-pointer list-none items-start gap-4 px-5 py-4 transition hover:bg-[var(--mkt-surface-2)]"
                 onClick={() =>
                   trackCtaEvent("click", {
                     cta_id: `framework_expand_${idx}`,
@@ -697,9 +697,9 @@ function SecurityPage() {
                   aria-hidden
                   className="mt-1 inline-flex h-5 w-5 flex-none items-center justify-center rounded-full transition group-open:rotate-90"
                   style={{
-                    background: "color-mix(in oklab, #ffffff 14%, transparent)",
-                    border: "1px solid color-mix(in oklab, #ffffff 32%, transparent)",
-                    color: "#2997ff",
+                    background: "color-mix(in oklab, var(--mkt-text) 14%, transparent)",
+                    border: "1px solid color-mix(in oklab, var(--mkt-text) 32%, transparent)",
+                    color: "var(--mkt-accent)",
                   }}
                 >
                   <ArrowRight className="h-3 w-3" />
@@ -707,13 +707,13 @@ function SecurityPage() {
                 <span className="flex-1">
                   <span
                     className="block text-[14px] font-semibold"
-                    style={{ color: "#f5f5f7" }}
+                    style={{ color: "var(--mkt-text)" }}
                   >
                     {row.framework}
                   </span>
                   <span
                     className="mt-1 block text-[12.5px] leading-relaxed"
-                    style={{ color: "color-mix(in oklab, #f5f5f7 68%, transparent)" }}
+                    style={{ color: "color-mix(in oklab, var(--mkt-text) 68%, transparent)" }}
                   >
                     {row.note}
                   </span>
@@ -725,12 +725,12 @@ function SecurityPage() {
 
               <div
                 className="grid gap-5 px-5 pb-6 pt-2 md:grid-cols-2"
-                style={{ background: "color-mix(in oklab, #f5f5f7 1.5%, transparent)" }}
+                style={{ background: "color-mix(in oklab, var(--mkt-text) 1.5%, transparent)" }}
               >
                 <ExpanderBlock title="Scope">
                   <p
                     className="text-[12.5px] leading-relaxed"
-                    style={{ color: "color-mix(in oklab, #f5f5f7 78%, transparent)" }}
+                    style={{ color: "color-mix(in oklab, var(--mkt-text) 78%, transparent)" }}
                   >
                     {row.scope}
                   </p>
@@ -751,7 +751,7 @@ function SecurityPage() {
 
         <p
           className="mt-4 text-[11.5px]"
-          style={{ color: "color-mix(in oklab, #f5f5f7 50%, transparent)" }}
+          style={{ color: "color-mix(in oklab, var(--mkt-text) 50%, transparent)" }}
         >
           &ldquo;Aligned by design&rdquo; means the platform&rsquo;s architecture and processes were
           shaped by the referenced framework. It does not constitute an audit opinion, certificate, or
@@ -772,23 +772,23 @@ function SecurityPage() {
           <div
             className="rounded-2xl p-5"
             style={{
-              background: "color-mix(in oklab, #f5f5f7 3%, transparent)",
-              border: "1px solid color-mix(in oklab, #ffffff 12%, transparent)",
+              background: "color-mix(in oklab, var(--mkt-text) 3%, transparent)",
+              border: "1px solid color-mix(in oklab, var(--mkt-text) 12%, transparent)",
             }}
           >
             <h3
               className="text-[14px] font-semibold"
-              style={{ color: "#f5f5f7" }}
+              style={{ color: "var(--mkt-text)" }}
             >
               Personal data &amp; retention
             </h3>
             <p
               className="mt-2 text-[13px] leading-relaxed"
-              style={{ color: "color-mix(in oklab, #f5f5f7 72%, transparent)" }}
+              style={{ color: "color-mix(in oklab, var(--mkt-text) 72%, transparent)" }}
             >
               Data classes, minimum retention windows, and the legal basis for each are published on
               the{" "}
-              <Link to="/retention" className="underline underline-offset-2" style={{ color: "#2997ff" }}>
+              <Link to="/retention" className="underline underline-offset-2" style={{ color: "var(--mkt-accent)" }}>
                 Data Retention Policy
               </Link>
               . Tenant administrators may extend, but not reduce below, platform minimums.
@@ -798,23 +798,23 @@ function SecurityPage() {
           <div
             className="rounded-2xl p-5"
             style={{
-              background: "color-mix(in oklab, #f5f5f7 3%, transparent)",
-              border: "1px solid color-mix(in oklab, #ffffff 12%, transparent)",
+              background: "color-mix(in oklab, var(--mkt-text) 3%, transparent)",
+              border: "1px solid color-mix(in oklab, var(--mkt-text) 12%, transparent)",
             }}
           >
             <h3
               className="text-[14px] font-semibold"
-              style={{ color: "#f5f5f7" }}
+              style={{ color: "var(--mkt-text)" }}
             >
               Subprocessors
             </h3>
             <p
               className="mt-2 text-[13px] leading-relaxed"
-              style={{ color: "color-mix(in oklab, #f5f5f7 72%, transparent)" }}
+              style={{ color: "color-mix(in oklab, var(--mkt-text) 72%, transparent)" }}
             >
               A current list of subprocessors — including their role, region, and safeguards — is
               provided as part of the Data Processing Addendum on request via{" "}
-              <Link to="/contact" className="underline underline-offset-2" style={{ color: "#2997ff" }}>
+              <Link to="/contact" className="underline underline-offset-2" style={{ color: "var(--mkt-accent)" }}>
                 the contact form
               </Link>
               . Material changes are notified in accordance with the DPA.
@@ -824,19 +824,19 @@ function SecurityPage() {
           <div
             className="rounded-2xl p-5"
             style={{
-              background: "color-mix(in oklab, #f5f5f7 3%, transparent)",
-              border: "1px solid color-mix(in oklab, #ffffff 12%, transparent)",
+              background: "color-mix(in oklab, var(--mkt-text) 3%, transparent)",
+              border: "1px solid color-mix(in oklab, var(--mkt-text) 12%, transparent)",
             }}
           >
             <h3
               className="text-[14px] font-semibold"
-              style={{ color: "#f5f5f7" }}
+              style={{ color: "var(--mkt-text)" }}
             >
               Data-subject requests
             </h3>
             <p
               className="mt-2 text-[13px] leading-relaxed"
-              style={{ color: "color-mix(in oklab, #f5f5f7 72%, transparent)" }}
+              style={{ color: "color-mix(in oklab, var(--mkt-text) 72%, transparent)" }}
             >
               End-user requests (access, rectification, erasure, portability) should be routed
               through the controller — typically your organisation. ReconIQ supports the controller in
@@ -847,19 +847,19 @@ function SecurityPage() {
           <div
             className="rounded-2xl p-5"
             style={{
-              background: "color-mix(in oklab, #f5f5f7 3%, transparent)",
-              border: "1px solid color-mix(in oklab, #ffffff 12%, transparent)",
+              background: "color-mix(in oklab, var(--mkt-text) 3%, transparent)",
+              border: "1px solid color-mix(in oklab, var(--mkt-text) 12%, transparent)",
             }}
           >
             <h3
               className="text-[14px] font-semibold"
-              style={{ color: "#f5f5f7" }}
+              style={{ color: "var(--mkt-text)" }}
             >
               International transfers
             </h3>
             <p
               className="mt-2 text-[13px] leading-relaxed"
-              style={{ color: "color-mix(in oklab, #f5f5f7 72%, transparent)" }}
+              style={{ color: "color-mix(in oklab, var(--mkt-text) 72%, transparent)" }}
             >
               Where personal data leaves the customer&rsquo;s selected region, transfers rely on
               Standard Contractual Clauses (SCCs) and, where applicable, the UK IDTA, supported by
@@ -879,26 +879,26 @@ function SecurityPage() {
           <div
             className="rounded-2xl p-6"
             style={{
-              background: "color-mix(in oklab, #f5f5f7 3%, transparent)",
-              border: "1px solid color-mix(in oklab, #ffffff 12%, transparent)",
+              background: "color-mix(in oklab, var(--mkt-text) 3%, transparent)",
+              border: "1px solid color-mix(in oklab, var(--mkt-text) 12%, transparent)",
             }}
           >
             <div className="flex items-center gap-2">
               <AlertTriangle
                 className="h-4 w-4"
-                style={{ color: "#2997ff" }}
+                style={{ color: "var(--mkt-accent)" }}
                 aria-hidden="true"
               />
               <h3
                 className="text-[14px] font-semibold"
-                style={{ color: "#f5f5f7" }}
+                style={{ color: "var(--mkt-text)" }}
               >
                 Security incidents
               </h3>
             </div>
             <p
               className="mt-2 text-[13px] leading-relaxed"
-              style={{ color: "color-mix(in oklab, #f5f5f7 75%, transparent)" }}
+              style={{ color: "color-mix(in oklab, var(--mkt-text) 75%, transparent)" }}
             >
               Customers are notified of confirmed security incidents affecting their tenant without
               undue delay, in line with contractual and statutory obligations. Our incident-response
@@ -907,35 +907,42 @@ function SecurityPage() {
             <Link
               to="/contact"
               className="mt-4 inline-flex items-center gap-1.5 text-[12.5px] font-semibold"
-              style={{ color: "#2997ff" }}
+              style={{ color: "var(--mkt-accent)" }}
             >
               <Mail className="h-3.5 w-3.5" /> Contact us via the contact form
             </Link>
+            <a
+              href="mailto:security@reconintelligence.app"
+              className="mt-2 flex items-center gap-1.5 text-[12.5px] font-semibold"
+              style={{ color: "var(--mkt-accent)" }}
+            >
+              <Mail className="h-3.5 w-3.5" /> security@reconintelligence.app
+            </a>
           </div>
 
           <div
             className="rounded-2xl p-6"
             style={{
-              background: "color-mix(in oklab, #f5f5f7 3%, transparent)",
-              border: "1px solid color-mix(in oklab, #ffffff 12%, transparent)",
+              background: "color-mix(in oklab, var(--mkt-text) 3%, transparent)",
+              border: "1px solid color-mix(in oklab, var(--mkt-text) 12%, transparent)",
             }}
           >
             <div className="flex items-center gap-2">
               <ShieldCheck
                 className="h-4 w-4"
-                style={{ color: "#2997ff" }}
+                style={{ color: "var(--mkt-accent)" }}
                 aria-hidden="true"
               />
               <h3
                 className="text-[14px] font-semibold"
-                style={{ color: "#f5f5f7" }}
+                style={{ color: "var(--mkt-text)" }}
               >
                 Vulnerability disclosure
               </h3>
             </div>
             <p
               className="mt-2 text-[13px] leading-relaxed"
-              style={{ color: "color-mix(in oklab, #f5f5f7 75%, transparent)" }}
+              style={{ color: "color-mix(in oklab, var(--mkt-text) 75%, transparent)" }}
             >
               Researchers who believe they have identified a vulnerability affecting the platform
               are invited to report it privately. We do not pursue legal action against good-faith
@@ -944,7 +951,7 @@ function SecurityPage() {
             <Link
               to="/contact"
               className="mt-4 inline-flex items-center gap-1.5 text-[12.5px] font-semibold"
-              style={{ color: "#2997ff" }}
+              style={{ color: "var(--mkt-accent)" }}
             >
               <Mail className="h-3.5 w-3.5" /> Report privately via the contact form
             </Link>
@@ -957,19 +964,19 @@ function SecurityPage() {
         <div
           className="rounded-2xl p-6 md:p-7"
           style={{
-            background: "color-mix(in oklab, #f5f5f7 2.5%, transparent)",
-            border: "1px solid color-mix(in oklab, #ffffff 14%, transparent)",
+            background: "color-mix(in oklab, var(--mkt-text) 2.5%, transparent)",
+            border: "1px solid color-mix(in oklab, var(--mkt-text) 14%, transparent)",
           }}
         >
           <h3
             className="text-[15px] font-semibold"
-            style={{ color: "#f5f5f7" }}
+            style={{ color: "var(--mkt-text)" }}
           >
             Need something not published here?
           </h3>
           <p
             className="mt-2 text-[13.5px] leading-relaxed"
-            style={{ color: "color-mix(in oklab, #f5f5f7 72%, transparent)" }}
+            style={{ color: "color-mix(in oklab, var(--mkt-text) 72%, transparent)" }}
           >
             Enterprise customers can request the full due-diligence pack — including completed SIG
             Core and CAIQ v4, current penetration-test summary, SBOM, DPA and sub-processor register,
@@ -978,9 +985,9 @@ function SecurityPage() {
           <div className="mt-4">
             <Link
               to="/contact"
-              className="inline-flex items-center gap-1.5 rounded-full bg-white px-4 py-2 text-[12px] font-semibold text-black transition hover:bg-white/85"
+              className="inline-flex items-center gap-1.5 rounded-full bg-[var(--mkt-btn-bg)] px-4 py-2 text-[12px] font-semibold text-[var(--mkt-btn-text)] transition hover:opacity-85"
               style={{
-                border: "1px solid #ffffff",
+                border: "1px solid var(--mkt-btn-bg)",
               }}
             >
               Contact the ReconIQ trust team <ArrowRight className="h-3.5 w-3.5" />
@@ -999,13 +1006,13 @@ function ExpanderBlock({ title, children }: { title: string; children: React.Rea
     <div
       className="rounded-xl p-4"
       style={{
-        background: "color-mix(in oklab, #f5f5f7 3%, transparent)",
-        border: "1px solid color-mix(in oklab, #ffffff 14%, transparent)",
+        background: "color-mix(in oklab, var(--mkt-text) 3%, transparent)",
+        border: "1px solid color-mix(in oklab, var(--mkt-text) 14%, transparent)",
       }}
     >
       <div
         className="mb-2 text-[10.5px] font-semibold uppercase tracking-[0.2em]"
-        style={{ color: "#2997ff" }}
+        style={{ color: "var(--mkt-accent)" }}
       >
         {title}
       </div>
@@ -1021,12 +1028,12 @@ function ExpanderList({ items }: { items: string[] }) {
         <li
           key={item}
           className="flex gap-2 text-[12.5px] leading-relaxed"
-          style={{ color: "color-mix(in oklab, #f5f5f7 78%, transparent)" }}
+          style={{ color: "color-mix(in oklab, var(--mkt-text) 78%, transparent)" }}
         >
           <span
             aria-hidden
             className="mt-1.5 h-1 w-1 flex-none rounded-full"
-            style={{ background: "#ffffff" }}
+            style={{ background: "var(--mkt-text)" }}
           />
           <span>{item}</span>
         </li>
@@ -1038,16 +1045,16 @@ function ExpanderList({ items }: { items: string[] }) {
 function StatusBadge({ status }: { status: "Aligned by design" | "In progress" | "Not certified" }) {
   const tone =
     status === "Aligned by design"
-      ? { bg: 12, border: 32, color: "#2997ff" }
+      ? { bg: 12, border: 32, color: "var(--mkt-accent)" }
       : status === "In progress"
-        ? { bg: 8, border: 24, color: "#2997ff" }
-        : { bg: 4, border: 18, color: "color-mix(in oklab, #f5f5f7 70%, transparent)" };
+        ? { bg: 8, border: 24, color: "var(--mkt-accent)" }
+        : { bg: 4, border: 18, color: "color-mix(in oklab, var(--mkt-text) 70%, transparent)" };
   return (
     <span
       className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] whitespace-nowrap"
       style={{
-        background: `color-mix(in oklab, #ffffff ${tone.bg}%, transparent)`,
-        border: `1px solid color-mix(in oklab, #ffffff ${tone.border}%, transparent)`,
+        background: `color-mix(in oklab, var(--mkt-text) ${tone.bg}%, transparent)`,
+        border: `1px solid color-mix(in oklab, var(--mkt-text) ${tone.border}%, transparent)`,
         color: tone.color,
       }}
     >

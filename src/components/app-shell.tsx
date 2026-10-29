@@ -14,7 +14,7 @@ import { ScopeSwitcher, type Scope } from "@/components/scope-switcher";
 import { UserProfileMenu } from "@/components/user-profile-menu";
 import { CopilotSheetButton } from "@/components/copilot-sheet";
 import { TourButton } from "@/components/tour-button";
-import { FviApprovedLogo } from "@/components/fvi-approved-logo";
+import { RQApprovedLogo } from "@/components/rq-approved-logo";
 import { IdleTimeoutGuard } from "@/hooks/use-idle-timeout";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -98,7 +98,7 @@ export function AppShell({
           aria-label="Primary navigation"
         >
           <div className="flex items-center gap-2 border-b border-sidebar-border px-5 py-4">
-            <FviApprovedLogo className="h-16 w-16 rounded-md" />
+            <RQApprovedLogo className="h-16 w-16 rounded-md" />
             <Link to="/home" className="font-display text-sm font-semibold tracking-tight">
               ReconIQ
             </Link>
@@ -131,7 +131,7 @@ export function AppShell({
             Navigate ReconIQ on a small screen.
           </SheetDescription>
           <div className="flex items-center gap-2 border-b border-sidebar-border px-5 py-4 pr-12">
-            <FviApprovedLogo className="h-9 w-9 rounded-md" />
+            <RQApprovedLogo className="h-9 w-9 rounded-md" />
             <Link
               to="/home"
               className="font-display text-sm font-semibold tracking-tight"

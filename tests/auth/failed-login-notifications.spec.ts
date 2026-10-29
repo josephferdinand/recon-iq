@@ -88,7 +88,7 @@ describe("trusted failed-login capture", () => {
 describe("recipient-safe branded notification", () => {
   it.each(failedLoginOutcomes)("renders truthful %s and real recovery links without credentials", async outcome => {
     const notice = await renderFailedLoginEmail({ attemptId: id, occurredAt: "2026-10-03T16:00:00Z", outcome, origin: "https://app.reconiq.example" });
-    expect(notice.html).toContain("fv-monogram.svg");
+    expect(notice.html).toContain("rq-seal.svg");
     expect(notice.html).toContain("https://app.reconiq.example/auth?reset=true");
     expect(notice.text).toContain("2026-10-03T16:00:00.000Z");
     expect(notice.text).not.toMatch(/OTP|JWT|access_token|refresh_token|reset_token|password mismatch/i);

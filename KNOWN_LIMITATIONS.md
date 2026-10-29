@@ -19,7 +19,7 @@ ReconIQ is a live, working hackathon MVP. This file lists what is intentionally 
 ## Platform & operations
 
 - No mailbox is provisioned on `reconintelligence.app` yet; contact happens through the `/contact` and `/support` forms. Social-preview images use the SVG monogram (`og:image`) — a raster 1200×630 card is a nice-to-have.
-- `*.reconiq.example` remains in internal placeholders, docs samples, email-template defaults, and the CSP allowlist (RFC 2606 `.example` — non-resolving by design). Public pages no longer link to it.
+- `*.reconiq.example` remains only in legacy host-routing allowlists, placeholder guards, and historical provenance records (RFC 2606 `.example` — non-resolving by design). All functional defaults, docs samples, email templates, and public pages use `reconintelligence.app`.
 - The internal codename **FVI / Falcon Veritas** persists in reference IDs (`FVI-EXC-…`), `x-fvi-*` headers, and some internal identifiers. This is deliberate provenance, not a second brand.
 - `supabase/migrations/` (397 historical files) must **not** be run against a fresh project; `database/production-schema.sql` is the supported restore path (see `database/README.md`).
 - Mobile sign-in was verified via browser device emulation, not on a physical device.

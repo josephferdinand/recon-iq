@@ -4,9 +4,9 @@
  * border in brand cyan (#00d4ff) and a cream "RQ" ligature in Inter Bold.
  *
  * Brand colors are fixed per BRAND.md (do not theme-shift). The standalone
- * SVG mirror of this component lives at public/fv-monogram.svg.
+ * SVG mirror of this component lives at public/rq-seal.svg.
  */
-export function FVMonogram({ className = "" }: { className?: string }) {
+export function RQSeal({ className = "" }: { className?: string }) {
   const PRIMARY = "#1e3a5f"; // deep brand blue
   const ACCENT = "#00d4ff";  // brand cyan
   const CREAM = "#f4ede0";   // brand cream

@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { z } from "zod";
-import { FviApprovedLogo } from "@/components/fvi-approved-logo";
+import { RQApprovedLogo } from "@/components/rq-approved-logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -195,30 +195,30 @@ function RequestInvitePage() {
   };
 
   return (
-    <main className="min-h-dvh bg-black text-[#f5f5f7] xl:grid xl:grid-cols-2">
-      <section className="hidden border-r border-white/10 bg-[#0b0b0f] px-12 py-10 text-[#f5f5f7] xl:flex xl:flex-col xl:justify-center">
-        <FviApprovedLogo className="h-28 w-28 rounded-lg" />
-        <p className="mt-8 text-xs font-semibold uppercase tracking-[0.18em] text-[#86868b]">
+    <main className="min-h-dvh bg-[var(--mkt-bg)] text-[var(--mkt-text)] transition-colors duration-300 xl:grid xl:grid-cols-2">
+      <section className="hidden border-r border-[var(--mkt-line)] bg-[var(--mkt-bg-soft)] px-12 py-10 text-[var(--mkt-text)] xl:flex xl:flex-col xl:justify-center">
+        <RQApprovedLogo className="h-28 w-28 rounded-lg" />
+        <p className="mt-8 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--mkt-text-3)]">
           ReconIQ
         </p>
         <h1 className="mt-4 max-w-lg font-display text-4xl font-semibold leading-tight">
           Join your organization’s reconciliation workspace
         </h1>
-        <p className="mt-5 max-w-lg text-sm leading-relaxed text-[#a1a1a6]">
+        <p className="mt-5 max-w-lg text-sm leading-relaxed text-[var(--mkt-text-2)]">
           Your verified work email identifies the eligible organization. Its tenant administrator
           decides whether to admit you.
         </p>
-        <ol className="mt-9 space-y-5 text-sm text-[#d4d4da]">
+        <ol className="mt-9 space-y-5 text-sm text-[var(--mkt-text-2)]">
           <li>1. Request access using your work email.</li>
           <li>2. Verify that email using the link we send.</li>
           <li>3. Wait for your tenant administrator’s decision.</li>
         </ol>
       </section>
-      <section className="flex min-h-dvh items-center justify-center bg-black px-5 py-8 xl:px-12">
+      <section className="flex min-h-dvh items-center justify-center bg-[var(--mkt-bg)] px-5 py-8 xl:px-12">
         <div className="w-full max-w-md">
-          <FviApprovedLogo className="mx-auto mb-5 h-32 w-32 rounded-lg xl:hidden" />
-          <div className="rounded-3xl border border-white/10 bg-[#161617] p-7">
-            <p className="text-center text-xs font-semibold uppercase tracking-[0.18em] text-[#86868b]">Request access</p>
+          <RQApprovedLogo className="mx-auto mb-5 h-32 w-32 rounded-lg xl:hidden" />
+          <div className="rounded-3xl border border-[var(--mkt-line)] bg-[var(--mkt-surface)] p-7">
+            <p className="text-center text-xs font-semibold uppercase tracking-[0.18em] text-[var(--mkt-text-3)]">Request access</p>
             <h2 className="mt-2 text-center font-display text-3xl font-semibold">Sign Up</h2>
             {phase === "verify" ? (
               <p className="mt-5 text-center text-sm leading-relaxed" role="status">
@@ -241,7 +241,7 @@ function RequestInvitePage() {
                   here. Repeating this request will not create a second admission request.
                 </p>
                 <Button
-                  className="mt-4 border-white/20 bg-transparent text-[#f5f5f7] hover:bg-white/10 hover:text-white"
+                  className="mt-4 border-[var(--mkt-line-strong)] bg-transparent text-[var(--mkt-text)] hover:bg-[var(--mkt-surface-2)] hover:text-[var(--mkt-text)]"
                   variant="outline"
                   onClick={() => {
                     void submitVerifiedAdmission();
@@ -264,21 +264,21 @@ function RequestInvitePage() {
                     <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
                       <Link
                         to="/auth"
-                        className="font-semibold text-[#2997ff] underline-offset-4 hover:text-white hover:underline"
+                        className="font-semibold text-[var(--mkt-accent)] underline-offset-4 hover:text-[var(--mkt-text)] hover:underline"
                       >
                         Sign In
                       </Link>
                       <Link
                         to="/auth"
                         search={{ reset: true }}
-                        className="font-semibold text-[#2997ff] underline-offset-4 hover:text-white hover:underline"
+                        className="font-semibold text-[var(--mkt-accent)] underline-offset-4 hover:text-[var(--mkt-text)] hover:underline"
                       >
                         Forgot Password
                       </Link>
                       <Button
                         type="button"
                         variant="link"
-                        className="h-auto px-0 py-0 text-[#2997ff] hover:text-white"
+                        className="h-auto px-0 py-0 text-[var(--mkt-accent)] hover:text-[var(--mkt-text)]"
                         onClick={startAnotherEmail}
                       >
                         Use Another Email Address
@@ -299,7 +299,7 @@ function RequestInvitePage() {
                         <Button
                           type="button"
                           variant="outline"
-                          className="border-white/20 bg-transparent text-[#f5f5f7] hover:bg-white/10 hover:text-white"
+                          className="border-[var(--mkt-line-strong)] bg-transparent text-[var(--mkt-text)] hover:bg-[var(--mkt-surface-2)] hover:text-[var(--mkt-text)]"
                           disabled={phase === "checking"}
                           onClick={() => {
                             if (attempt.current) void recoverAttempt(attempt.current, "check");
@@ -311,7 +311,7 @@ function RequestInvitePage() {
                           <Button
                             type="button"
                             variant="outline"
-                            className="border-white/20 bg-transparent text-[#f5f5f7] hover:bg-white/10 hover:text-white"
+                            className="border-[var(--mkt-line-strong)] bg-transparent text-[var(--mkt-text)] hover:bg-[var(--mkt-surface-2)] hover:text-[var(--mkt-text)]"
                             onClick={() => {
                               if (attempt.current) void recoverAttempt(attempt.current, "submit");
                             }}
@@ -324,14 +324,14 @@ function RequestInvitePage() {
                     <div className="flex flex-wrap gap-4">
                       <Link
                         to="/auth"
-                        className="font-semibold text-[#2997ff] underline-offset-4 hover:text-white hover:underline"
+                        className="font-semibold text-[var(--mkt-accent)] underline-offset-4 hover:text-[var(--mkt-text)] hover:underline"
                       >
                         Sign In
                       </Link>
                       <Link
                         to="/auth"
                         search={{ reset: true }}
-                        className="font-semibold text-[#2997ff] underline-offset-4 hover:text-white hover:underline"
+                        className="font-semibold text-[var(--mkt-accent)] underline-offset-4 hover:text-[var(--mkt-text)] hover:underline"
                       >
                         Forgot Password
                       </Link>
@@ -348,11 +348,11 @@ function RequestInvitePage() {
               ["form", "sending", "existing", "unknown", "checking", "not_sent"] as Phase[]
             ).includes(phase) ? (
               <form className="mt-6 space-y-4" onSubmit={submit} noValidate>
-                <p className="text-center text-sm text-[#a1a1a6]">
+                <p className="text-center text-sm text-[var(--mkt-text-2)]">
                   Request admission to your organization’s ReconIQ tenant.
                 </p>
                 <div className="space-y-1.5">
-                  <Label htmlFor="signup-name" className="text-sm font-medium text-[#f5f5f7]">Full name</Label>
+                  <Label htmlFor="signup-name" className="text-sm font-medium text-[var(--mkt-text)]">Full name</Label>
                   <Input
                     id="signup-name"
                     autoComplete="name"
@@ -361,11 +361,11 @@ function RequestInvitePage() {
                     required
                     maxLength={120}
                     disabled={phase !== "form" && phase !== "existing"}
-                    className="h-11 rounded-xl border-white/15 bg-[#1c1c1f] px-3.5 text-[#f5f5f7] placeholder:text-[#86868b] focus-visible:ring-2 focus-visible:ring-[#2997ff]"
+                    className="h-11 rounded-xl border-[var(--mkt-line)] bg-[var(--mkt-surface-2)] px-3.5 text-[var(--mkt-text)] placeholder:text-[var(--mkt-text-3)] focus-visible:ring-2 focus-visible:ring-[var(--mkt-accent)]"
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="signup-email" className="text-sm font-medium text-[#f5f5f7]">Work email</Label>
+                  <Label htmlFor="signup-email" className="text-sm font-medium text-[var(--mkt-text)]">Work email</Label>
                   <Input
                     ref={emailInput}
                     id="signup-email"
@@ -380,31 +380,31 @@ function RequestInvitePage() {
                     maxLength={254}
                     disabled={phase !== "form" && phase !== "existing"}
                     aria-describedby="signup-email-helper"
-                    className="h-11 rounded-xl border-white/15 bg-[#1c1c1f] px-3.5 text-[#f5f5f7] placeholder:text-[#86868b] focus-visible:ring-2 focus-visible:ring-[#2997ff]"
+                    className="h-11 rounded-xl border-[var(--mkt-line)] bg-[var(--mkt-surface-2)] px-3.5 text-[var(--mkt-text)] placeholder:text-[var(--mkt-text-3)] focus-visible:ring-2 focus-visible:ring-[var(--mkt-accent)]"
                   />
-                  <p id="signup-email-helper" className="text-xs text-[#86868b]">
+                  <p id="signup-email-helper" className="text-xs text-[var(--mkt-text-3)]">
                     Use the work email your organization uses — we’ll send a verification link there.
                   </p>
                 </div>
                 {formError && phase === "form" ? (
-                  <p className="text-sm text-red-400" role="alert">
+                  <p className="text-sm text-[var(--mkt-error-text)]" role="alert">
                     {formError}
                   </p>
                 ) : null}
-                <Button type="submit" className="h-11 w-full bg-white text-black hover:bg-white/85" disabled={phase !== "form"}>
+                <Button type="submit" className="h-11 w-full bg-[var(--mkt-btn-bg)] text-[var(--mkt-btn-text)] hover:opacity-85" disabled={phase !== "form"}>
                   {phase === "sending"
                     ? "Sending verification…"
                     : "Verify email and request access"}
                 </Button>
-                <p className="text-center text-xs text-[#86868b]">
+                <p className="text-center text-xs text-[var(--mkt-text-3)]">
                   Submitting does not create tenant membership or grant access.
                 </p>
               </form>
             ) : null}
             {phase !== "existing" && !["unknown", "checking", "not_sent"].includes(phase) ? (
-              <p className="mt-6 text-center text-sm text-[#a1a1a6]">
+              <p className="mt-6 text-center text-sm text-[var(--mkt-text-2)]">
                 Already have access?{" "}
-                <Link to="/auth" className="font-semibold text-[#2997ff] hover:text-white hover:underline">
+                <Link to="/auth" className="font-semibold text-[var(--mkt-accent)] hover:text-[var(--mkt-text)] hover:underline">
                   Sign In
                 </Link>
               </p>

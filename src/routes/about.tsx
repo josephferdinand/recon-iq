@@ -39,23 +39,23 @@ const PRINCIPLES = [
 
 function About() {
   return (
-    <div className="min-h-screen bg-black font-sans text-[#f5f5f7] antialiased">
+    <div className="min-h-screen bg-[var(--mkt-bg)] font-sans text-[var(--mkt-text)] antialiased transition-colors duration-300">
       <MarketingNav />
 
       <main className="mx-auto max-w-4xl px-6 py-20">
-        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#86868b]">
+        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--mkt-text-3)]">
           About
         </p>
         <h1 className="mt-6 font-display text-4xl font-medium leading-tight tracking-tight md:text-6xl">
           Reconciliation, reimagined for the AI era.
         </h1>
-        <p className="mt-6 max-w-2xl text-lg leading-relaxed text-[#a1a1a6]">
+        <p className="mt-6 max-w-2xl text-lg leading-relaxed text-[var(--mkt-text-2)]">
           ReconIQ is an enterprise-grade platform built to modernise how finance teams run reconciliation — from cash and securities to intercompany, GL, and complex multi-party flows.
         </p>
 
         <section className="mt-16">
           <h2 className="font-display text-2xl font-semibold">Our mission</h2>
-          <p className="mt-3 leading-relaxed text-[#a1a1a6]">
+          <p className="mt-3 leading-relaxed text-[var(--mkt-text-2)]">
             To retire the batch-era reconciliation stack and replace it with an intelligent control plane where breaks explain themselves, remediation is proposed by AI and approved by humans, and every action is sealed in a hash-chained audit trail.
           </p>
         </section>
@@ -64,15 +64,15 @@ function About() {
           {PRINCIPLES.map((p) => (
             <div
               key={p.title}
-              className="rounded-2xl border border-white/10 bg-[#161617] p-6"
+              className="rounded-2xl border border-[var(--mkt-line)] bg-[var(--mkt-surface)] p-6"
             >
-              <div className="grid h-10 w-10 place-items-center rounded-lg border border-white/10 bg-white/5">
-                <p.icon className="h-5 w-5 text-[#2997ff]" />
+              <div className="grid h-10 w-10 place-items-center rounded-lg border border-[var(--mkt-line)] bg-[var(--mkt-surface-2)]">
+                <p.icon className="h-5 w-5 text-[var(--mkt-accent)]" />
               </div>
               <h3 className="mt-4 font-display text-lg font-semibold">
                 {p.title}
               </h3>
-              <p className="mt-2 text-sm leading-relaxed text-[#a1a1a6]">
+              <p className="mt-2 text-sm leading-relaxed text-[var(--mkt-text-2)]">
                 {p.body}
               </p>
             </div>
@@ -81,34 +81,34 @@ function About() {
 
         <section className="mt-16">
           <h2 className="font-display text-2xl font-semibold">How we work</h2>
-          <p className="mt-3 leading-relaxed text-[#a1a1a6]">
+          <p className="mt-3 leading-relaxed text-[var(--mkt-text-2)]">
             The best way to see how we work is in the product itself. ReconIQ is live — you can open the working demo, run a reconciliation, and inspect the audit trail before you ever speak to us. When you do evaluate with us, you work directly with the team that builds the platform.
           </p>
           <div className="mt-6">
             <a
               href={appUrl("/auth")}
-              className="inline-flex items-center gap-2 text-sm font-semibold text-[#2997ff] hover:underline"
+              className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--mkt-accent)] hover:underline"
             >
               Try the live product <ArrowRight className="h-4 w-4" />
             </a>
           </div>
         </section>
 
-        <section className="mt-16 rounded-2xl border border-white/10 bg-[#161617] p-8">
+        <section className="mt-16 rounded-2xl border border-[var(--mkt-line)] bg-[var(--mkt-surface)] p-8">
           <h2 className="font-display text-xl font-semibold">Talk to us</h2>
-          <p className="mt-2 text-sm leading-relaxed text-[#a1a1a6]">
+          <p className="mt-2 text-sm leading-relaxed text-[var(--mkt-text-2)]">
             Whether you're evaluating a platform replacement, running a pilot, or exploring an AI overlay on your existing stack — we'd like to hear from you.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <Link
               to="/book-demo"
-              className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-black transition hover:bg-white/85"
+              className="inline-flex items-center gap-2 rounded-full bg-[var(--mkt-btn-bg)] px-5 py-2.5 text-sm font-semibold text-[var(--mkt-btn-text)] transition hover:opacity-85"
             >
               Book a demo <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
               to="/contact"
-              className="inline-flex items-center gap-2 rounded-full border border-white/20 px-5 py-2.5 text-sm font-semibold text-[#f5f5f7] transition hover:bg-white/10"
+              className="inline-flex items-center gap-2 rounded-full border border-[var(--mkt-line-strong)] px-5 py-2.5 text-sm font-semibold text-[var(--mkt-text)] transition hover:bg-[var(--mkt-surface-2)]"
             >
               Contact us
             </Link>

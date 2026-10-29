@@ -146,7 +146,7 @@ function escapeHtml(s: string): string {
 }
 
 /** Owner-approved raster master; adjacent brand text remains if mail clients block remote images. */
-const APPROVED_LOGO_URL = `${BRAND.siteUrl}/fv-monogram.svg`
+const APPROVED_LOGO_URL = `${BRAND.siteUrl}/rq-seal.svg`
 
 type EmailStep = { title: string; detail: string }
 
@@ -700,7 +700,7 @@ async function handle(req: Request): Promise<Response> {
   }
 
   const zeptoToken = Deno.env.get('ZEPTO_MAIL_API_TOKEN')
-  const fromHeader = Deno.env.get('FVI_EMAIL_FROM') ?? 'ReconIQ <noreply@reconiq.example>'
+  const fromHeader = Deno.env.get('FVI_EMAIL_FROM') ?? 'ReconIQ <noreply@reconintelligence.app>'
   const replyHeader = Deno.env.get('FVI_EMAIL_REPLY_TO')
 
   if (!zeptoToken) {

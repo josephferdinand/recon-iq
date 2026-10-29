@@ -4,12 +4,12 @@ import { renderBrandedQueueEmail, signupAdmissionNotice } from "@/lib/email-temp
 describe("queued email branding", () => {
   it("uses the exact approved logo and escapes notification data", () => {
     const html = renderBrandedQueueEmail("Admission <approved>", "Hello & welcome\nReview <request>");
-    expect(html).toContain("/fv-monogram.svg");
-    expect(html).toContain("alt=\"ReconIQ\"");
+    expect(html).toContain("https://reconintelligence.app/rq-seal.svg");
+    expect(html).toContain("alt=\"ReconIQ monogram\"");
     expect(html).toContain("Admission &lt;approved&gt;");
     expect(html).toContain("Hello &amp; welcome<br />Review &lt;request&gt;");
     expect(html).not.toContain("<request>");
-    expect(html).not.toContain("fv-monogram.svg");
+    expect(html).not.toContain("#102743"); // retired navy queue shell must not return
   });
 });
 

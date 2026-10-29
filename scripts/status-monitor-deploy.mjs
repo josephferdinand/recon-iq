@@ -1,6 +1,6 @@
 import fs from 'node:fs';import path from 'node:path';import crypto from 'node:crypto';
 import{credentials,cf,projectKeys,ACCOUNT,OUT,save,sha}from './status-monitor-operator.mjs';
-const NAME='fvi-status-monitor',KV_TITLE='FVI_STATUS_MONITOR_20261025',DOMAIN='status.reconiq.example';
+const NAME='rq-status-monitor',KV_TITLE='FVI_STATUS_MONITOR_20261025',DOMAIN='status.reconiq.example';
 const accessPath='./LOCAL_USER/AppData/Local/FVI-QA-Private-20260925/status-monitor-20261025/operator-access.json';
 async function listNamespaces(keys){const out=[];for(let page=1;page<=10;page++){const rows=await cf('/accounts/'+ACCOUNT+'/storage/kv/namespaces?per_page=100&page='+page,keys);out.push(...rows);if(rows.length<100)return out;}throw Error('Namespace registry exceeds verified page bound');}
 export async function deploy(){const keys=credentials();const verified=await cf('/accounts/'+ACCOUNT,keys);if(verified.id!==ACCOUNT)throw Error('Account identity mismatch');

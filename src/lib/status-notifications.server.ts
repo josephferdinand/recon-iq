@@ -29,7 +29,7 @@ export async function deliverConfirmedStatusUpdate(event: unknown, dependencies:
   const text = `${incident.title}\n${incident.status}\n${incident.summary}\nEvent: ${incident.occurred_at}\nPublished: ${incident.published_at}\nhttps://status.reconiq.example/`;
   const request: ZeptoSendRequest = { from: dependencies.zepto.from, to: [{ email: consent.email }], subject: `ReconIQ status: ${incident.title}`,
     textBody: text, htmlBody: `<h1>${escape(incident.title)}</h1><p>${escape(incident.status)}</p><p>${escape(incident.summary)}</p><p>Event: ${escape(incident.occurred_at)}</p><p>Published: ${escape(incident.published_at)}</p><p><a href="https://status.reconiq.example/">View ReconIQ status</a></p>`,
-    clientReference: `fvi-status-${incident.id}-${incident.version}`, trackClicks: false, trackOpens: false };
+    clientReference: `rq-status-${incident.id}-${incident.version}`, trackClicks: false, trackOpens: false };
   let providerReference: string;
   try {
     const receipt = await (dependencies.send ?? sendViaZeptoMail)(request, { apiToken: dependencies.zepto.apiToken, apiBase: dependencies.zepto.apiBase });

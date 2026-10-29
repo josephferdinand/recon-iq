@@ -1,5 +1,5 @@
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
-import { FviApprovedLogo } from "@/components/fvi-approved-logo";
+import { RQApprovedLogo } from "@/components/rq-approved-logo";
 import { BackButton } from "@/components/back-button";
 import { MarketingFooter } from "@/components/marketing-footer";
 
@@ -30,21 +30,21 @@ export const Route = createFileRoute("/developers")({
 
 function DevelopersLayout() {
   return (
-    <div className="min-h-screen bg-black text-[#f5f5f7]">
-      <header className="sticky top-0 z-30 border-b border-white/10 bg-black/85 backdrop-blur">
+    <div className="min-h-screen bg-[var(--mkt-bg)] text-[var(--mkt-text)] transition-colors duration-300">
+      <header className="sticky top-0 z-30 border-b border-[var(--mkt-line)] bg-[var(--mkt-header-bg)] backdrop-blur">
         <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-6">
           <Link to="/" className="flex items-center gap-2">
-            <FviApprovedLogo className="h-11 w-11 rounded-sm" />
+            <RQApprovedLogo className="h-11 w-11 rounded-sm" />
             <span className="font-display text-sm font-semibold">ReconIQ · Developers</span>
           </Link>
-          <nav aria-label="Developers" className="hidden items-center gap-5 text-xs text-[#a1a1a6] md:flex">
-            <Link to="/developers" activeOptions={{ exact: true }} activeProps={{ className: "text-white font-medium" }} className="hover:text-white">Overview</Link>
-            <Link to="/developers/api-reference" activeProps={{ className: "text-white font-medium" }} className="hover:text-white">API Reference</Link>
-            <Link to="/developers/guides" activeProps={{ className: "text-white font-medium" }} className="hover:text-white">Guides</Link>
-            <Link to="/developers/changelog" activeProps={{ className: "text-white font-medium" }} className="hover:text-white">Changelog</Link>
-            <Link to="/security" className="hover:text-white">Security</Link>
+          <nav aria-label="Developers" className="hidden items-center gap-5 text-xs text-[var(--mkt-text-2)] md:flex">
+            <Link to="/developers" activeOptions={{ exact: true }} activeProps={{ className: "text-[var(--mkt-text)] font-medium" }} className="hover:text-[var(--mkt-text)]">Overview</Link>
+            <Link to="/developers/api-reference" activeProps={{ className: "text-[var(--mkt-text)] font-medium" }} className="hover:text-[var(--mkt-text)]">API Reference</Link>
+            <Link to="/developers/guides" activeProps={{ className: "text-[var(--mkt-text)] font-medium" }} className="hover:text-[var(--mkt-text)]">Guides</Link>
+            <Link to="/developers/changelog" activeProps={{ className: "text-[var(--mkt-text)] font-medium" }} className="hover:text-[var(--mkt-text)]">Changelog</Link>
+            <Link to="/security" className="hover:text-[var(--mkt-text)]">Security</Link>
           </nav>
-          <BackButton fallbackTo="/" label="Back" className="border-white/20 bg-transparent text-xs text-[#f5f5f7] hover:border-white/40 hover:bg-white/10 hover:text-white" />
+          <BackButton fallbackTo="/" label="Back" className="border-[var(--mkt-line-strong)] bg-transparent text-xs text-[var(--mkt-text)] hover:border-[var(--mkt-line-strong)] hover:bg-[var(--mkt-surface-2)] hover:text-[var(--mkt-text)]" />
         </div>
       </header>
       <Outlet />

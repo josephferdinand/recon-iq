@@ -793,7 +793,7 @@ function OidcFormSection({
               redirect_uris: e.target.value.split("\n").map((s) => s.trim()).filter(Boolean),
             })
           }
-          placeholder={`https://app.reconiq.example/auth/callback\nhttps://${editing.tenant_id ? "tenant" : "app"}.reconiq.example/auth/callback`}
+          placeholder={"https://reconintelligence.app/auth/callback"}
         />
         <p className="text-xs text-muted-foreground">
           Register each of these URLs in the IdP's client configuration exactly as shown.

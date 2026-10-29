@@ -98,7 +98,7 @@ async function processSignupEvents() {
         const reference = `${event.idempotency_key}-${index}`;
         const result = await sendViaZeptoMail({
           to: [{ email: recipient.email }],
-          from: { email: "noreply@reconiq.example", name: "ReconIQ" },
+          from: { email: "notifications@reconintelligence.app", name: "ReconIQ" },
           subject: notice.subject,
           htmlBody: renderBrandedQueueEmail(notice.subject, notice.body),
           textBody: `${notice.subject}\n\n${notice.body}`,
@@ -176,7 +176,7 @@ async function processQueue() {
       const result = await sendViaZeptoMail(
         {
           to: [{ email: payload.to }],
-          from: { email: "noreply@reconiq.example", name: "ReconIQ" },
+          from: { email: "notifications@reconintelligence.app", name: "ReconIQ" },
           subject: payload.subject,
           htmlBody: renderBrandedQueueEmail(payload.subject, payload.body),
           textBody: `${payload.subject}\n\n${payload.body}`,

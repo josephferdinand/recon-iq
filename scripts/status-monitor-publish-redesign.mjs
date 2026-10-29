@@ -1,5 +1,5 @@
 import fs from'node:fs';import{credentials,cf,ACCOUNT,save,sha}from'./status-monitor-operator.mjs';
-const keys=credentials(),worker='fvi-status-monitor',out='docs/evidence/FVI_STATUS_MONITOR_RELEASE_2026-10-25';
+const keys=credentials(),worker='rq-status-monitor',out='docs/evidence/FVI_STATUS_MONITOR_RELEASE_2026-10-25';
 const preflight=JSON.parse(fs.readFileSync(out+'/REDESIGN-PREFLIGHT.json','utf8'));const before=await cf('/accounts/'+ACCOUNT+'/workers/scripts/'+worker+'/settings',keys);const schedules=await cf('/accounts/'+ACCOUNT+'/workers/scripts/'+worker+'/schedules',keys);if(JSON.stringify(schedules)!==JSON.stringify(preflight.schedules))throw Error('Schedule drift: inspect before publishing');
 const namespace=before.bindings.find(x=>x.name==='STATUS_STORE');if(!namespace||!['PROD_PUBLIC_KEY','DEV_PUBLIC_KEY','MONITOR_ADMIN_TOKEN'].every(name=>before.bindings.some(x=>x.name===name&&x.type==='secret_text')))throw Error('Binding drift');
 const names=['index.mjs','refined-page.mjs','view-model.mjs','brand-assets.mjs'];const sources=names.map(name=>({name,bytes:fs.readFileSync('workers/status-monitor/src/'+name)}));

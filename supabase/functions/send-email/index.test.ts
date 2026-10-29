@@ -36,7 +36,7 @@ Deno.test("renders the complete password-only dual-theme email family", () => {
     assert(rendered.html.includes("prefers-color-scheme: dark"), `${action} lacks dark-mode CSS`);
     assert(rendered.html.includes("Secure message"), `${action} lacks secure-message utility bar`);
     assert(
-      rendered.html.includes('src="https://app.reconiq.example/fv-monogram.svg"'),
+      rendered.html.includes('src="https://app.reconiq.example/rq-seal.svg"'),
       `${action} does not use the approved raster logo URL`,
     );
     assert(

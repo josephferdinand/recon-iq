@@ -36,7 +36,7 @@ const APP_ORIGIN = resolveAppOrigin();
 
 /**
  * Returns an absolute URL pointing at the app surface.
- * Use for cross-domain CTAs (e.g. Sign in → app.reconiq.example/auth).
+ * Use for cross-domain CTAs (e.g. Sign in → reconintelligence.app/auth).
  */
 export function appUrl(path: string): string {
   const clean = path.startsWith("/") ? path : `/${path}`;

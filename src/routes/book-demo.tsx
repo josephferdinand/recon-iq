@@ -80,7 +80,7 @@ export function nextBusinessSlots(anchorDate: string): { date: string; slots: st
 }
 
 const inputClass =
-  "h-11 rounded-xl border-white/15 bg-[#1c1c1f] px-3.5 text-[#f5f5f7] placeholder:text-[#86868b] focus-visible:ring-2 focus-visible:ring-[#2997ff]";
+  "h-11 rounded-xl border-[var(--mkt-line)] bg-[var(--mkt-surface-2)] px-3.5 text-[var(--mkt-text)] placeholder:text-[var(--mkt-text-3)] focus-visible:ring-2 focus-visible:ring-[var(--mkt-accent)]";
 
 function BookDemo() {
   const { slotAnchorDate } = Route.useLoaderData();
@@ -129,22 +129,22 @@ function BookDemo() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-[#f5f5f7]">
+    <div className="min-h-screen bg-[var(--mkt-bg)] text-[var(--mkt-text)] transition-colors duration-300">
       <MarketingNav />
 
       <main>
-        <section className="border-b border-white/10">
+        <section className="border-b border-[var(--mkt-line)]">
           <div className="mx-auto max-w-6xl px-6 pb-14 pt-16 md:pt-24">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#86868b]">Book a demo</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--mkt-text-3)]">Book a demo</p>
             <h1 className="mt-4 max-w-3xl font-display text-4xl font-semibold leading-[1.08] tracking-tight md:text-6xl">
               See ReconIQ with your team.
             </h1>
-            <p className="mt-5 max-w-2xl text-base leading-relaxed text-[#a1a1a6] md:text-lg">
+            <p className="mt-5 max-w-2xl text-base leading-relaxed text-[var(--mkt-text-2)] md:text-lg">
               Pick the format that fits your evaluation stage. We’ll review your request and confirm
               availability by email — or open the live product now and explore it yourself.
             </p>
             <div className="mt-8">
-              <Button asChild variant="outline" className="border-white/20 bg-transparent text-[#f5f5f7] hover:bg-white/10 hover:text-white">
+              <Button asChild variant="outline" className="border-[var(--mkt-line-strong)] bg-transparent text-[var(--mkt-text)] hover:bg-[var(--mkt-surface-2)] hover:text-[var(--mkt-text)]">
                 <a href={appUrl("/auth")}>Open the live product</a>
               </Button>
             </div>
@@ -153,22 +153,22 @@ function BookDemo() {
 
         <section className="mx-auto max-w-6xl px-6 py-16">
           {done ? (
-            <div className="max-w-2xl rounded-3xl border border-white/10 bg-[#161617] p-8">
-              <CheckCircle2 className="h-8 w-8 text-[#2997ff]" />
+            <div className="max-w-2xl rounded-3xl border border-[var(--mkt-line)] bg-[var(--mkt-surface)] p-8">
+              <CheckCircle2 className="h-8 w-8 text-[var(--mkt-accent)]" />
               <h2 className="mt-4 font-display text-2xl font-semibold">Booking request received</h2>
-              <p className="mt-3 text-sm leading-relaxed text-[#a1a1a6]">
+              <p className="mt-3 text-sm leading-relaxed text-[var(--mkt-text-2)]">
                 We received your request for {TYPES.find((t) => t.slug === done.type)?.title} on{" "}
-                <span className="font-medium text-[#f5f5f7]">{done.when}</span>. We’ll confirm availability by email.
+                <span className="font-medium text-[var(--mkt-text)]">{done.when}</span>. We’ll confirm availability by email.
               </p>
-              <p className="mt-4 text-xs leading-relaxed text-[#86868b]">
+              <p className="mt-4 text-xs leading-relaxed text-[var(--mkt-text-3)]">
                 By confirming, you consent to ReconIQ contacting you about this booking. Read our{" "}
-                <Link to="/privacy" className="text-[#2997ff] underline underline-offset-2 hover:text-white">Privacy Notice</Link>.
+                <Link to="/privacy" className="text-[var(--mkt-accent)] underline underline-offset-2 hover:text-[var(--mkt-text)]">Privacy Notice</Link>.
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
-                <Button asChild className="bg-white text-black hover:bg-white/85">
+                <Button asChild className="bg-[var(--mkt-btn-bg)] text-[var(--mkt-btn-text)] hover:opacity-85">
                   <Link to="/">Return home</Link>
                 </Button>
-                <Button asChild variant="outline" className="border-white/20 bg-transparent text-[#f5f5f7] hover:bg-white/10 hover:text-white">
+                <Button asChild variant="outline" className="border-[var(--mkt-line-strong)] bg-transparent text-[var(--mkt-text)] hover:bg-[var(--mkt-surface-2)] hover:text-[var(--mkt-text)]">
                   <Link to="/contact">Contact sales</Link>
                 </Button>
               </div>
@@ -176,7 +176,7 @@ function BookDemo() {
           ) : (
             <div className="grid gap-8 md:grid-cols-[1fr_1.4fr]">
               <div className="space-y-3">
-                <p className="text-sm font-medium text-[#f5f5f7]">1. Choose a session type</p>
+                <p className="text-sm font-medium text-[var(--mkt-text)]">1. Choose a session type</p>
                 {TYPES.map((t) => {
                   const active = type === t.slug;
                   return (
@@ -187,30 +187,30 @@ function BookDemo() {
                       aria-pressed={active}
                       className={
                         active
-                          ? "w-full rounded-2xl border border-white bg-white p-4 text-left text-black transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2997ff]"
-                          : "w-full rounded-2xl border border-white/10 bg-[#161617] p-4 text-left transition-colors hover:border-white/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2997ff]"
+                          ? "w-full rounded-2xl border border-[var(--mkt-btn-bg)] bg-[var(--mkt-btn-bg)] p-4 text-left text-[var(--mkt-btn-text)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--mkt-accent)]"
+                          : "w-full rounded-2xl border border-[var(--mkt-line)] bg-[var(--mkt-surface)] p-4 text-left transition-colors hover:border-[var(--mkt-line-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--mkt-accent)]"
                       }
                     >
                       <span className="flex items-center justify-between gap-3">
-                        <span className={active ? "font-medium text-black" : "font-medium text-[#f5f5f7]"}>{t.title}</span>
-                        <span className={active ? "flex items-center gap-1 text-xs text-black/60" : "flex items-center gap-1 text-xs text-[#86868b]"}>
+                        <span className={active ? "font-medium text-[var(--mkt-btn-text)]" : "font-medium text-[var(--mkt-text)]"}>{t.title}</span>
+                        <span className={active ? "flex items-center gap-1 text-xs text-[var(--mkt-btn-text)]/60" : "flex items-center gap-1 text-xs text-[var(--mkt-text-3)]"}>
                           <Clock className="h-3 w-3" /> {t.duration}
                         </span>
                       </span>
-                      <span className={active ? "mt-1 block text-xs text-black/60" : "mt-1 block text-xs text-[#86868b]"}>{t.desc}</span>
+                      <span className={active ? "mt-1 block text-xs text-[var(--mkt-btn-text)]/60" : "mt-1 block text-xs text-[var(--mkt-text-3)]"}>{t.desc}</span>
                     </button>
                   );
                 })}
-                <p className="pt-2 text-xs leading-relaxed text-[#86868b]">
+                <p className="pt-2 text-xs leading-relaxed text-[var(--mkt-text-3)]">
                   Security controls are designed with reference to SOC 2 and ISO 27001 frameworks.
                   ReconIQ does not claim SOC 2 or ISO certification — see the Security page for status.
                 </p>
               </div>
 
-              <form onSubmit={submit} className="h-fit space-y-7 rounded-3xl border border-white/10 bg-[#161617] p-6 md:p-8">
+              <form onSubmit={submit} className="h-fit space-y-7 rounded-3xl border border-[var(--mkt-line)] bg-[var(--mkt-surface)] p-6 md:p-8">
                 <div>
-                  <Label className="mb-2 block text-sm font-medium text-[#f5f5f7]">
-                    <CalendarIcon className="mr-1.5 inline h-4 w-4 text-[#a1a1a6]" /> 2. Choose a date
+                  <Label className="mb-2 block text-sm font-medium text-[var(--mkt-text)]">
+                    <CalendarIcon className="mr-1.5 inline h-4 w-4 text-[var(--mkt-text-2)]" /> 2. Choose a date
                   </Label>
                   <div className="grid grid-cols-5 gap-2">
                     {days.map((d) => {
@@ -226,8 +226,8 @@ function BookDemo() {
                           aria-pressed={active}
                           className={
                             active
-                              ? "rounded-xl border border-white bg-white p-2 text-center text-xs font-medium text-black transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2997ff]"
-                              : "rounded-xl border border-white/15 bg-[#1c1c1f] p-2 text-center text-xs text-[#f5f5f7] transition-colors hover:border-white/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2997ff]"
+                              ? "rounded-xl border border-[var(--mkt-btn-bg)] bg-[var(--mkt-btn-bg)] p-2 text-center text-xs font-medium text-[var(--mkt-btn-text)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--mkt-accent)]"
+                              : "rounded-xl border border-[var(--mkt-line)] bg-[var(--mkt-surface-2)] p-2 text-center text-xs text-[var(--mkt-text)] transition-colors hover:border-[var(--mkt-line-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--mkt-accent)]"
                           }
                         >
                           {new Date(`${d.date}T12:00:00.000Z`).toLocaleDateString("en-GB", {
@@ -244,7 +244,7 @@ function BookDemo() {
 
                 {date ? (
                   <div>
-                    <Label className="mb-2 block text-sm font-medium text-[#f5f5f7]">3. Choose a time <span className="font-normal text-[#86868b]">(your local time)</span></Label>
+                    <Label className="mb-2 block text-sm font-medium text-[var(--mkt-text)]">3. Choose a time <span className="font-normal text-[var(--mkt-text-3)]">(your local time)</span></Label>
                     <div className="flex flex-wrap gap-2">
                       {(days.find((d) => d.date === date)?.slots ?? []).map((s) => {
                         const active = slot === s;
@@ -256,8 +256,8 @@ function BookDemo() {
                             aria-pressed={active}
                             className={
                               active
-                                ? "rounded-full border border-white bg-white px-3.5 py-1.5 text-xs font-medium text-black transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2997ff]"
-                                : "rounded-full border border-white/15 bg-[#1c1c1f] px-3.5 py-1.5 text-xs text-[#f5f5f7] transition-colors hover:border-white/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2997ff]"
+                                ? "rounded-full border border-[var(--mkt-btn-bg)] bg-[var(--mkt-btn-bg)] px-3.5 py-1.5 text-xs font-medium text-[var(--mkt-btn-text)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--mkt-accent)]"
+                                : "rounded-full border border-[var(--mkt-line)] bg-[var(--mkt-surface-2)] px-3.5 py-1.5 text-xs text-[var(--mkt-text)] transition-colors hover:border-[var(--mkt-line-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--mkt-accent)]"
                             }
                           >
                             {s}
@@ -267,11 +267,11 @@ function BookDemo() {
                     </div>
                   </div>
                 ) : (
-                  <p className="text-sm text-[#86868b]">Choose a date first — times will appear here.</p>
+                  <p className="text-sm text-[var(--mkt-text-3)]">Choose a date first — times will appear here.</p>
                 )}
 
                 <div>
-                  <p className="mb-4 text-sm font-medium text-[#f5f5f7]">{date ? "4. Your details" : "3. Your details"}</p>
+                  <p className="mb-4 text-sm font-medium text-[var(--mkt-text)]">{date ? "4. Your details" : "3. Your details"}</p>
                   <div className="grid gap-5 md:grid-cols-2">
                     <OnyxField name="first_name" label="First name" required autoComplete="given-name" />
                     <OnyxField name="last_name" label="Last name" required autoComplete="family-name" />
@@ -284,7 +284,7 @@ function BookDemo() {
                 </div>
 
                 <div>
-                  <Label htmlFor="message" className="mb-1.5 block text-sm font-medium text-[#f5f5f7]">
+                  <Label htmlFor="message" className="mb-1.5 block text-sm font-medium text-[var(--mkt-text)]">
                     Anything we should prepare?
                   </Label>
                   <Textarea
@@ -292,16 +292,16 @@ function BookDemo() {
                     name="message"
                     rows={3}
                     placeholder="For example, the reconciliation types or systems you want to cover."
-                    className="rounded-xl border-white/15 bg-[#1c1c1f] px-3.5 py-3 text-[#f5f5f7] placeholder:text-[#86868b] focus-visible:ring-2 focus-visible:ring-[#2997ff]"
+                    className="rounded-xl border-[var(--mkt-line)] bg-[var(--mkt-surface-2)] px-3.5 py-3 text-[var(--mkt-text)] placeholder:text-[var(--mkt-text-3)] focus-visible:ring-2 focus-visible:ring-[var(--mkt-accent)]"
                   />
                 </div>
 
                 <div>
-                  <Button type="submit" size="lg" disabled={submitting || !date || !slot} className="bg-white text-black hover:bg-white/85 disabled:opacity-40">
+                  <Button type="submit" size="lg" disabled={submitting || !date || !slot} className="bg-[var(--mkt-btn-bg)] text-[var(--mkt-btn-text)] hover:opacity-85 disabled:opacity-40">
                     {submitting ? "Booking…" : "Confirm booking"}
                   </Button>
                   {!date || !slot ? (
-                    <p className="mt-3 text-xs text-[#86868b]">Choose a date and time above to continue.</p>
+                    <p className="mt-3 text-xs text-[var(--mkt-text-3)]">Choose a date and time above to continue.</p>
                   ) : null}
                 </div>
               </form>
@@ -332,12 +332,12 @@ function OnyxField({
 }) {
   return (
     <div>
-      <Label htmlFor={name} className="mb-1.5 block text-sm font-medium text-[#f5f5f7]">
+      <Label htmlFor={name} className="mb-1.5 block text-sm font-medium text-[var(--mkt-text)]">
         {label}
         {required ? " *" : ""}
       </Label>
       <Input id={name} name={name} type={type} required={required} autoComplete={autoComplete} className={inputClass} aria-describedby={helper ? `${name}-helper` : undefined} />
-      {helper ? <p id={`${name}-helper`} className="mt-1.5 text-xs text-[#86868b]">{helper}</p> : null}
+      {helper ? <p id={`${name}-helper`} className="mt-1.5 text-xs text-[var(--mkt-text-3)]">{helper}</p> : null}
     </div>
   );
 }

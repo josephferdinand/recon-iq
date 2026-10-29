@@ -75,7 +75,7 @@ export interface RenderedAuthEmail {
 }
 
 const SITE_NAME = 'ReconIQ'
-const SITE_URL = process.env.VITE_PUBLIC_APP_URL ?? 'https://app.reconiq.example'
+const SITE_URL = process.env.VITE_PUBLIC_APP_URL ?? 'https://reconintelligence.app'
 
 /**
  * Render the appropriate ReconIQ template for a given Supabase auth event.

@@ -1,17 +1,17 @@
 import { cn } from "@/lib/utils";
-import { FVMonogram } from "@/components/fv-monogram";
+import { RQSeal } from "@/components/rq-seal";
 
-type FviApprovedLogoProps = {
+type RQApprovedLogoProps = {
   className?: string;
 };
 
 /** Renders the ReconIQ brand seal (RQ monogram) at the requested size. */
-export function FviApprovedLogo({
+export function RQApprovedLogo({
   className,
-}: FviApprovedLogoProps) {
+}: RQApprovedLogoProps) {
   return (
     <span className={cn("block aspect-square h-16 w-16 shrink-0", className)}>
-      <FVMonogram className="block h-full w-full" />
+      <RQSeal className="block h-full w-full" />
       <span className="sr-only">ReconIQ</span>
     </span>
   );

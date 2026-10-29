@@ -21,7 +21,7 @@ function references(value: unknown): string[] {
 describe("queued dynamic environment package contract", () => {
   it("remains unpublished, without a server URL or enabled transport", () => {
     expect(proposed.openapi).toBe("3.1.0");
-    expect(proposed["x-fvi-status"]).toBe("proposed-not-implemented");
+    expect(proposed["x-rq-status"]).toBe("proposed-not-implemented");
     expect(proposed["x-fvi-transport-enabled"]).toBe(false);
     expect(proposed.servers).toBeUndefined();
     expect(operations).toHaveLength(6);

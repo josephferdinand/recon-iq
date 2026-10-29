@@ -66,19 +66,19 @@ function SolutionRoute() {
 
 function SolutionNotFound() {
   return (
-    <div className="min-h-screen bg-black text-[#f5f5f7]">
+    <div className="min-h-screen bg-[var(--mkt-bg)] text-[var(--mkt-text)] transition-colors duration-300">
       <MarketingNav />
       <main className="mx-auto max-w-2xl px-6 py-32 text-center">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#86868b]">Solutions</p>
+        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--mkt-text-3)]">Solutions</p>
         <h1 className="mt-4 font-display text-3xl font-medium tracking-tight">Nothing To Display Yet</h1>
-        <p className="mt-3 text-sm leading-relaxed text-[#a1a1a6]">
+        <p className="mt-3 text-sm leading-relaxed text-[var(--mkt-text-2)]">
           We couldn&apos;t find that solution page — it may have moved. Browse the overview to
           find the workflow closest to yours.
         </p>
         <div className="mt-8">
           <Link
             to="/solutions"
-            className="inline-flex items-center justify-center rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black transition hover:bg-white/85"
+            className="inline-flex items-center justify-center rounded-full bg-[var(--mkt-btn-bg)] px-5 py-2.5 text-sm font-medium text-[var(--mkt-btn-text)] transition hover:opacity-85"
           >
             View all solutions
           </Link>
@@ -91,18 +91,18 @@ function SolutionNotFound() {
 
 function SolutionErrorComponent() {
   return (
-    <div className="min-h-screen bg-black text-[#f5f5f7]">
+    <div className="min-h-screen bg-[var(--mkt-bg)] text-[var(--mkt-text)] transition-colors duration-300">
       <MarketingNav />
       <main className="mx-auto max-w-2xl px-6 py-32 text-center">
         <h1 className="font-display text-3xl font-medium tracking-tight">Something Didn&apos;t Go As Planned</h1>
-        <p className="mt-3 text-sm leading-relaxed text-[#a1a1a6]">
+        <p className="mt-3 text-sm leading-relaxed text-[var(--mkt-text-2)]">
           We couldn&apos;t load this page just now. Please try again in a few moments, or browse the
           solutions overview in the meantime.
         </p>
         <div className="mt-8">
           <Link
             to="/solutions"
-            className="inline-flex items-center justify-center rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black transition hover:bg-white/85"
+            className="inline-flex items-center justify-center rounded-full bg-[var(--mkt-btn-bg)] px-5 py-2.5 text-sm font-medium text-[var(--mkt-btn-text)] transition hover:opacity-85"
           >
             View all solutions
           </Link>

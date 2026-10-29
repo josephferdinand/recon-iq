@@ -550,7 +550,7 @@ export const createPlatformInvitation = createServerFn({ method: "POST" })
     if (data.send_email) {
       try {
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-        const origin = process.env.PUBLIC_APP_URL || "https://app.reconiq.example";
+        const origin = process.env.PUBLIC_APP_URL || "https://reconintelligence.app";
         const { error: mailErr } = await (supabaseAdmin as any).auth.admin.inviteUserByEmail(emailLower, {
           redirectTo: `${origin}/auth`,
           data: {
@@ -657,7 +657,7 @@ export const resendPlatformInvitation = createServerFn({ method: "POST" })
     let email_error: string | null = null;
     try {
       const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-      const origin = process.env.PUBLIC_APP_URL || "https://app.reconiq.example";
+      const origin = process.env.PUBLIC_APP_URL || "https://reconintelligence.app";
       const { error: mailErr } = await (supabaseAdmin as any).auth.admin.inviteUserByEmail((inv as any).email, {
         redirectTo: `${origin}/auth`,
         data: { fvi_platform_role: (inv as any).role, fvi_invite_kind: "platform" },

@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 
 import { renderAuthEmail } from "../src/lib/email-templates/render";
 
-const logoUrl = "https://app.reconiq.example/fv-monogram.svg";
+const logoUrl = "https://reconintelligence.app/rq-seal.svg";
 const confirmationUrl = "https://app.reconiq.example/auth/confirm?token=mail-proof&type=signup";
 
 const actions = [
@@ -18,7 +18,7 @@ const actions = [
 
 describe("transactional auth email approved logo", () => {
   it("keeps the ReconIQ monogram master available to the email build", () => {
-    const logo = readFileSync("public/fv-monogram.svg", "utf8");
+    const logo = readFileSync("public/rq-seal.svg", "utf8");
     expect(logo).toContain("<svg");
     expect(logo).toContain(">RQ</text>");
   });
@@ -39,8 +39,8 @@ describe("transactional auth email approved logo", () => {
       });
 
       expect(rendered.html).toContain(`src="${logoUrl}"`);
-      expect(rendered.html).toContain('width="128"');
-      expect(rendered.html).toContain('height="128"');
+      expect(rendered.html).toContain('width="44"');
+      expect(rendered.html).toContain('height="44"');
       expect(rendered.html).toContain('alt="ReconIQ monogram"');
       // Adjacent semantic text remains visible if the email client blocks images.
       expect(rendered.html).toContain("ReconIQ");

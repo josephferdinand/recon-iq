@@ -4,8 +4,8 @@ import { getPublicCorsOrigin as getCorsOrigin } from "@/lib/public-cors";
 import { getRuntimeEnv } from "@/lib/runtime-env.server";
 
 const DEFAULT_NOTIFY_RECIPIENTS = [
-  "support@reconiq.example",
-  "joseph.ferdinand@reconiq.example",
+  "support@reconintelligence.app",
+  "joseph.ferdinand@reconintelligence.app",
 ];
 
 export function parseNotifyRecipients(configured: string | undefined): string[] {
@@ -163,7 +163,7 @@ export const Route = createFileRoute("/api/public/mkt-leads")({
             try {
               const { error: activityError } = await supabaseAdmin.from("mkt_lead_activity").insert({
                 lead_id: lead.id,
-                action: `${recipient === "support@reconiq.example" ? "support_notification" : "lead_notification"}.${queued ? "queued" : "failed"}`,
+                action: `${recipient === "support@reconintelligence.app" ? "support_notification" : "lead_notification"}.${queued ? "queued" : "failed"}`,
                 details: { channel: "email", recipient, queue: "transactional_emails" },
               });
               if (activityError) notificationActivityRecorded = false;

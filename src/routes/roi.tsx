@@ -43,14 +43,14 @@ export const Route = createFileRoute("/roi")({
 
 /* ------------------------------------------------------------------ */
 
-const CARD_BG = "#161617";
-const CARD_BORDER = "1px solid rgba(255,255,255,0.1)";
-const TILE_BG = "#1c1c1f";
-const TILE_BORDER = "1px solid rgba(255,255,255,0.1)";
+const CARD_BG = "var(--mkt-surface)";
+const CARD_BORDER = "1px solid var(--mkt-line)";
+const TILE_BG = "var(--mkt-surface-2)";
+const TILE_BORDER = "1px solid var(--mkt-line)";
 
 function Kicker({ children }: { children: React.ReactNode }) {
   return (
-    <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#86868b]">
+    <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--mkt-text-3)]">
       {children}
     </div>
   );
@@ -59,10 +59,10 @@ function Kicker({ children }: { children: React.ReactNode }) {
 function LabelRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-baseline justify-between gap-4">
-      <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#86868b]">
+      <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--mkt-text-3)]">
         {label}
       </span>
-      <span className="font-display text-sm tabular-nums text-[#f5f5f7]">
+      <span className="font-display text-sm tabular-nums text-[var(--mkt-text)]">
         {value}
       </span>
     </div>
@@ -119,7 +119,7 @@ function RoiPage() {
   }, [inp]);
 
   return (
-    <div className="relative min-h-screen bg-black text-[#f5f5f7]">
+    <div className="relative min-h-screen bg-[var(--mkt-bg)] text-[var(--mkt-text)] transition-colors duration-300">
       <MarketingNav />
 
       <div className="relative mx-auto max-w-[1200px] px-6 pt-16 pb-24 md:px-10">
@@ -132,16 +132,16 @@ function RoiPage() {
           className="mb-10"
         >
           <div className="mb-3 flex items-center gap-3">
-            <div className="grid h-11 w-11 place-items-center rounded-xl border border-white/10 bg-white/5">
-              <Calculator className="h-5 w-5 text-[#2997ff]" />
+            <div className="grid h-11 w-11 place-items-center rounded-xl border border-[var(--mkt-line)] bg-[var(--mkt-surface-2)]">
+              <Calculator className="h-5 w-5 text-[var(--mkt-accent)]" />
             </div>
             <Kicker>ROI Estimator · v1</Kicker>
           </div>
 
-          <h1 className="font-display text-4xl font-medium leading-[1.05] tracking-tight text-[#f5f5f7] md:text-6xl">
+          <h1 className="font-display text-4xl font-medium leading-[1.05] tracking-tight text-[var(--mkt-text)] md:text-6xl">
             Model your reconciliation ROI.
           </h1>
-          <p className="mt-4 max-w-[720px] text-[15px] leading-relaxed text-[#a1a1a6] md:text-base">
+          <p className="mt-4 max-w-[720px] text-[15px] leading-relaxed text-[var(--mkt-text-2)] md:text-base">
             A defensible, benchmark-anchored model of the labour, audit, and incident savings from
             moving reconciliation to ReconIQ. Every constant is editable, every
             source cited. Outputs are <strong>indicative</strong> — we validate them on your data
@@ -157,8 +157,8 @@ function RoiPage() {
               onClick={() => setTab(t)}
               className={`rounded-full px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.18em] transition ${
                 tab === t
-                  ? "bg-white text-black"
-                  : "border border-white/15 text-[#a1a1a6] hover:bg-white/10 hover:text-white"
+                  ? "bg-[var(--mkt-btn-bg)] text-[var(--mkt-btn-text)]"
+                  : "border border-[var(--mkt-line)] text-[var(--mkt-text-2)] hover:bg-[var(--mkt-surface-2)] hover:text-[var(--mkt-text)]"
               }`}
             >
               {t === "simple" ? "Simple · 4 inputs" : "Advanced · full model"}
@@ -167,13 +167,13 @@ function RoiPage() {
           <div className="ml-auto flex items-center gap-2">
             <button
               onClick={() => setInp(ROI_DEFAULTS)}
-              className="rounded-full border border-white/15 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#a1a1a6] transition hover:bg-white/10 hover:text-white"
+              className="rounded-full border border-[var(--mkt-line)] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--mkt-text-2)] transition hover:bg-[var(--mkt-surface-2)] hover:text-[var(--mkt-text)]"
             >
               Reset defaults
             </button>
             <button
               onClick={copyShare}
-              className="inline-flex items-center gap-1.5 rounded-full border border-white/15 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#f5f5f7] transition hover:bg-white/10"
+              className="inline-flex items-center gap-1.5 rounded-full border border-[var(--mkt-line)] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--mkt-text)] transition hover:bg-[var(--mkt-surface-2)]"
             >
               <Share2 className="h-3.5 w-3.5" />
               {copied ? "Link copied" : "Share model"}
@@ -188,7 +188,7 @@ function RoiPage() {
             style={{ background: CARD_BG, border: CARD_BORDER }}
           >
             <div className="mb-5 flex items-center gap-2">
-              <Sliders className="h-4 w-4 text-[#2997ff]" />
+              <Sliders className="h-4 w-4 text-[var(--mkt-accent)]" />
               <Kicker>Inputs</Kicker>
             </div>
 
@@ -224,7 +224,7 @@ function RoiPage() {
 
               {tab === "advanced" && (
                 <>
-                  <div className="my-2 h-px bg-white/10" />
+                  <div className="my-2 h-px bg-[var(--mkt-surface-2)]" />
                   <Slider
                     label="Fully-loaded FTE cost / yr"
                     value={inp.fteFullyLoadedUsd}
@@ -278,7 +278,7 @@ function RoiPage() {
               )}
             </div>
 
-            <p className="mt-6 text-[11px] text-[#86868b]">
+            <p className="mt-6 text-[11px] text-[var(--mkt-text-3)]">
               Defaults from public industry benchmarks — see the Assumptions panel below.
             </p>
           </div>
@@ -291,7 +291,7 @@ function RoiPage() {
               style={{ background: CARD_BG, border: CARD_BORDER }}
             >
               <div className="mb-4 flex items-center gap-2">
-                <TrendingUp className="h-4 w-4 text-[#2997ff]" />
+                <TrendingUp className="h-4 w-4 text-[var(--mkt-accent)]" />
                 <Kicker>Estimated annual impact · range</Kicker>
               </div>
 
@@ -341,7 +341,7 @@ function RoiPage() {
                 <LabelRow label="Incident savings / yr" value={fmtUsd(out.mid.incidentSavingsYr)} />
               </div>
 
-              <p className="mt-5 text-[11px] leading-relaxed text-[#86868b]">
+              <p className="mt-5 text-[11px] leading-relaxed text-[var(--mkt-text-3)]">
                 * Indicative. Ranges reflect ReconIQ target auto-match {(inp.fviAutoMatchLow * 100).toFixed(0)}%
                 – {(inp.fviAutoMatchHigh * 100).toFixed(0)}%. Actual performance is validated on your data during a POC.
               </p>
@@ -353,7 +353,7 @@ function RoiPage() {
               style={{ background: CARD_BG, border: CARD_BORDER }}
             >
               <div className="mb-4 flex items-center gap-2">
-                <BarChart3 className="h-4 w-4 text-[#2997ff]" />
+                <BarChart3 className="h-4 w-4 text-[var(--mkt-accent)]" />
                 <Kicker>Sensitivity · savings vs ReconIQ auto-match %</Kicker>
               </div>
               <div className="h-[240px] w-full">
@@ -361,26 +361,26 @@ function RoiPage() {
                   <AreaChart data={sensitivity} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                     <defs>
                       <linearGradient id="gAccent" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#2997ff" stopOpacity={0.35} />
-                        <stop offset="100%" stopColor="#2997ff" stopOpacity={0} />
+                        <stop offset="0%" stopColor="var(--mkt-accent)" stopOpacity={0.35} />
+                        <stop offset="100%" stopColor="var(--mkt-accent)" stopOpacity={0} />
                       </linearGradient>
                     </defs>
-                    <CartesianGrid stroke="rgba(255,255,255,0.06)" vertical={false} />
+                    <CartesianGrid stroke="var(--mkt-line)" vertical={false} />
                     <XAxis
                       dataKey="match"
-                      tick={{ fill: "#86868b", fontSize: 11 }}
+                      tick={{ fill: "var(--mkt-text-3)", fontSize: 11 }}
                       tickFormatter={(v: number) => `${v}%`}
                     />
                     <YAxis
-                      tick={{ fill: "#86868b", fontSize: 11 }}
+                      tick={{ fill: "var(--mkt-text-3)", fontSize: 11 }}
                       tickFormatter={(v: number) => `$${(v / 1_000_000).toFixed(1)}M`}
                     />
                     <RTooltip
                       contentStyle={{
-                        background: "#161617",
-                        border: "1px solid rgba(255,255,255,0.1)",
+                        background: "var(--mkt-surface)",
+                        border: "1px solid var(--mkt-line)",
                         borderRadius: 12,
-                        color: "#f5f5f7",
+                        color: "var(--mkt-text)",
                       }}
                       formatter={(v: number) => [fmtUsd(v), "Total savings / yr"]}
                       labelFormatter={(v: number) => `ReconIQ match ${v}%`}
@@ -388,14 +388,14 @@ function RoiPage() {
                     <Area
                       type="monotone"
                       dataKey="savings"
-                      stroke="#2997ff"
+                      stroke="var(--mkt-accent)"
                       strokeWidth={2}
                       fill="url(#gAccent)"
                     />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
-              <p className="mt-3 text-[11px] text-[#86868b]">
+              <p className="mt-3 text-[11px] text-[var(--mkt-text-3)]">
                 Every 1% lift in auto-match rate compounds against your annual transaction volume.
               </p>
             </div>
@@ -412,30 +412,30 @@ function RoiPage() {
             className="flex w-full items-center justify-between p-6 md:p-8"
           >
             <div className="flex items-center gap-2">
-              <Info className="h-4 w-4 text-[#2997ff]" />
+              <Info className="h-4 w-4 text-[var(--mkt-accent)]" />
               <Kicker>Assumptions & sources</Kicker>
             </div>
             {showAssumptions ? (
-              <ChevronUp className="h-4 w-4 text-[#f5f5f7]" />
+              <ChevronUp className="h-4 w-4 text-[var(--mkt-text)]" />
             ) : (
-              <ChevronDown className="h-4 w-4 text-[#f5f5f7]" />
+              <ChevronDown className="h-4 w-4 text-[var(--mkt-text)]" />
             )}
           </button>
           {showAssumptions && (
-            <div className="border-t border-white/10 px-6 pb-8 md:px-8">
+            <div className="border-t border-[var(--mkt-line)] px-6 pb-8 md:px-8">
               <ul className="mt-5 grid gap-3 md:grid-cols-2">
                 {ROI_SOURCES.map((s) => (
                   <li key={s.label} className="rounded-xl p-4" style={{ background: TILE_BG, border: TILE_BORDER }}>
-                    <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#86868b]">
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--mkt-text-3)]">
                       {s.label}
                     </div>
-                    <div className="mt-1 text-[13px] leading-relaxed text-[#a1a1a6]">
+                    <div className="mt-1 text-[13px] leading-relaxed text-[var(--mkt-text-2)]">
                       {s.source}
                     </div>
                   </li>
                 ))}
               </ul>
-              <p className="mt-5 text-[12px] leading-relaxed text-[#a1a1a6]">
+              <p className="mt-5 text-[12px] leading-relaxed text-[var(--mkt-text-2)]">
                 ReconIQ target auto-match ({(B.fviAutoMatchPct.low * 100).toFixed(0)}–{(B.fviAutoMatchPct.high * 100).toFixed(0)}%) is a design target validated during POC on your data.
                 ReconIQ does not publish production customer metrics; all figures on this page are model outputs, not observed benchmarks.
               </p>
@@ -449,7 +449,7 @@ function RoiPage() {
         }} />
 
         {/* Trust footer */}
-        <p className="mt-10 text-center text-[11px] leading-relaxed text-[#86868b]">
+        <p className="mt-10 text-center text-[11px] leading-relaxed text-[var(--mkt-text-3)]">
           Indicative model only — figures are estimates from the inputs and benchmarks above,
           not observed customer results. ReconIQ does not hold SOC 2 or ISO 27001 certification;
           controls are designed with reference to those frameworks.
@@ -471,14 +471,14 @@ function Tile({
 }) {
   return (
     <div className="rounded-2xl p-4" style={{ background: TILE_BG, border: TILE_BORDER }}>
-      <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#86868b]">
-        <span className="text-[#2997ff]">{icon}</span>
+      <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--mkt-text-3)]">
+        <span className="text-[var(--mkt-accent)]">{icon}</span>
         {label}
       </div>
-      <div className="mt-1 font-display text-2xl font-medium tabular-nums text-[#f5f5f7]">
+      <div className="mt-1 font-display text-2xl font-medium tabular-nums text-[var(--mkt-text)]">
         {primary}
       </div>
-      <div className="text-[11px] tabular-nums text-[#86868b]">
+      <div className="text-[11px] tabular-nums text-[var(--mkt-text-3)]">
         {range}
       </div>
     </div>
@@ -494,16 +494,16 @@ function Slider({
   return (
     <div>
       <label className="mb-2 flex items-baseline justify-between gap-3">
-        <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#86868b]">
+        <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--mkt-text-3)]">
           {label}
         </span>
-        <span className="font-display text-sm tabular-nums text-[#f5f5f7]">{display}</span>
+        <span className="font-display text-sm tabular-nums text-[var(--mkt-text)]">{display}</span>
       </label>
       <input
         type="range" min={min} max={max} step={step} value={value}
         aria-label={label}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="w-full accent-[#2997ff]"
+        className="w-full accent-[var(--mkt-accent)]"
       />
     </div>
   );
@@ -518,10 +518,10 @@ function RangeSlider({
   return (
     <div>
       <label className="mb-2 flex items-baseline justify-between gap-3">
-        <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#86868b]">
+        <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--mkt-text-3)]">
           {label}
         </span>
-        <span className="font-display text-sm tabular-nums text-[#f5f5f7]">{low.toFixed(0)}% – {high.toFixed(0)}%</span>
+        <span className="font-display text-sm tabular-nums text-[var(--mkt-text)]">{low.toFixed(0)}% – {high.toFixed(0)}%</span>
       </label>
       <div className="grid gap-2">
         <input
@@ -531,7 +531,7 @@ function RangeSlider({
             const v = Number(e.target.value);
             onChange(Math.min(v, high), high);
           }}
-          className="w-full accent-[#2997ff]"
+          className="w-full accent-[var(--mkt-accent)]"
         />
         <input
           type="range" min={min} max={max} step={step} value={high}
@@ -540,7 +540,7 @@ function RangeSlider({
             const v = Number(e.target.value);
             onChange(low, Math.max(v, low));
           }}
-          className="w-full accent-[#2997ff]"
+          className="w-full accent-[var(--mkt-accent)]"
         />
       </div>
     </div>
@@ -618,23 +618,23 @@ function TailoredCta({
     >
       <div>
         <Kicker>Take it further</Kicker>
-        <h2 className="mt-3 font-display text-2xl font-medium tracking-tight text-[#f5f5f7] md:text-3xl">
+        <h2 className="mt-3 font-display text-2xl font-medium tracking-tight text-[var(--mkt-text)] md:text-3xl">
           Get a tailored business case with your data.
         </h2>
-        <p className="mt-3 text-[14px] leading-relaxed text-[#a1a1a6]">
+        <p className="mt-3 text-[14px] leading-relaxed text-[var(--mkt-text-2)]">
           Our solutions team will validate every constant against a representative slice of your
           reconciliation workload and return a model you can review with your finance and audit teams.
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
           <Link
             to="/book-demo"
-            className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black transition hover:bg-white/85"
+            className="inline-flex items-center gap-2 rounded-full bg-[var(--mkt-btn-bg)] px-5 py-2.5 text-sm font-medium text-[var(--mkt-btn-text)] transition hover:opacity-85"
           >
             Book a working session <ArrowRight className="h-4 w-4" />
           </Link>
           <Link
             to="/contact"
-            className="inline-flex items-center gap-2 rounded-full border border-white/15 px-5 py-2.5 text-sm font-medium text-[#f5f5f7] transition hover:bg-white/10"
+            className="inline-flex items-center gap-2 rounded-full border border-[var(--mkt-line)] px-5 py-2.5 text-sm font-medium text-[var(--mkt-text)] transition hover:bg-[var(--mkt-surface-2)]"
           >
             Talk to sales
           </Link>
@@ -647,11 +647,11 @@ function TailoredCta({
           style={{ background: TILE_BG, border: TILE_BORDER }}
         >
           <div>
-            <div className="mx-auto mb-3 grid h-12 w-12 place-items-center rounded-full border border-white/10 bg-white/5">
-              <Send className="h-5 w-5 text-[#2997ff]" />
+            <div className="mx-auto mb-3 grid h-12 w-12 place-items-center rounded-full border border-[var(--mkt-line)] bg-[var(--mkt-surface-2)]">
+              <Send className="h-5 w-5 text-[var(--mkt-accent)]" />
             </div>
-            <div className="font-display text-lg font-medium text-[#f5f5f7]">Model sent.</div>
-            <p className="mt-2 text-[13px] leading-relaxed text-[#a1a1a6]">
+            <div className="font-display text-lg font-medium text-[var(--mkt-text)]">Model sent.</div>
+            <p className="mt-2 text-[13px] leading-relaxed text-[var(--mkt-text-2)]">
               Thanks — we&apos;ll be in touch by email.
             </p>
           </div>
@@ -667,15 +667,15 @@ function TailoredCta({
             <Field label="Company" value={company} onChange={setCompany} required />
             <Field label="Job title" value={jobTitle} onChange={setJobTitle} />
           </div>
-          <label className="mt-1 flex items-start gap-2 text-[12px] leading-relaxed text-[#a1a1a6]">
-            <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} className="mt-0.5 accent-[#2997ff]" />
+          <label className="mt-1 flex items-start gap-2 text-[12px] leading-relaxed text-[var(--mkt-text-2)]">
+            <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} className="mt-0.5 accent-[var(--mkt-accent)]" />
             I agree ReconIQ may contact me about this ROI model.
           </label>
-          {err && <p className="text-[12px] leading-relaxed text-red-400">{err}</p>}
+          {err && <p className="text-[12px] leading-relaxed text-[var(--mkt-error-text)]">{err}</p>}
           <button
             type="submit"
             disabled={busy}
-            className="mt-1 inline-flex items-center justify-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black transition hover:bg-white/85 disabled:opacity-60"
+            className="mt-1 inline-flex items-center justify-center gap-2 rounded-full bg-[var(--mkt-btn-bg)] px-5 py-2.5 text-sm font-medium text-[var(--mkt-btn-text)] transition hover:opacity-85 disabled:opacity-60"
           >
             {busy ? "Sending…" : "Email me this model"} <Send className="h-4 w-4" />
           </button>
@@ -692,12 +692,12 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.18em] text-[#86868b]">
+      <span className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--mkt-text-3)]">
         {label}{required && " *"}
       </span>
       <input
         type={type} value={value} onChange={(e) => onChange(e.target.value)} required={required}
-        className="w-full rounded-lg border border-white/10 bg-[#0b0b0f] px-3 py-2 text-sm text-[#f5f5f7] outline-none transition placeholder:text-[#86868b] focus:border-white/25"
+        className="w-full rounded-lg border border-[var(--mkt-line)] bg-[var(--mkt-bg-soft)] px-3 py-2 text-sm text-[var(--mkt-text)] outline-none transition placeholder:text-[var(--mkt-text-3)] focus:border-[var(--mkt-line-strong)]"
       />
     </label>
   );

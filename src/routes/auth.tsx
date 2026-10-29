@@ -3,7 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
-import { FviApprovedLogo } from "@/components/fvi-approved-logo";
+import { RQApprovedLogo } from "@/components/rq-approved-logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -216,7 +216,7 @@ function AuthPage() {
         <div className="pointer-events-none absolute -bottom-40 -left-24 h-96 w-96 rounded-full bg-white/[0.03]" aria-hidden />
 
         <div className="relative flex items-center gap-3">
-          <FviApprovedLogo className="h-11 w-11 rounded-xl" />
+          <RQApprovedLogo className="h-11 w-11 rounded-xl" />
           <div className="leading-tight">
             <p className="font-display text-lg font-bold tracking-tight">RECONIQ</p>
             <p className="text-[10px] font-medium uppercase tracking-[0.32em] text-neutral-400">Intelligence</p>
@@ -264,7 +264,7 @@ function AuthPage() {
       <main className="flex items-center justify-center px-5 py-10 sm:px-8">
         <div className="w-full max-w-[400px]">
           <div className="mb-8 flex flex-col items-center text-center lg:hidden">
-            <FviApprovedLogo className="h-14 w-14 rounded-2xl" />
+            <RQApprovedLogo className="h-14 w-14 rounded-2xl" />
             <p className="mt-3 font-display text-xl font-bold tracking-tight">RECONIQ</p>
             <p className="text-[10px] font-medium uppercase tracking-[0.32em] text-neutral-500">Intelligence</p>
           </div>

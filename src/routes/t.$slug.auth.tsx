@@ -8,7 +8,7 @@ import { requiresMfaChallenge } from "@/lib/mfa-assurance";
 import { supabase } from "@/integrations/supabase/client";
 import { getTenantBrandingBySlug, type TenantBranding } from "@/lib/tenant-branding.functions";
 import { appUrl } from "@/lib/cross-domain";
-import { FviApprovedLogo } from "@/components/fvi-approved-logo";
+import { RQApprovedLogo } from "@/components/rq-approved-logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -133,7 +133,7 @@ function TenantAuthPage() {
                   className="h-20 w-20 rounded-xl bg-white/5 object-contain p-2 ring-1 ring-white/15"
                 />
               ) : (
-                <FviApprovedLogo className="h-20 w-20 rounded-xl" />
+                <RQApprovedLogo className="h-20 w-20 rounded-xl" />
               )}
               <div>
                 <div className="text-[11px] font-semibold uppercase tracking-[0.32em]" style={{ color: palette.accent_hex }}>

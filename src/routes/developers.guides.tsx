@@ -126,7 +126,7 @@ function Guides() {
 Content-Type: application/problem+json
 
 {
-  "type":     "https://app.reconiq.example/errors/validation",
+  "type":     "https://reconintelligence.app/errors/validation",
   "title":    "Validation failed",
   "status":   422,
   "detail":   "amount must be a positive decimal",
@@ -198,15 +198,15 @@ webhook-signature:  v1,sha256=8c...`}</Code>
         </P>
         <Code>{`Deprecation: true
 Sunset:      Wed, 01 Jul 2027 00:00:00 GMT
-Link:        <https://app.reconiq.example/developers/changelog>; rel="deprecation"`}</Code>
+Link:        <https://reconintelligence.app/developers/changelog>; rel="deprecation"`}</Code>
 
         <H2 id="sdks">9. SDK examples</H2>
         <H3>curl</H3>
-        <Code>{`curl -sS https://app.reconiq.example/api/reconciliation/batches \\
+        <Code>{`curl -sS https://reconintelligence.app/api/reconciliation/batches \\
   -H "Authorization: Bearer $FVI_TOKEN"`}</Code>
         <H3>TypeScript (fetch)</H3>
         <Code>{`const res = await fetch(
-  "https://app.reconiq.example/api/reconciliation/batches",
+  "https://reconintelligence.app/api/reconciliation/batches",
   { headers: { Authorization: \`Bearer \${process.env.FVI_TOKEN}\` } },
 );
 if (!res.ok) throw new Error(await res.text());
@@ -214,7 +214,7 @@ const { data, next } = await res.json();`}</Code>
         <H3>Python (httpx)</H3>
         <Code>{`import os, httpx
 r = httpx.get(
-  "https://app.reconiq.example/api/reconciliation/batches",
+  "https://reconintelligence.app/api/reconciliation/batches",
   headers={"Authorization": f"Bearer {os.environ['FVI_TOKEN']}"},
   timeout=30,
 )
@@ -222,7 +222,7 @@ r.raise_for_status()
 print(r.json())`}</Code>
         <H3>Java (HttpClient)</H3>
         <Code>{`HttpRequest req = HttpRequest.newBuilder()
-  .uri(URI.create("https://app.reconiq.example/api/reconciliation/batches"))
+  .uri(URI.create("https://reconintelligence.app/api/reconciliation/batches"))
   .header("Authorization", "Bearer " + System.getenv("FVI_TOKEN"))
   .GET().build();
 HttpResponse<String> res = HttpClient.newHttpClient()
@@ -240,7 +240,7 @@ HttpResponse<String> res = HttpClient.newHttpClient()
         <P>
           Email <a href="mailto:developers@reconiq.example" className="underline">developers@reconiq.example</a>{" "}
           with the <code>request_id</code> from the failing response. Security issues:{" "}
-          <a href="mailto:security@reconiq.example" className="underline">security@reconiq.example</a> — see also
+          <a href="mailto:security@reconintelligence.app" className="underline">security@reconintelligence.app</a> — see also
           our disclosure policy at{" "}
           <a href="/.well-known/security.txt" className="underline">/.well-known/security.txt</a>.
         </P>

@@ -77,15 +77,15 @@ export const Route = createFileRoute("/enterprise-faq")({
 
 function EnterpriseFaqPage() {
   return (
-    <div className="min-h-screen bg-black text-[#f5f5f7]">
+    <div className="min-h-screen bg-[var(--mkt-bg)] text-[var(--mkt-text)] transition-colors duration-300">
       <MarketingNav />
       <main className="mx-auto max-w-5xl px-5 py-16 sm:px-8">
         <header className="mb-12 max-w-3xl">
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#86868b]">Enterprise buyers</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--mkt-text-3)]">Enterprise buyers</p>
           <h1 className="mt-4 font-display text-4xl font-semibold tracking-tight sm:text-5xl">Enterprise FAQ</h1>
-          <p className="mt-5 text-lg leading-relaxed text-[#a1a1a6]">
+          <p className="mt-5 text-lg leading-relaxed text-[var(--mkt-text-2)]">
             The questions we get most often from CISO, procurement, and audit teams. If your question isn&apos;t
-            here, request the full <Link to="/security" className="text-[#2997ff] underline underline-offset-4">Security &amp; Compliance</Link> pack.
+            here, request the full <Link to="/security" className="text-[var(--mkt-accent)] underline underline-offset-4">Security &amp; Compliance</Link> pack.
           </p>
         </header>
 
@@ -93,19 +93,19 @@ function EnterpriseFaqPage() {
           {CATEGORIES.map((cat) => {
             const Icon = cat.icon;
             return (
-              <Card key={cat.key} className="border-white/10 bg-[#161617] text-[#f5f5f7] shadow-none">
+              <Card key={cat.key} className="border-[var(--mkt-line)] bg-[var(--mkt-surface)] text-[var(--mkt-text)] shadow-none">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-xl">
-                    <Icon className="h-5 w-5 text-[#2997ff]" aria-hidden />
+                    <Icon className="h-5 w-5 text-[var(--mkt-accent)]" aria-hidden />
                     {cat.title}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <Accordion type="single" collapsible className="w-full">
                     {cat.items.map((item, i) => (
-                      <AccordionItem key={i} value={`${cat.key}-${i}`} className="border-white/10">
-                        <AccordionTrigger className="text-left text-base font-medium text-[#f5f5f7] hover:text-white">{item.q}</AccordionTrigger>
-                        <AccordionContent className="text-sm leading-relaxed text-[#a1a1a6]">
+                      <AccordionItem key={i} value={`${cat.key}-${i}`} className="border-[var(--mkt-line)]">
+                        <AccordionTrigger className="text-left text-base font-medium text-[var(--mkt-text)] hover:text-[var(--mkt-text)]">{item.q}</AccordionTrigger>
+                        <AccordionContent className="text-sm leading-relaxed text-[var(--mkt-text-2)]">
                           {item.a}
                         </AccordionContent>
                       </AccordionItem>
@@ -117,18 +117,18 @@ function EnterpriseFaqPage() {
           })}
         </div>
 
-        <section className="mt-12 rounded-2xl border border-white/10 bg-[#161617] p-6">
-          <h2 className="text-lg font-semibold text-[#f5f5f7]">Need deeper answers?</h2>
-          <p className="mt-2 text-sm leading-relaxed text-[#a1a1a6]">
+        <section className="mt-12 rounded-2xl border border-[var(--mkt-line)] bg-[var(--mkt-surface)] p-6">
+          <h2 className="text-lg font-semibold text-[var(--mkt-text)]">Need deeper answers?</h2>
+          <p className="mt-2 text-sm leading-relaxed text-[var(--mkt-text-2)]">
             Signed-in enterprise admins can generate a live evidence bundle from the
-            in-app <span className="font-medium text-[#f5f5f7]">Security &amp; Compliance Appendix</span>.
+            in-app <span className="font-medium text-[var(--mkt-text)]">Security &amp; Compliance Appendix</span>.
             For pen-test attestation letters, sub-processor register, or a CISO deep-dive,{" "}
-            <Link to="/contact" className="text-[#2997ff] underline underline-offset-4">contact us via the contact form</Link>.
+            <Link to="/contact" className="text-[var(--mkt-accent)] underline underline-offset-4">contact us via the contact form</Link>.
           </p>
           <div className="mt-5">
             <Link
               to="/due-diligence"
-              className="inline-flex items-center rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-black transition hover:bg-white/85"
+              className="inline-flex items-center rounded-full bg-[var(--mkt-btn-bg)] px-5 py-2.5 text-sm font-semibold text-[var(--mkt-btn-text)] transition hover:opacity-85"
             >
               Request the due-diligence pack
             </Link>

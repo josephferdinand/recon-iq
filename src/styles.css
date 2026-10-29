@@ -1880,3 +1880,44 @@ a[href*="meta.dev"][title*="Meta" i],
     --fvi-selected-row-edge: HighlightText;
   }
 }
+/* ===== Marketing dual theme — Axiom Blue on Black (default) / White =====
+ * Design language follows falconaxiom.com: monochrome black/white base,
+ * one vivid blue for accents and primary actions, pastel-blue washes and
+ * blue-tinted shadows in the light edition. Marketing surfaces consume
+ * these variables only, so the authenticated app's own theme system is
+ * unaffected. Toggled by the `mkt-light` class on <html> (MarketingNav
+ * toggle, persisted in localStorage). */
+:root {
+  --mkt-bg: #000000;
+  --mkt-bg-soft: #060b14;
+  --mkt-surface: #0b1420;
+  --mkt-surface-2: #101c2e;
+  --mkt-text: #f7faff;
+  --mkt-text-2: #a9b8cc;
+  --mkt-text-3: #7e8fa9;
+  --mkt-line: rgba(148, 184, 255, 0.14);
+  --mkt-line-strong: rgba(148, 184, 255, 0.28);
+  --mkt-btn-bg: #0a6cff;
+  --mkt-btn-text: #ffffff;
+  --mkt-accent: #4da3ff;
+  --mkt-header-bg: rgba(0, 0, 0, 0.85);
+  --mkt-error-text: #ffb4b4;
+  --mkt-shadow: 0 24px 60px -12px rgba(0, 0, 0, 0.55);
+}
+:root.mkt-light {
+  --mkt-bg: #ffffff;
+  --mkt-bg-soft: #edf3fe;
+  --mkt-surface: #ffffff;
+  --mkt-surface-2: #e9f1fd;
+  --mkt-text: #0a1420;
+  --mkt-text-2: #47586e;
+  --mkt-text-3: #75859d;
+  --mkt-line: rgba(10, 60, 140, 0.1);
+  --mkt-line-strong: rgba(10, 60, 140, 0.2);
+  --mkt-btn-bg: #0a6cff;
+  --mkt-btn-text: #ffffff;
+  --mkt-accent: #0a6cff;
+  --mkt-header-bg: rgba(255, 255, 255, 0.86);
+  --mkt-error-text: #b91c1c;
+  --mkt-shadow: 0 24px 60px -24px rgba(10, 60, 160, 0.28);
+}

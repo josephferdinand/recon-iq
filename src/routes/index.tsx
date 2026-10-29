@@ -169,7 +169,7 @@ const FAQ_TEASERS = [
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
   return (
-    <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#86868b]">
+    <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[var(--mkt-text-3)]">
       {children}
     </p>
   );
@@ -187,11 +187,11 @@ function SectionHeading({
   return (
     <div className="max-w-3xl">
       <Eyebrow>{eyebrow}</Eyebrow>
-      <h2 className="mt-4 font-display text-4xl font-medium tracking-tight text-[#f5f5f7] md:text-5xl">
+      <h2 className="mt-4 font-display text-4xl font-semibold tracking-tight text-[var(--mkt-text)] md:text-5xl">
         {title}
       </h2>
       {body ? (
-        <p className="mt-4 text-base leading-relaxed text-[#a1a1a6]">{body}</p>
+        <p className="mt-4 text-base leading-relaxed text-[var(--mkt-text-2)]">{body}</p>
       ) : null}
     </div>
   );
@@ -207,7 +207,7 @@ function PrimaryLink({
   return (
     <Link
       to={to}
-      className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-black transition hover:bg-white/85"
+      className="inline-flex items-center gap-2 rounded-full bg-[var(--mkt-btn-bg)] px-6 py-3 text-sm font-semibold text-[var(--mkt-btn-text)] transition hover:opacity-85"
     >
       {children}
       <ArrowRight className="h-4 w-4" aria-hidden="true" />
@@ -219,7 +219,7 @@ function SignInLink({ label = "Sign in" }: { label?: string }) {
   return (
     <a
       href={appUrl("/auth")}
-      className="inline-flex items-center gap-2 rounded-full border border-white/20 px-6 py-3 text-sm font-semibold text-[#f5f5f7] transition hover:border-white/40 hover:bg-white/5"
+      className="inline-flex items-center gap-2 rounded-full border border-[var(--mkt-line-strong)] px-6 py-3 text-sm font-semibold text-[var(--mkt-text)] transition hover:border-[var(--mkt-line-strong)] hover:bg-[var(--mkt-surface-2)]"
     >
       {label}
       <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
@@ -233,29 +233,35 @@ function SignInLink({ label = "Sign in" }: { label?: string }) {
 
 function Landing() {
   return (
-    <div className="min-h-screen bg-black font-sans text-[#f5f5f7] antialiased">
+    <div className="min-h-screen bg-[var(--mkt-bg)] font-sans text-[var(--mkt-text)] antialiased transition-colors duration-300">
       <StructuredData />
       <MarketingNav />
 
       <main id="main-content">
         {/* ------------------------------ Hero ------------------------------ */}
-        <section className="border-b border-white/10 bg-black">
+        <section
+          className="border-b border-[var(--mkt-line)] bg-[var(--mkt-bg)]"
+          style={{
+            backgroundImage:
+              "radial-gradient(58% 52% at 50% 0%, color-mix(in oklab, var(--mkt-accent) 13%, transparent), transparent 72%)",
+          }}
+        >
           <div className="mx-auto max-w-7xl px-6 py-24 md:py-32">
-            <div className="max-w-4xl">
+            <div className="mx-auto max-w-4xl text-center">
               <Eyebrow>ReconIQ · AI-assisted reconciliation</Eyebrow>
-              <h1 className="mt-6 font-display text-5xl font-medium leading-[1.05] tracking-tight text-[#f5f5f7] md:text-7xl">
+              <h1 className="mt-6 font-display text-5xl font-semibold leading-[1.05] tracking-tight text-[var(--mkt-text)] md:text-7xl">
                 Reconciliation you can verify, break by break.
               </h1>
-              <p className="mt-6 max-w-2xl text-lg leading-relaxed text-[#a1a1a6]">
+              <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-[var(--mkt-text-2)]">
                 ReconIQ matches your records with deterministic rules, uses AI to
                 explain what did not match, and leaves the decision — and the
                 audit trail — with your team.
               </p>
-              <div className="mt-10 flex flex-wrap items-center gap-3">
+              <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
                 <PrimaryLink to="/book-demo">Book a demo</PrimaryLink>
                 <SignInLink />
               </div>
-              <p className="mt-6 text-sm text-[#86868b]">
+              <p className="mt-6 text-sm text-[var(--mkt-text-3)]">
                 Or try it first: the live demo is inside the product, after sign-in.
               </p>
             </div>
@@ -263,7 +269,7 @@ function Landing() {
         </section>
 
         {/* --------------------------- How it works -------------------------- */}
-        <section aria-labelledby="how-heading" className="bg-[#0b0b0f]">
+        <section aria-labelledby="how-heading" className="bg-[var(--mkt-bg-soft)]">
           <div className="mx-auto max-w-7xl px-6 py-24">
             <div className="flex flex-wrap items-end justify-between gap-6">
               <SectionHeading
@@ -273,7 +279,7 @@ function Landing() {
               />
               <Link
                 to="/solutions"
-                className="inline-flex items-center gap-1.5 text-sm font-medium text-[#2997ff] hover:underline"
+                className="inline-flex items-center gap-1.5 text-sm font-medium text-[var(--mkt-accent)] hover:underline"
               >
                 See it by use case
                 <ArrowRight className="h-4 w-4" aria-hidden="true" />
@@ -284,15 +290,15 @@ function Landing() {
               {HOW_IT_WORKS.map((item) => (
                 <li
                   key={item.step}
-                  className="rounded-3xl border border-white/10 bg-[#161617] p-8"
+                  className="rounded-3xl border border-[var(--mkt-line)] bg-[var(--mkt-surface)] p-8"
                 >
-                  <p className="font-mono text-xs tracking-[0.2em] text-[#86868b]">
+                  <p className="font-mono text-xs tracking-[0.2em] text-[var(--mkt-text-3)]">
                     {item.step}
                   </p>
-                  <h3 className="mt-5 font-display text-2xl font-medium tracking-tight text-[#f5f5f7]">
+                  <h3 className="mt-5 font-display text-2xl font-medium tracking-tight text-[var(--mkt-text)]">
                     {item.title}
                   </h3>
-                  <p className="mt-3 text-sm leading-relaxed text-[#a1a1a6]">
+                  <p className="mt-3 text-sm leading-relaxed text-[var(--mkt-text-2)]">
                     {item.body}
                   </p>
                 </li>
@@ -304,7 +310,7 @@ function Landing() {
         {/* --------------------------- Capabilities -------------------------- */}
         <section
           aria-labelledby="capabilities-heading"
-          className="border-t border-white/10 bg-black"
+          className="border-t border-[var(--mkt-line)] bg-[var(--mkt-bg)]"
         >
           <div className="mx-auto max-w-7xl px-6 py-24">
             <SectionHeading
@@ -317,17 +323,17 @@ function Landing() {
               {CAPABILITIES.map((cap) => {
                 const Icon = cap.icon;
                 const cardClass =
-                  "group flex h-full flex-col rounded-3xl border border-white/10 bg-[#161617] p-7 transition hover:border-white/25 hover:bg-[#1c1c1f]";
+                  "group flex h-full flex-col rounded-3xl border border-[var(--mkt-line)] bg-[var(--mkt-surface)] p-7 transition hover:border-[var(--mkt-line-strong)] hover:bg-[var(--mkt-surface-2)]";
                 const inner = (
                   <>
-                    <Icon className="h-6 w-6 text-[#f5f5f7]" aria-hidden="true" />
-                    <h3 className="mt-6 font-display text-xl font-medium tracking-tight text-[#f5f5f7]">
+                    <Icon className="h-6 w-6 text-[var(--mkt-text)]" aria-hidden="true" />
+                    <h3 className="mt-6 font-display text-xl font-medium tracking-tight text-[var(--mkt-text)]">
                       {cap.title}
                     </h3>
-                    <p className="mt-2 flex-1 text-sm leading-relaxed text-[#a1a1a6]">
+                    <p className="mt-2 flex-1 text-sm leading-relaxed text-[var(--mkt-text-2)]">
                       {cap.body}
                     </p>
-                    <span className="mt-6 inline-flex items-center gap-1.5 text-sm font-medium text-[#2997ff]">
+                    <span className="mt-6 inline-flex items-center gap-1.5 text-sm font-medium text-[var(--mkt-accent)]">
                       {cap.linkLabel}
                       <ArrowRight
                         className="h-4 w-4 transition-transform group-hover:translate-x-0.5"
@@ -357,14 +363,14 @@ function Landing() {
         </section>
 
         {/* ------------------------ Regulatory alignment --------------------- */}
-        <div className="border-t border-white/10 bg-[#0b0b0f]">
+        <div className="border-t border-[var(--mkt-line)] bg-[var(--mkt-bg-soft)]">
           <RegulatoryAlignment />
         </div>
 
         {/* ----------------------------- Live demo --------------------------- */}
         <section
           aria-labelledby="demo-heading"
-          className="border-t border-white/10 bg-black"
+          className="border-t border-[var(--mkt-line)] bg-[var(--mkt-bg)]"
         >
           <div className="mx-auto max-w-7xl px-6 py-24">
             <div className="grid gap-12 lg:grid-cols-[1fr_1.2fr] lg:gap-16">
@@ -372,11 +378,11 @@ function Landing() {
                 <Eyebrow>Try the live demo</Eyebrow>
                 <h2
                   id="demo-heading"
-                  className="mt-4 font-display text-4xl font-medium tracking-tight text-[#f5f5f7] md:text-5xl"
+                  className="mt-4 font-display text-4xl font-medium tracking-tight text-[var(--mkt-text)] md:text-5xl"
                 >
                   Don&apos;t take our word for it. Run it.
                 </h2>
-                <p className="mt-4 text-base leading-relaxed text-[#a1a1a6]">
+                <p className="mt-4 text-base leading-relaxed text-[var(--mkt-text-2)]">
                   The product itself is the proof. Sign in, work through one
                   reconciliation end to end, and inspect the same audit trail
                   your auditors would see.
@@ -384,14 +390,14 @@ function Landing() {
                 <div className="mt-8 flex flex-wrap gap-3">
                   <a
                     href={appUrl("/auth")}
-                    className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-black transition hover:bg-white/85"
+                    className="inline-flex items-center gap-2 rounded-full bg-[var(--mkt-btn-bg)] px-6 py-3 text-sm font-semibold text-[var(--mkt-btn-text)] transition hover:opacity-85"
                   >
                     <PlayCircle className="h-4 w-4" aria-hidden="true" />
                     Sign in to try the demo
                   </a>
                   <PrimaryLink to="/book-demo">Book a demo</PrimaryLink>
                 </div>
-                <p className="mt-6 flex items-start gap-2 text-sm leading-relaxed text-[#86868b]">
+                <p className="mt-6 flex items-start gap-2 text-sm leading-relaxed text-[var(--mkt-text-3)]">
                   <Lock className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
                   Use the sample files provided in the demo. Nothing in the demo
                   requires — or should contain — real customer data.
@@ -404,24 +410,24 @@ function Landing() {
                   return (
                     <li
                       key={item.title}
-                      className="flex gap-5 rounded-3xl border border-white/10 bg-[#161617] p-6"
+                      className="flex gap-5 rounded-3xl border border-[var(--mkt-line)] bg-[var(--mkt-surface)] p-6"
                     >
                       <div className="flex flex-col items-center">
-                        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/15 bg-[#1c1c1f]">
-                          <Icon className="h-5 w-5 text-[#f5f5f7]" aria-hidden="true" />
+                        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[var(--mkt-line)] bg-[var(--mkt-surface-2)]">
+                          <Icon className="h-5 w-5 text-[var(--mkt-text)]" aria-hidden="true" />
                         </span>
                         {index < DEMO_STEPS.length - 1 ? (
-                          <span aria-hidden="true" className="mt-3 w-px flex-1 bg-white/10" />
+                          <span aria-hidden="true" className="mt-3 w-px flex-1 bg-[var(--mkt-surface-2)]" />
                         ) : null}
                       </div>
                       <div className="pb-1">
-                        <p className="font-mono text-[11px] tracking-[0.2em] text-[#86868b]">
+                        <p className="font-mono text-[11px] tracking-[0.2em] text-[var(--mkt-text-3)]">
                           STEP {index + 1}
                         </p>
-                        <h3 className="mt-1.5 font-display text-lg font-medium tracking-tight text-[#f5f5f7]">
+                        <h3 className="mt-1.5 font-display text-lg font-medium tracking-tight text-[var(--mkt-text)]">
                           {item.title}
                         </h3>
-                        <p className="mt-1.5 text-sm leading-relaxed text-[#a1a1a6]">
+                        <p className="mt-1.5 text-sm leading-relaxed text-[var(--mkt-text-2)]">
                           {item.body}
                         </p>
                       </div>
@@ -436,7 +442,7 @@ function Landing() {
         {/* ------------------------------ FAQ teaser ------------------------- */}
         <section
           aria-labelledby="faq-heading"
-          className="border-t border-white/10 bg-[#0b0b0f]"
+          className="border-t border-[var(--mkt-line)] bg-[var(--mkt-bg-soft)]"
         >
           <div className="mx-auto max-w-7xl px-6 py-24">
             <div className="flex flex-wrap items-end justify-between gap-6">
@@ -446,7 +452,7 @@ function Landing() {
               />
               <Link
                 to="/enterprise-faq"
-                className="inline-flex items-center gap-1.5 text-sm font-medium text-[#2997ff] hover:underline"
+                className="inline-flex items-center gap-1.5 text-sm font-medium text-[var(--mkt-accent)] hover:underline"
               >
                 Read the enterprise FAQ
                 <ArrowRight className="h-4 w-4" aria-hidden="true" />
@@ -457,16 +463,16 @@ function Landing() {
               {FAQ_TEASERS.map((item) => (
                 <div
                   key={item.q}
-                  className="rounded-3xl border border-white/10 bg-[#161617] p-7"
+                  className="rounded-3xl border border-[var(--mkt-line)] bg-[var(--mkt-surface)] p-7"
                 >
-                  <dt className="flex items-start gap-2 font-display text-lg font-medium tracking-tight text-[#f5f5f7]">
+                  <dt className="flex items-start gap-2 font-display text-lg font-medium tracking-tight text-[var(--mkt-text)]">
                     <BookOpenCheck
-                      className="mt-1 h-5 w-5 shrink-0 text-[#86868b]"
+                      className="mt-1 h-5 w-5 shrink-0 text-[var(--mkt-text-3)]"
                       aria-hidden="true"
                     />
                     {item.q}
                   </dt>
-                  <dd className="mt-3 text-sm leading-relaxed text-[#a1a1a6]">
+                  <dd className="mt-3 text-sm leading-relaxed text-[var(--mkt-text-2)]">
                     {item.a}
                   </dd>
                 </div>
@@ -476,16 +482,16 @@ function Landing() {
         </section>
 
         {/* ------------------------------ Final CTA -------------------------- */}
-        <section className="border-t border-white/10 bg-black">
+        <section className="border-t border-[var(--mkt-line)] bg-[var(--mkt-bg)]">
           <div className="mx-auto max-w-7xl px-6 py-24">
-            <div className="rounded-[2rem] border border-white/10 bg-[#161617] px-8 py-16 text-center md:px-16">
-              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-white/15 bg-[#1c1c1f]">
-                <CheckCircle2 className="h-6 w-6 text-[#f5f5f7]" aria-hidden="true" />
+            <div className="rounded-[2rem] border border-[var(--mkt-line)] bg-[var(--mkt-surface)] px-8 py-16 text-center md:px-16">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-[var(--mkt-line)] bg-[var(--mkt-surface-2)]">
+                <CheckCircle2 className="h-6 w-6 text-[var(--mkt-text)]" aria-hidden="true" />
               </div>
-              <h2 className="mx-auto mt-8 max-w-3xl font-display text-4xl font-medium tracking-tight text-[#f5f5f7] md:text-5xl">
+              <h2 className="mx-auto mt-8 max-w-3xl font-display text-4xl font-medium tracking-tight text-[var(--mkt-text)] md:text-5xl">
                 See a break explained, approved, and sealed — in the product.
               </h2>
-              <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-[#a1a1a6]">
+              <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-[var(--mkt-text-2)]">
                 Book a demo with your own workflow in mind, or sign in and run
                 the live demo today.
               </p>
@@ -493,7 +499,7 @@ function Landing() {
                 <PrimaryLink to="/book-demo">Book a demo</PrimaryLink>
                 <SignInLink />
               </div>
-              <p className="mt-8 flex items-center justify-center gap-2 text-xs text-[#86868b]">
+              <p className="mt-8 flex items-center justify-center gap-2 text-xs text-[var(--mkt-text-3)]">
                 <Link2 className="h-3.5 w-3.5" aria-hidden="true" />
                 reconintelligence.app — one product, from first upload to audit trail.
               </p>

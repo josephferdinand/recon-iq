@@ -8,7 +8,7 @@ import { recordAccessDenied } from "@/lib/access-audit.functions";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { FVMonogram } from "@/components/fv-monogram";
+import { RQSeal } from "@/components/rq-seal";
 import {
   LayoutDashboard, Users, GitBranch, CalendarClock, MessageSquare, Database, Cpu,
   BarChart3, LogOut, ShieldCheck, Building2, LayoutTemplate, ScrollText, Palette,
@@ -177,7 +177,7 @@ function MktAdminLayout() {
       <aside className="sticky top-0 flex h-screen w-64 shrink-0 flex-col border-r border-border/60 bg-card/40 backdrop-blur-xl">
         <div className="flex items-center gap-3 border-b border-border/60 px-5 py-4">
           <div className="relative">
-            <FVMonogram className="h-9 w-9" />
+            <RQSeal className="h-9 w-9" />
             <span aria-hidden className="absolute -inset-1 -z-10 rounded-full opacity-40 blur-md"
               style={{ background: "radial-gradient(closest-side, var(--brand-gold, hsl(var(--primary))), transparent)" }} />
           </div>

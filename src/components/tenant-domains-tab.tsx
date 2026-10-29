@@ -169,7 +169,7 @@ export function TenantDomainsTab({ tenantId }: { tenantId: string }) {
               Bring your own hostname (e.g. <span className="font-mono">recon.bank.com</span>). Verification is by
               DNS <span className="font-mono">TXT</span> record on <span className="font-mono">_fvi-verify.&lt;host&gt;</span>.
               Once verified, point a <span className="font-mono">CNAME</span> at
-              <span className="font-mono"> app.reconiq.example</span> and the ReconIQ edge issues a managed certificate
+              <span className="font-mono"> reconintelligence.app</span> and the ReconIQ edge issues a managed certificate
               (SOC 2 CC8.1 change record auto-logged).
             </CardDescription>
           </div>
@@ -225,7 +225,7 @@ export function TenantDomainsTab({ tenantId }: { tenantId: string }) {
                         <Copy className="h-3 w-3" />
                       </Button>
                     </div>
-                    <div className="pt-2"><span className="text-muted-foreground">Then add:</span> CNAME {r.host} → app.reconiq.example</div>
+                    <div className="pt-2"><span className="text-muted-foreground">Then add:</span> CNAME {r.host} → reconintelligence.app</div>
                   </div>
                   {r.last_verification_check_at && (
                     <p className="text-muted-foreground">

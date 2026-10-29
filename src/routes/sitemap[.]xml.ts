@@ -14,12 +14,9 @@ export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
       GET: async ({ request }) => {
-        const hostname = new URL(request.url).hostname;
-        const baseUrl = hostname === "app.reconiq.example"
-          ? "https://app.reconiq.example"
-          : hostname === "dev.app.reconiq.example"
-            ? "https://dev.app.reconiq.example"
-            : "https://reconiq.example";
+        // Single canonical product domain, whichever host served the request
+        // (custom domain or the pages.dev mirror).
+        const baseUrl = "https://reconintelligence.app";
         const { getSupportCategories } = await import("@/content/support-toc");
         const supportCategories = getSupportCategories();
         const entries: SitemapEntry[] = [

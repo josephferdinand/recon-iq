@@ -26,13 +26,13 @@ export function RegulatoryAlignment() {
       className="mx-auto max-w-7xl px-6 py-24"
     >
       <div className="max-w-3xl">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#86868b]">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[var(--mkt-text-3)]">
           Compliance-ready architecture
         </p>
-        <h2 className="mt-4 font-display text-4xl font-medium tracking-tight text-[#f5f5f7] md:text-5xl">
+        <h2 className="mt-4 font-display text-4xl font-medium tracking-tight text-[var(--mkt-text)] md:text-5xl">
           Built for organisations in regulated environments.
         </h2>
-        <p className="mt-4 text-base leading-relaxed text-[#a1a1a6]">
+        <p className="mt-4 text-base leading-relaxed text-[var(--mkt-text-2)]">
           The platform is designed with reference to industry frameworks
           including DORA, SOC 2, ISO 27001, and SEC 17a-4 — supporting
           governance, auditability, security, and operational resilience
@@ -42,16 +42,16 @@ export function RegulatoryAlignment() {
 
       <div className="mt-12 grid gap-10 md:grid-cols-2">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#86868b]">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[var(--mkt-text-3)]">
             Reference frameworks
           </p>
           <ul className="mt-4 flex flex-wrap gap-2">
             {REFERENCE_FRAMEWORKS.map(({ label, icon: Icon }) => (
               <li
                 key={label}
-                className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-[#161617] px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#f5f5f7]"
+                className="inline-flex items-center gap-1.5 rounded-full border border-[var(--mkt-line)] bg-[var(--mkt-surface)] px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--mkt-text)]"
               >
-                <Icon className="h-3.5 w-3.5 text-[#a1a1a6]" aria-hidden="true" />
+                <Icon className="h-3.5 w-3.5 text-[var(--mkt-text-2)]" aria-hidden="true" />
                 {label}
               </li>
             ))}
@@ -59,16 +59,16 @@ export function RegulatoryAlignment() {
         </div>
 
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#86868b]">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[var(--mkt-text-3)]">
             Capability pillars
           </p>
           <ul className="mt-4 flex flex-wrap gap-2">
             {CAPABILITY_PILLARS.map(({ label, icon: Icon }) => (
               <li
                 key={label}
-                className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-[#161617] px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#a1a1a6]"
+                className="inline-flex items-center gap-1.5 rounded-full border border-[var(--mkt-line)] bg-[var(--mkt-surface)] px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--mkt-text-2)]"
               >
-                <Icon className="h-3.5 w-3.5 text-[#86868b]" aria-hidden="true" />
+                <Icon className="h-3.5 w-3.5 text-[var(--mkt-text-3)]" aria-hidden="true" />
                 {label}
               </li>
             ))}
@@ -76,15 +76,15 @@ export function RegulatoryAlignment() {
         </div>
       </div>
 
-      <div className="mt-12 flex flex-col gap-4 border-t border-white/10 pt-8 md:flex-row md:items-center md:justify-between">
-        <p className="max-w-2xl text-sm leading-relaxed text-[#86868b]">
+      <div className="mt-12 flex flex-col gap-4 border-t border-[var(--mkt-line)] pt-8 md:flex-row md:items-center md:justify-between">
+        <p className="max-w-2xl text-sm leading-relaxed text-[var(--mkt-text-3)]">
           Framework references describe design intent. ReconIQ does not
           currently hold SOC 2 or ISO 27001 certification; formal certifications
           and attestations are pursued as the platform matures.
         </p>
         <Link
           to="/security"
-          className="inline-flex shrink-0 items-center gap-1.5 text-sm font-medium text-[#2997ff] hover:underline"
+          className="inline-flex shrink-0 items-center gap-1.5 text-sm font-medium text-[var(--mkt-accent)] hover:underline"
         >
           <ShieldCheck className="h-4 w-4" aria-hidden="true" />
           Security &amp; compliance overview

@@ -23,16 +23,16 @@ CANONICAL="$ROOT/public"
 
 # Canonical sources (source of truth)
 SOURCES=(
-  "fv-monogram.svg"
+  "rq-seal.svg"
   "favicon.svg"
 )
 
 # Copies that MUST be byte-identical. Add a row here when a new surface ships.
 COPIES=(
-  "support-docs-site/assets/img/fv-monogram.svg"
+  "support-docs-site/assets/img/rq-seal.svg"
   "support-docs-site/favicon.svg"
   "support-docs-site/dist/favicon.svg"
-  "client-portal-site/assets/img/fv-monogram.svg"
+  "client-portal-site/assets/img/rq-seal.svg"
   "client-portal-site/favicon.svg"
   "client-portal-site/dist/favicon.svg"
 )

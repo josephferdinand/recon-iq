@@ -16,7 +16,7 @@ export async function renderFailedLoginEmail(input: { attemptId: string; request
     <table role="presentation" width="100%" cellPadding={0} cellSpacing={0}><tbody><tr><td style={{ padding: "32px 16px" }}>
     <table role="presentation" width="600" cellPadding={0} cellSpacing={0} style={{ maxWidth: 600, width: "100%", margin: "0 auto", backgroundColor: BRAND.surface }}><tbody>
       <tr><td style={{ padding: "28px 32px", backgroundColor: BRAND.primary, borderRadius: "12px 12px 0 0" }}>
-        <img src={`${origin}/fv-monogram.svg`} width="128" height="128" alt="ReconIQ monogram" style={{ display: "block", border: 0 }} />
+        <img src={`${origin}/rq-seal.svg`} width="128" height="128" alt="ReconIQ monogram" style={{ display: "block", border: 0 }} />
         <p style={{ color: BRAND.textInverse, fontSize: 18, fontWeight: 700 }}>ReconIQ</p>
       </td></tr>
       <tr><td style={{ padding: "40px 32px", color: BRAND.textPrimary, fontFamily: "Inter, Arial, sans-serif", lineHeight: 1.6 }}>

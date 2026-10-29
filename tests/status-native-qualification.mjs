@@ -4,7 +4,7 @@ import { spawnSync } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
 const root = process.cwd();
 const output = path.join(root, 'docs/evidence/status-lane-2026-10-03');
-const name = 'fvi-status-native-20261004-' + randomUUID().slice(0, 8);
+const name = 'rq-status-native-20261004-' + randomUUID().slice(0, 8);
 const image = 'postgres:17.6-alpine';
 const call = (args, input) => spawnSync('docker', args, { cwd: root, input, encoding: 'utf8', timeout: 60_000, windowsHide: true });
 let created = false;

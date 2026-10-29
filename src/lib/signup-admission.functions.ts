@@ -8,8 +8,8 @@ import { recoverableSignupInterest, signupInterestSchema, signupDigest, type Sig
 const tenantInput = z.object({ tenant_id: z.string().uuid() });
 
 export function signupRedirectOrigin(projectRef: string): string {
-  if (projectRef === "YOUR_PROJECT_REF") return "https://app.reconiq.example";
-  if (projectRef === "YOUR_PROJECT_REF") return "https://dev.app.reconiq.example";
+  if (projectRef === "YOUR_PROJECT_REF") return "https://reconintelligence.app";
+  if (projectRef === "YOUR_PROJECT_REF") return "https://reconintelligence.app";
   throw new Error("Signup environment is unavailable");
 }
 

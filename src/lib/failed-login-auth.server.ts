@@ -26,8 +26,8 @@ export function failedLoginProxyReady() {
 
 export function failedLoginCanonicalOrigin() {
   const url = getRuntimeEnv("SUPABASE_URL");
-  if (url?.replace(/\/$/, "") === "https://YOUR_PROJECT_REF.supabase.co") return "https://app.reconiq.example";
-  if (url?.replace(/\/$/, "") === "https://YOUR_PROJECT_REF.supabase.co") return "https://dev.app.reconiq.example";
+  if (url?.replace(/\/$/, "") === "https://YOUR_PROJECT_REF.supabase.co") return "https://reconintelligence.app";
+  if (url?.replace(/\/$/, "") === "https://YOUR_PROJECT_REF.supabase.co") return "https://reconintelligence.app";
   throw new Error("Failed-login environment unavailable");
 }
 

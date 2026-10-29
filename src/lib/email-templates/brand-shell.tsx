@@ -12,45 +12,45 @@ import * as React from "react";
 
 export const BRAND = {
   // BRAND.md §3
-  primary: "#1e3a5f",
-  primaryLight: "#3b5f87",
-  accent: "#00d4ff",
+  primary: "#1d1d1f",
+  primaryLight: "#3a3a3c",
+  accent: "#0066cc",
   // backgrounds
-  background: "#f4f6fa", // soft brand-tinted off-white
+  background: "#f5f5f7", // Onyx Light page backdrop
   surface: "#ffffff",
-  border: "#e5e7eb",
+  border: "#e5e5ea",
   // text
-  textPrimary: "#0a0e1a",
-  textMuted: "#6b7280",
+  textPrimary: "#1d1d1f",
+  textMuted: "#6e6e73",
   textInverse: "#ffffff",
   // gradients
-  ctaGradient: "linear-gradient(135deg, #1e3a5f 0%, #0a0e1a 100%)",
-  heroGradient: "linear-gradient(135deg, #0a0e1a 0%, #1e3a5f 100%)",
+  ctaGradient: "linear-gradient(135deg, #2c2c2e 0%, #000000 100%)",
+  heroGradient: "linear-gradient(135deg, #1d1d1f 0%, #000000 100%)",
   // BRAND.md §2
   tagline: "Recon, exceptions, and agentic AI on one ledger of truth.",
   // BRAND.md §5
   siteName: "ReconIQ",
   siteShort: "ReconIQ",
   // contact
-  supportEmail: "support@reconiq.example",
-  marketingSite: "https://www.reconiq.example",
-  accountSite: "https://app.reconiq.example",
+  supportEmail: "support@reconintelligence.app",
+  marketingSite: "https://reconintelligence.app",
+  accountSite: "https://reconintelligence.app",
   // logo (CDN — public asset)
-  monogramUrl: "https://app.reconiq.example/fv-monogram.svg",
-  wordmarkUrl: "https://app.reconiq.example/og-fvi-1200x630.png",
-  approvedLogoUrl: "https://app.reconiq.example/fv-monogram.svg",
+  monogramUrl: "https://reconintelligence.app/rq-seal.svg",
+  wordmarkUrl: "https://reconintelligence.app/rq-seal.svg",
+  approvedLogoUrl: "https://reconintelligence.app/rq-seal.svg",
 } as const;
 
 // Public inbox-safe URLs for the brand assets. The monogram is INLINED as an
 // SVG string below so the email never depends on a remote fetch (which would
 // be blocked in some clients or fail silently in offline previews).
 export const ASSETS = {
-  // The fv-monogram.svg is served from each Pages project. The remote URL is
+  // The rq-seal.svg is served from each Pages project. The remote URL is
   // kept for the cases where a remote fetch is preferable (e.g. an external
   // email client that disables inline SVG). When in doubt, use MONOGRAM_SVG.
-  monogram: "https://www.reconiq.example/fv-monogram.svg",
-  wordmark: "https://www.reconiq.example/og-fvi-1200x630.png",
-  approvedLogo: "https://app.reconiq.example/fv-monogram.svg",
+  monogram: "https://reconintelligence.app/rq-seal.svg",
+  wordmark: "https://reconintelligence.app/rq-seal.svg",
+  approvedLogo: "https://reconintelligence.app/rq-seal.svg",
 } as const;
 
 /**
@@ -62,7 +62,7 @@ export const ASSETS = {
  *  - inherit container dimensions (the width/height attrs override this)
  *  - scale crisply on retina displays
  *
- * Mirrors public/fv-monogram.svg — when the source SVG changes, update this
+ * Mirrors public/rq-seal.svg — when the source SVG changes, update this
  * string in lockstep (BRAND.md §5 requires byte-identical brand assets).
  *
  * Rendered as proper JSX (not dangerouslySetInnerHTML) so the SVG markup is
@@ -177,21 +177,21 @@ export function BrandShell({ preview, children, locale = "en" }: BrandShellProps
               >
                 <tbody>
                   <tr>
-                    <td style={{ verticalAlign: "middle", paddingRight: 18, width: 148 }}>
+                    <td style={{ verticalAlign: "middle", paddingRight: 14, width: 70 }}>
                       <div
                         style={{
                           display: "inline-block",
                           backgroundColor: "#ffffff",
-                          borderRadius: 6,
-                          padding: 10,
+                          borderRadius: 8,
+                          padding: 6,
                         }}
                       >
                         <img
                           src={ASSETS.approvedLogo}
-                          width={128}
-                          height={128}
+                          width={44}
+                          height={44}
                           alt="ReconIQ monogram"
-                          style={{ display: "block", width: 128, height: 128, border: 0 }}
+                          style={{ display: "block", width: 44, height: 44, border: 0 }}
                         />
                       </div>
                     </td>
@@ -290,10 +290,25 @@ export function BrandShell({ preview, children, locale = "en" }: BrandShellProps
                       </div>
                       <div style={{ marginTop: 6 }}>
                         <a
+                          href="mailto:security@reconintelligence.app"
+                          style={{ color: BRAND.primary, textDecoration: "underline" }}
+                        >
+                          security@reconintelligence.app
+                        </a>
+                        {" · "}
+                        <a
+                          href="mailto:privacy@reconintelligence.app"
+                          style={{ color: BRAND.primary, textDecoration: "underline" }}
+                        >
+                          privacy@reconintelligence.app
+                        </a>
+                      </div>
+                      <div style={{ marginTop: 6 }}>
+                        <a
                           href={BRAND.marketingSite}
                           style={{ color: BRAND.primary, textDecoration: "underline" }}
                         >
-                          reconiq.example
+                          reconintelligence.app
                         </a>
                       </div>
                     </td>

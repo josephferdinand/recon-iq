@@ -52,7 +52,7 @@ export async function processFailedLoginQueueMessage(admin: RpcClient, item: { m
   let result: FailedLoginProviderReceipt;
   try {
     const notice = await renderFailedLoginEmail({ attemptId: message.attempt_id, requestId: claim.data.request_id, occurredAt: claim.data.occurred_at, outcome: claim.data.outcome, origin: failedLoginCanonicalOrigin() });
-    result = await sender({ to: [{ email: claim.data.to }], from: { email: "noreply@reconiq.example", name: "ReconIQ" }, subject: notice.subject, htmlBody: notice.html, textBody: notice.text, clientReference: `fvi-failed-login-${message.attempt_id}` }, apiToken);
+    result = await sender({ to: [{ email: claim.data.to }], from: { email: "security@reconintelligence.app", name: "ReconIQ Security" }, subject: notice.subject, htmlBody: notice.html, textBody: notice.text, clientReference: `fvi-failed-login-${message.attempt_id}` }, apiToken);
     if (result.state === "provider_accepted" && !isProviderReference(result.messageId)) {
       result = { state: "uncertain", code: "provider_response_unknown" };
     }

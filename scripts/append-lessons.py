@@ -49,7 +49,7 @@ LESSONS = """
 - docs-docusaurus/src/css/custom.css — Infima overrides with FVI tokens
 - docs-docusaurus/docs/ — 94 MD + 1 MDX intro migrated from support-docs-site/dist/
 - scripts/html-to-mdx.py — Python HTML-to-MDX converter for future re-runs
-- docs-docusaurus/static/img/ — fv-monogram.svg, favicon.svg from public/
+- docs-docusaurus/static/img/ — rq-seal.svg, favicon.svg from public/
 
 *End of LL-062.*
 

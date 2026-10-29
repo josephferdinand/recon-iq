@@ -15,11 +15,11 @@ $Root       = (Resolve-Path (Join-Path $ScriptDir "..")).Path
 $Canonical  = Join-Path $Root "public"
 
 # Canonical sources (source of truth)
-$sources = @("fv-monogram.svg", "favicon.svg")
+$sources = @("rq-seal.svg", "favicon.svg")
 
 # Copies that MUST be byte-identical. Add a row when a new surface ships.
 $copies = @(
-  "support-docs-site/assets/img/fv-monogram.svg",
+  "support-docs-site/assets/img/rq-seal.svg",
   "support-docs-site/favicon.svg",
   "support-docs-site/dist/favicon.svg"
 )

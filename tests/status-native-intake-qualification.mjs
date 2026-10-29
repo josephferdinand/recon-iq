@@ -1,5 +1,5 @@
 import fs from 'node:fs';import {spawnSync} from 'node:child_process';import {createHash} from 'node:crypto';
-const dir='docs/evidence/status-lane-2026-10-03';const saved=JSON.parse(fs.readFileSync(dir+'/native-qualification.json','utf8'));if(!saved.container.startsWith('fvi-status-native-20261004-'))throw new Error('Wrong fixture');
+const dir='docs/evidence/status-lane-2026-10-03';const saved=JSON.parse(fs.readFileSync(dir+'/native-qualification.json','utf8'));if(!saved.container.startsWith('rq-status-native-20261004-'))throw new Error('Wrong fixture');
 const call=(args,input)=>spawnSync('docker',args,{input,encoding:'utf8',timeout:60000,windowsHide:true});
 const base=fs.readFileSync(dir+'/guarded-status-workflow-proposal.sql','utf8');const intake=fs.readFileSync(dir+'/guarded-status-escalation-proposal.sql','utf8');let delta='';
 for(const name of ['status_incident_command','status_record_probe']){const start=base.indexOf('CREATE FUNCTION public.'+name+'(');const end=base.indexOf('END $$;',start);if(start<0||end<start)throw new Error('Missing changed function');delta+=base.slice(start,end+7).replace('CREATE FUNCTION','CREATE OR REPLACE FUNCTION')+'\n';}

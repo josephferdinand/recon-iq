@@ -19,7 +19,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { ShieldCheck, LayoutDashboard, Palette, ArrowRight, LogOut, Loader2, Sparkles, Building2, Lock, Send, XCircle, CheckCircle2, Clock } from "lucide-react";
-import { FviApprovedLogo } from "@/components/fvi-approved-logo";
+import { RQApprovedLogo } from "@/components/rq-approved-logo";
 
 /**
  * Post-login chooser presented to Platform Owners only.
@@ -171,7 +171,7 @@ function ConsoleChooser() {
       {/* Top bar */}
       <header className="relative z-10 flex items-center justify-between border-b border-border/60 bg-background/60 px-6 py-4 backdrop-blur">
         <div className="flex items-center gap-3">
-          <FviApprovedLogo className="h-8 w-8 rounded-sm" />
+          <RQApprovedLogo className="h-8 w-8 rounded-sm" />
           <div>
             <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">ReconIQ</div>
             <div className="font-display text-sm font-semibold">Platform Owner Console</div>

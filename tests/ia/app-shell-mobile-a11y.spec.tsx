@@ -43,8 +43,8 @@ vi.mock("@/components/scope-switcher", () => ({ ScopeSwitcher: () => null }));
 vi.mock("@/components/user-profile-menu", () => ({ UserProfileMenu: () => null }));
 vi.mock("@/components/copilot-sheet", () => ({ CopilotSheetButton: () => null }));
 vi.mock("@/components/tour-button", () => ({ TourButton: () => null }));
-vi.mock("@/components/fv-monogram", () => ({
-  FVMonogram: ({ className }: { className?: string }) => (
+vi.mock("@/components/rq-seal", () => ({
+  RQSeal: ({ className }: { className?: string }) => (
     <span aria-hidden="true" className={className} />
   ),
 }));

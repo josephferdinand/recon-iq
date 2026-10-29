@@ -174,17 +174,17 @@ function DueDiligencePage() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-[#f5f5f7]">
+    <div className="min-h-screen bg-[var(--mkt-bg)] text-[var(--mkt-text)] transition-colors duration-300">
       <MarketingNav />
       <main className="mx-auto max-w-4xl px-6 py-16 md:py-24">
         <header>
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#a1a1a6]">
+          <div className="inline-flex items-center gap-2 rounded-full border border-[var(--mkt-line)] bg-[var(--mkt-surface-2)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--mkt-text-2)]">
             <ShieldCheck className="h-3.5 w-3.5" /> Gated — enterprise buyers only
           </div>
           <h1 className="mt-6 font-display text-4xl font-semibold tracking-tight md:text-5xl">
             Request the ReconIQ Due-Diligence Pack
           </h1>
-          <p className="mt-4 max-w-2xl text-base leading-relaxed text-[#a1a1a6]">
+          <p className="mt-4 max-w-2xl text-base leading-relaxed text-[var(--mkt-text-2)]">
             A single PDF containing the security overview, SIG Lite &amp; CAIQ responses, DPA
             template, subprocessor list, audit-log evidence schema, incident response summary,
             and the shared responsibility matrix. The pack downloads to your device once you
@@ -196,7 +196,7 @@ function DueDiligencePage() {
           <form
             onSubmit={onSubmit}
             noValidate
-            className="rounded-2xl border border-white/10 bg-[#161617] p-6 md:p-8"
+            className="rounded-2xl border border-[var(--mkt-line)] bg-[var(--mkt-surface)] p-6 md:p-8"
           >
             {status === "done" ? (
               <SuccessPanel reference={leadRef} email={form.work_email} />
@@ -264,7 +264,7 @@ function DueDiligencePage() {
                       required
                     >
                       {ROLES.map((r) => (
-                        <option key={r} value={r} style={{ background: "#161617" }}>
+                        <option key={r} value={r} style={{ background: "var(--mkt-surface)", color: "var(--mkt-text)" }}>
                           {r}
                         </option>
                       ))}
@@ -281,29 +281,29 @@ function DueDiligencePage() {
                   </Field>
                 </div>
 
-                <label className="mt-5 flex items-start gap-3 text-[13px] leading-snug text-[#a1a1a6]">
+                <label className="mt-5 flex items-start gap-3 text-[13px] leading-snug text-[var(--mkt-text-2)]">
                   <input
                     type="checkbox"
                     checked={form.consent}
                     onChange={(e) => set("consent", e.target.checked)}
-                    className="mt-0.5 h-4 w-4 shrink-0 rounded accent-[#2997ff]"
+                    className="mt-0.5 h-4 w-4 shrink-0 rounded accent-[var(--mkt-accent)]"
                     required
                   />
                   <span>
                     I agree that ReconIQ may contact me about my request and
                     process my details per its{" "}
-                    <Link to="/privacy" className="text-[#2997ff] underline underline-offset-2">
+                    <Link to="/privacy" className="text-[var(--mkt-accent)] underline underline-offset-2">
                       privacy notice
                     </Link>
                     . The pack is shared under mutual NDA on request.
                   </span>
                 </label>
                 {errors.consent && (
-                  <p className="mt-1 text-[12px] text-red-400">{errors.consent}</p>
+                  <p className="mt-1 text-[12px] text-[var(--mkt-error-text)]">{errors.consent}</p>
                 )}
 
                 {errorMsg && (
-                  <div className="mt-4 rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-2 text-[13px] text-[#ffb4b4]">
+                  <div className="mt-4 rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-2 text-[13px] text-[var(--mkt-error-text)]">
                     {errorMsg}
                   </div>
                 )}
@@ -311,7 +311,7 @@ function DueDiligencePage() {
                 <button
                   type="submit"
                   disabled={status === "submitting"}
-                  className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-5 py-3 text-[13px] font-semibold text-black transition hover:bg-white/85 disabled:opacity-60"
+                  className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-[var(--mkt-btn-bg)] px-5 py-3 text-[13px] font-semibold text-[var(--mkt-btn-text)] transition hover:opacity-85 disabled:opacity-60"
                 >
                   {status === "submitting" ? (
                     <>
@@ -328,15 +328,15 @@ function DueDiligencePage() {
           </form>
 
           <aside className="space-y-5">
-            <div className="rounded-2xl border border-white/10 bg-[#161617] p-5">
-              <div className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#86868b]">
+            <div className="rounded-2xl border border-[var(--mkt-line)] bg-[var(--mkt-surface)] p-5">
+              <div className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--mkt-text-3)]">
                 <FileText className="h-3.5 w-3.5" /> What's inside
               </div>
-              <ul className="mt-3 space-y-2 text-[13px] leading-relaxed text-[#a1a1a6]">
+              <ul className="mt-3 space-y-2 text-[13px] leading-relaxed text-[var(--mkt-text-2)]">
                 {PACK_CONTENTS.map((item) => (
                   <li key={item} className="flex items-start gap-2">
                     <CheckCircle2
-                      className="mt-0.5 h-4 w-4 shrink-0 text-[#2997ff]"
+                      className="mt-0.5 h-4 w-4 shrink-0 text-[var(--mkt-accent)]"
                     />
                     <span>{item}</span>
                   </li>
@@ -344,8 +344,8 @@ function DueDiligencePage() {
               </ul>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-[#161617] p-5 text-[12px] leading-relaxed text-[#a1a1a6]">
-              <div className="font-semibold text-[#f5f5f7]">
+            <div className="rounded-2xl border border-[var(--mkt-line)] bg-[var(--mkt-surface)] p-5 text-[12px] leading-relaxed text-[var(--mkt-text-2)]">
+              <div className="font-semibold text-[var(--mkt-text)]">
                 Note on scope
               </div>
               <p className="mt-2">
@@ -374,7 +374,7 @@ const PACK_CONTENTS = [
 ];
 
 const inputCls =
-  "w-full rounded-lg bg-[#1c1c1f] px-3 py-2.5 text-[13px] text-[#f5f5f7] outline-none transition placeholder:text-[#86868b] focus:ring-2 focus:ring-[#2997ff]/50";
+  "w-full rounded-lg bg-[var(--mkt-surface-2)] px-3 py-2.5 text-[13px] text-[var(--mkt-text)] outline-none transition placeholder:text-[var(--mkt-text-3)] focus:ring-2 focus:ring-[var(--mkt-accent)]/50";
 
 function Field({
   label,
@@ -389,9 +389,9 @@ function Field({
 }) {
   return (
     <label
-      className={`block text-[#f5f5f7] ${full ? "md:col-span-2" : ""}`}
+      className={`block text-[var(--mkt-text)] ${full ? "md:col-span-2" : ""}`}
     >
-      <span className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.18em] text-[#86868b]">
+      <span className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--mkt-text-3)]">
         {label}
       </span>
       <div
@@ -400,13 +400,13 @@ function Field({
           border: `1px solid ${
             error
               ? "rgba(255,107,107,0.6)"
-              : "rgba(255,255,255,0.10)"
+              : "var(--mkt-line)"
           }`,
         }}
       >
         {children}
       </div>
-      {error && <p className="mt-1 text-[12px] text-red-400">{error}</p>}
+      {error && <p className="mt-1 text-[12px] text-[var(--mkt-error-text)]">{error}</p>}
     </label>
   );
 }
@@ -414,32 +414,32 @@ function Field({
 function SuccessPanel({ reference, email }: { reference: string | null; email: string }) {
   return (
     <div className="text-center">
-      <div className="mx-auto inline-flex h-14 w-14 items-center justify-center rounded-full bg-white/10 text-[#2997ff]">
+      <div className="mx-auto inline-flex h-14 w-14 items-center justify-center rounded-full bg-[var(--mkt-surface-2)] text-[var(--mkt-accent)]">
         <CheckCircle2 className="h-7 w-7" />
       </div>
-      <h2 className="mt-4 text-xl font-semibold text-[#f5f5f7]">
+      <h2 className="mt-4 text-xl font-semibold text-[var(--mkt-text)]">
         Your download has started
       </h2>
-      <p className="mt-2 text-[13px] leading-relaxed text-[#a1a1a6]">
+      <p className="mt-2 text-[13px] leading-relaxed text-[var(--mkt-text-2)]">
         A copy of the Due-Diligence Pack is downloading to your device. We've also logged your
         request under reference{" "}
-        <span className="font-mono text-[#2997ff]">
+        <span className="font-mono text-[var(--mkt-accent)]">
           {reference ? reference.slice(0, 8).toUpperCase() : "—"}
         </span>
         . Our team will follow up at{" "}
-        <span className="font-mono text-[#f5f5f7]">{email}</span> with any items
+        <span className="font-mono text-[var(--mkt-text)]">{email}</span> with any items
         that require NDA.
       </p>
       <div className="mt-6 flex flex-wrap justify-center gap-3">
         <Link
           to="/security"
-          className="inline-flex items-center gap-1.5 rounded-full bg-white px-4 py-2 text-[12px] font-semibold text-black transition hover:bg-white/85"
+          className="inline-flex items-center gap-1.5 rounded-full bg-[var(--mkt-btn-bg)] px-4 py-2 text-[12px] font-semibold text-[var(--mkt-btn-text)] transition hover:opacity-85"
         >
           View security posture
         </Link>
         <Link
           to="/book-demo"
-          className="inline-flex items-center gap-1.5 rounded-full border border-white/20 px-4 py-2 text-[12px] font-semibold text-[#f5f5f7] transition hover:bg-white/10"
+          className="inline-flex items-center gap-1.5 rounded-full border border-[var(--mkt-line-strong)] px-4 py-2 text-[12px] font-semibold text-[var(--mkt-text)] transition hover:bg-[var(--mkt-surface-2)]"
         >
           Book a briefing
         </Link>

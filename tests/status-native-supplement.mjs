@@ -3,7 +3,7 @@ import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 const dir='docs/evidence/status-lane-2026-10-03';
 const saved=JSON.parse(fs.readFileSync(dir+'/native-qualification.json','utf8'));
-if(!saved.container.startsWith('fvi-status-native-20261004-')||saved.kind!=='isolated_synthetic_postgresql_fixture') throw new Error('Unexpected status fixture identity');
+if(!saved.container.startsWith('rq-status-native-20261004-')||saved.kind!=='isolated_synthetic_postgresql_fixture') throw new Error('Unexpected status fixture identity');
 const call=(args,input)=>spawnSync('docker',args,{input,encoding:'utf8',timeout:60000,windowsHide:true});
 const sql=fs.readFileSync(dir+'/guarded-status-workflow-proposal.sql','utf8');
 let functions='';

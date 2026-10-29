@@ -45,7 +45,7 @@ export const Route = createFileRoute("/api/public/chat-ops/slash")({
         if (!ws) return Response.json({ response_type: "ephemeral", text: "ReconIQ not installed for this Slack workspace." });
         const tenant_id = (ws as any).tenant_id as string;
 
-        const baseUrl = process.env.PUBLIC_BASE_URL ?? "https://app.reconiq.example";
+        const baseUrl = process.env.PUBLIC_BASE_URL ?? "https://reconintelligence.app";
         let status: "ok" | "denied" | "step_up_required" | "error" = "ok";
         let responseText = "";
         try {

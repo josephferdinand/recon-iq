@@ -17,7 +17,7 @@ The recoverable GitHub main revision is older than the recovered working applica
 ## Personal setup
 
 1. Create your own Supabase project, GitHub repository and Cloudflare project. Do not link this folder to the original project repository or accounts.
-2. Read `database/README.md`. Enable required supported extensions and qualify the schema on your NEW database. This export has not been restored against a new project yet. Do not run the historical migration chain blindly.
+2. Read `database/README.md`. Enable required supported extensions and qualify the schema on your NEW database. This export has not been applied to a new project yet. Do not run the historical migration chain blindly.
 3. Copy `.env.example` to `.env.local` and supply only your new project reference, URL and public key. Supply server-only values through local private configuration or Cloudflare secrets; never prefix secret values with `VITE_`.
 4. Configure `META_API_KEY` with your own Meta account key. `META_API_BASE_URL` is `https://api.meta.ai/v1`; `META_MUSE_MODEL` defaults to `muse-spark-1.3`. Select a permitted Muse model available in your account. No model request was made while packaging.
 5. Install the dependencies in this folder using Bun 1.3.14. Lockfiles were intentionally not copied because the dependency set changed; generate a fresh lockfile and review it. No dependency installation was performed during export.
@@ -50,4 +50,4 @@ DEMO-002,249.00,USD,2026-10-29
 - Email/password: https://supabase.com/docs/guides/auth/passwords
 - Pages hosting: https://developers.cloudflare.com/pages/framework-guides/deploy-anything/
 
-This package is local only. It has not been uploaded to a repository or deployed. Verify event rules and disclose pre-existing foundations accurately when preparing your submission. Public source publication exposes the selected proprietary source, even after rebranding; choose the license you intend before publishing.
+This package is local only. It has not been uploaded to a repository or deployed. Verify event rules and disclose pre-existing foundations accurately when preparing your submission. Public source publication exposes the selected proprietary source; choose the license you intend before publishing.

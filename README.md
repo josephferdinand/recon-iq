@@ -79,7 +79,7 @@ TanStack Start (SSR + server functions)  ──►  AI provider (break explanati
    │  deployed on Cloudflare Pages              Meta Muse adapter, or any
    ▼                                            OpenAI-compatible endpoint
 Supabase (managed Postgres + Auth + RLS)        configured server-side
-   • 679 tables, 1,123 functions, 1,547 RLS policies (restored & counted live)
+   • 679 tables, 1,123 functions, 1,547 RLS policies (counted live)
    • Email/password auth + MFA, tenant membership, hash-chained audit log
 Cloudflare: Pages hosting, custom domain, WAF, security headers
 ```
@@ -164,7 +164,7 @@ Then in Cloudflare → Pages → `reconiq` → Settings → Environment variable
 
 ## What has been verified (2026-10-29)
 
-- **Schema restore, counted live:** 679 tables, 1,123 functions, 1,547 RLS policies, 523 triggers, 13 extensions; RBAC seeded (78 permissions, 11 roles).
+- **Schema, counted live:** 679 tables, 1,123 functions, 1,547 RLS policies, 523 triggers, 13 extensions; RBAC seeded (78 permissions, 11 roles).
 - **TypeScript typecheck:** zero errors. **Production build:** succeeds; `dist/` secret scan clean (only placeholder form hints match).
 - **Live end-to-end (production):** sign-in with MFA → demo tenant → CSV upload → column mapping → deterministic run (`DEMO-001` matched, `DEMO-002` break) → AI explanation → human resolution → hash-chained audit history.
 - **Judge tour:** verified through the judge account's own JWT against live RLS policies (runs, exceptions, comments readable; tenant isolation intact).
@@ -174,7 +174,7 @@ Then in Cloudflare → Pages → `reconiq` → Settings → Environment variable
 
 ## Project status & honest provenance
 
-ReconIQ was prepared for the Meta Developer Hackathon from a pre-existing application codebase (internal codename **FVI / Falcon Veritas**), rebranded and re-qualified on personal accounts. It is **not** a byte-identical certified archive of any prior production deployment. The `FVI-*` reference IDs, `x-fvi-*` headers, and `*.reconiq.example` strings in internal placeholders use the RFC 2606 `.example` TLD intentionally and are retained for provenance; historical export records (`EXPORT_MANIFEST.json`, `database/schema-catalog.json`, `supabase/migrations/`) are retained unmodified.
+ReconIQ was prepared for the Meta Developer Hackathon from a pre-existing application codebase (internal codename **FVI / Falcon Veritas**) and re-qualified on personal accounts. It is **not** a byte-identical certified archive of any prior production deployment. The `FVI-*` reference IDs, `x-fvi-*` headers, and `*.reconiq.example` strings in internal placeholders use the RFC 2606 `.example` TLD intentionally and are retained for provenance; historical export records (`EXPORT_MANIFEST.json`, `database/schema-catalog.json`, `supabase/migrations/`) are retained unmodified.
 
 ## Repository layout
 
